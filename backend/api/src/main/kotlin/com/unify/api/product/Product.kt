@@ -33,7 +33,7 @@ public class Product {
     @Column(name = "created_at")
     val createdAt: LocalDateTime? = null
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     var category: Category? = null
 
