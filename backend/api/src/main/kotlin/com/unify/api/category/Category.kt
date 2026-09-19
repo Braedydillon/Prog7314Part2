@@ -16,5 +16,4 @@ public class Category {
     var description: String? = null
     @Column(name="is_active")
     var isActive: Boolean? = null
-
 }
