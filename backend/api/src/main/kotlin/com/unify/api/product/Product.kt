@@ -23,7 +23,7 @@ public class Product {
     @Column(name = "discount_price")
     val discountPrice: BigDecimal? = null
     @Column(name = "stock_quantity")
-    val stockQuantity: Int? = null
+    var stockQuantity: Int? = null
     @Column(name = "image_url")
     val imageUrl: String? = null
     @Column(name = "brand")

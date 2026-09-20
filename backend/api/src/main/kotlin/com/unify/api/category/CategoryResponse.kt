@@ -6,3 +6,10 @@ data class CategoryResponse(
     val description: String?,
     val active: Boolean
 )
+
+fun Category.toResponse(): CategoryResponse = CategoryResponse(
+    id = this.id!!,
+    name = this.name ?: "",
+    description = this.description,
+    active = this.isActive ?: false
+)

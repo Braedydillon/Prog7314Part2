@@ -20,10 +20,3 @@ class CategoryController(val categoryRepository: CategoryRepository) {
             .orElse(ResponseEntity.notFound().build())
     }
 }
-
-fun Category.toResponse(): CategoryResponse = CategoryResponse(
-    id = this.id!!,
-    name = this.name ?: "",
-    description = this.description,
-    active = this.isActive ?: false
-)
