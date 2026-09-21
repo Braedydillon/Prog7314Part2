@@ -7,7 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
+// Removed EditText import
+import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,8 +38,8 @@ class Settings : Fragment() {
 
             val btnLogout = view.findViewById<Button>(R.id.btnLogout)
             val btnResetPassword = view.findViewById<Button>(R.id.btnResetPassword)
-            val etName = view.findViewById<EditText>(R.id.etProfileName)
-            val etSurname = view.findViewById<EditText>(R.id.etProfileSurname)
+            val tvName = view.findViewById<TextView>(R.id.name)
+            val tvSurname = view.findViewById<TextView>(R.id.surname)
             
             val userId = FirebaseAuth.getInstance().currentUser?.uid
             val userEmail = FirebaseAuth.getInstance().currentUser?.email
@@ -49,8 +50,8 @@ class Settings : Fragment() {
                     .collection("users").document(userId).get()
                     .addOnSuccessListener { document ->
                         if (document != null && document.exists()) {
-                            etName.setText(document.getString("name"))
-                            etSurname.setText(document.getString("surname"))
+                            tvName.text = document.getString("name")
+                            tvSurname.text = document.getString("surname")
                         }
                     }
             }

@@ -29,44 +29,42 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/etProfileName"
+    <TextView
+        android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:ems="10"
-        android:hint="First Name"
-        android:inputType="text"
+        android:layout_marginTop="32dp"
+        android:text="Name"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSettingsTitle" />
 
-    <EditText
-        android:id="@+id/etProfileSurname"
+    <TextView
+        android:id="@+id/surname"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:ems="10"
-        android:hint="Surname"
-        android:inputType="text"
+        android:layout_marginTop="16dp"
+        android:text="Surname"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etProfileName" />
+        app:layout_constraintTop_toBottomOf="@+id/name" />
 
     <Button
         android:id="@+id/btnResetPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginTop="32dp"
         android:text="Reset Password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etProfileSurname" />
+        app:layout_constraintTop_toBottomOf="@+id/surname" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

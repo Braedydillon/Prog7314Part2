@@ -1,5 +1,7 @@
 package com.example.prog7314p2.Models
 
+import java.io.Serializable
+
 data class Product(
     val id: Int,
     val name: String,
@@ -11,4 +13,4 @@ data class Product(
     val stock: Int,
     val available: Boolean,
     val category: Category?
-)
+) : Serializable

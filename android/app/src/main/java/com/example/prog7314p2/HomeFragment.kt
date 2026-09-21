@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import RetrofitClient
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -30,7 +31,20 @@ class HomeFragment : Fragment() {
         rvProducts = view.findViewById(R.id.rvProducts)
         
         // Start with an empty list
-        productAdapter = ProductAdapter(emptyList())
+        productAdapter = ProductAdapter(emptyList()) { clickedProduct ->
+            val detailsFragment = ProductDetailsFragment()
+            val bundle = Bundle()
+            
+            // Pack the product into the bundle
+            bundle.putSerializable("PRODUCT_DATA", clickedProduct)
+            detailsFragment.arguments = bundle
+            
+            // Navigate to the Details Fragment and add to backstack
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, detailsFragment)
+                .addToBackStack(null) // This lets the user press 'back' to go to home
+                .commit()
+        }
         rvProducts.adapter = productAdapter
 
         // Fetch Data from DB (Spring Boot API)
@@ -38,8 +52,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun fetchData() {
+        // Use a standard CoroutineScope attached to the ViewLifecycle, but without strict cancellation
         viewLifecycleOwner.lifecycleScope.launch {
             try {
+                // Let's add a tiny delay to ensure the view is fully attached before making the call
+                delay(100)
+                
                 // Fetch Products
                 val productResponse = RetrofitClient.instance.getProducts()
                 val products = productResponse.products
@@ -48,7 +66,9 @@ class HomeFragment : Fragment() {
                 productAdapter.updateData(products)
 
             } catch (e: Exception) {
-                Toast.makeText(context, "Failed to load data: ${e.message}", Toast.LENGTH_SHORT).show()
+                // If it fails, print the exact error to the console so we can see what really happened
+                e.printStackTrace()
+                Toast.makeText(context, "Failed to load data: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
