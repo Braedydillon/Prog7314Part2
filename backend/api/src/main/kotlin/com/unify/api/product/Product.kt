@@ -15,23 +15,23 @@ public class Product {
     @Column(name = "product_id")
     public var id: Int? = null
     @Column(name = "product_name")
-    val productName: String? = null
+    var productName: String? = null
     @Column(name = "description")
-    val description: String? = null
+    var description: String? = null
     @Column(name = "price")
-    val price: BigDecimal? = null
+    var price: BigDecimal? = null
     @Column(name = "discount_price")
-    val discountPrice: BigDecimal? = null
+    var discountPrice: BigDecimal? = null
     @Column(name = "stock_quantity")
     var stockQuantity: Int? = null
     @Column(name = "image_url")
-    val imageUrl: String? = null
+    var imageUrl: String? = null
     @Column(name = "brand")
-    val brand: String? = null
+    var brand: String? = null
     @Column(name = "is_available")
-    val isAvailable: Boolean? = null
+    var isAvailable: Boolean? = null
     @Column(name = "created_at")
-    val createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
