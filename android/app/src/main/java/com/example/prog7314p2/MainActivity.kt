@@ -2,11 +2,11 @@ package com.example.prog7314p2
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.prog7314p2.Models.ShopActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +23,10 @@ class MainActivity : AppCompatActivity() {
         // Redirect to Login if no user is signed in
         if (auth.currentUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        } else {
+            startActivity(Intent(this, ShopActivity::class.java))
             finish()
             return
         }
