@@ -7,7 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,6 +36,37 @@ class Settings : Fragment() {
             super.onViewCreated(view, savedInstanceState)
 
             val btnLogout = view.findViewById<Button>(R.id.btnLogout)
+            val btnResetPassword = view.findViewById<Button>(R.id.btnResetPassword)
+            val etName = view.findViewById<EditText>(R.id.etProfileName)
+            val etSurname = view.findViewById<EditText>(R.id.etProfileSurname)
+            
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            val userEmail = FirebaseAuth.getInstance().currentUser?.email
+
+            // Fetch Name and Surname from Firestore
+            if (userId != null) {
+                FirebaseFirestore.getInstance()
+                    .collection("Users").document(userId).get()
+                    .addOnSuccessListener { document ->
+                        if (document != null && document.exists()) {
+                            etName.setText(document.getString("name"))
+                            etSurname.setText(document.getString("surname"))
+                        }
+                    }
+            }
+
+            // Reset Password Logic
+            btnResetPassword.setOnClickListener {
+                if (userEmail != null) {
+                    FirebaseAuth.getInstance().sendPasswordResetEmail(userEmail)
+                        .addOnSuccessListener {
+                            Toast.makeText(context, "Password reset email sent!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(context, "Failed to send reset email: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
 
             btnLogout.setOnClickListener {
                 // Log out from Firebase

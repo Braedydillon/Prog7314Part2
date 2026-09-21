@@ -15,7 +15,7 @@ class ShopActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_shop)
+        setContentView(R.layout.activitybar)
         
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { v, insets ->
