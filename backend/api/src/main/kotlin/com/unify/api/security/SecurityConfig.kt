@@ -17,6 +17,7 @@ class SecurityConfig(private val firebaseTokenFilter: FirebaseTokenFilter) {
         http.authorizeHttpRequests { auth ->
             auth.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
             auth.requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+            auth.requestMatchers("/error").permitAll()
             auth.anyRequest().authenticated()
         }
         http.addFilterBefore(firebaseTokenFilter, UsernamePasswordAuthenticationFilter::class.java)

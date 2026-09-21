@@ -1,5 +1,6 @@
 package com.unify.api.product
 
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
@@ -9,7 +10,20 @@ import java.math.BigDecimal
 class ProductController(val productRepository: ProductRepository) {
 
     @GetMapping
-    fun findAll(): List<ProductResponse> = productRepository.findAll().map { it.toResponse() }
+    fun findAll(
+        @RequestParam category: Int?,
+        @RequestParam search: String?,
+        @RequestParam(defaultValue = "0") page: Int
+    ): ProductPageResponse{
+        val pageable = PageRequest.of(page, 20)
+        val result = productRepository.findWithFilters(category,search,pageable)
+
+        return ProductPageResponse(
+            page = result.number,
+            totalPages = result.totalPages,
+            products = result.content.map { it.toResponse() }
+        )
+    }
 
     @GetMapping("/{id}")
     fun getProductById(@PathVariable("id") id: Int): ResponseEntity<ProductResponse>? {
