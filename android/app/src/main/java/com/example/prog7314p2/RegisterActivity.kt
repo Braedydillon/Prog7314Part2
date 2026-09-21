@@ -2,7 +2,6 @@ package com.example.prog7314p2
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -12,45 +11,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var login: Button
-    private lateinit var email: EditText
-    private lateinit var password: EditText
-    private lateinit var surname: EditText
+    private lateinit var register: Button
+    private lateinit var emailEditText: EditText
+    private lateinit var passwordEditText: EditText
     private lateinit var auth: FirebaseAuth
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.register)
-
-
-        email = findViewById(R.id.regemail)
-        password = findViewById(R.id.regpassword)
-        surname = findViewById<EditText>(R.id.regsurname)
-        val button: Button = findViewById(R.id.regregister)
-
+        
         auth = FirebaseAuth.getInstance()
-
-        button.setOnClickListener {
-            val txtEmail = email.text.toString().trim()
-            val txtPassword = password.text.toString().trim()
-
-            if(TextUtils.isEmpty(txtEmail) || TextUtils.isEmpty(txtPassword)){
-                Toast.makeText(this, "Empty cresidentials", Toast.LENGTH_SHORT).show()
-
-            } else if (txtPassword.length < 6)
-            {
-                Toast.makeText(this, "Password to short", Toast.LENGTH_SHORT).show()
-            } else
-            {
-                registerUser(txtEmail, txtPassword)
-            }
-        }
-
+        
         val rootView = findViewById<View>(R.id.register)
         if (rootView != null) {
             ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
@@ -60,33 +37,62 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-
         login = findViewById<Button>(R.id.reglogin)
+        register = findViewById<Button>(R.id.regregister)
+        emailEditText = findViewById<EditText>(R.id.regemail)
+        passwordEditText = findViewById<EditText>(R.id.regpassword)
 
+        // Login Button (Navigates back to MainActivity)
         login.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
-    }
 
-    private fun registerUser(txtEmail: String, txtPassword: String) {
-        auth.createUserWithEmailAndPassword(txtEmail, txtPassword)
-            .addOnCompleteListener (this) { task ->
-                if (task.isSuccessful){
-                    Toast.makeText(this, "Successfully registered", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, LoginActivity::class.java))
-                    finish()
-                } else {
-                    // Check if the error is due to a duplicate email
-                    if (task.exception is com.google.firebase.auth.FirebaseAuthUserCollisionException) {
-                        email.error = "This email is already registered. Try logging in!"
+        // Register Button Logic
+        register.setOnClickListener {
+            val email = emailEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter email and password.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Create user in Firebase
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Registration success! Now save the name and surname to Firestore
+                        val userId = auth.currentUser?.uid
+                        if (userId != null) {
+                            val name = findViewById<EditText>(R.id.regname).text.toString().trim()
+                            val surname = findViewById<EditText>(R.id.regsurname).text.toString().trim()
+                            
+                            val userMap = hashMapOf(
+                                "name" to name,
+                                "surname" to surname,
+                                "email" to email
+                            )
+                            
+                            FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(userId)
+                                .set(userMap)
+                                .addOnSuccessListener {
+                                    Toast.makeText(baseContext, "Registration successful.", Toast.LENGTH_SHORT).show()
+                                    // Go back to login screen
+                                    val intent = Intent(this, MainActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(baseContext, "Failed to save details: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        }
                     } else {
-                        val errorMessage = task.exception?.message ?: "Unknown error"
-                        Toast.makeText(this, "Registration failed: $errorMessage", Toast.LENGTH_LONG).show()
+                        Toast.makeText(baseContext, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
+        }
     }
-
-
 }
