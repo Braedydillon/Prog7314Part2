@@ -1,87 +1,95 @@
 package com.example.prog7314p2
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.recyclerview.widget.RecyclerView
-import com.example.prog7314p2.Models.cartItem
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
+import com.example.prog7314p2.Firestore.FirebaseHelper
+import com.example.prog7314p2.Models.cartItem
 import kotlinx.coroutines.launch
-import RetrofitClient
-import com.google.firebase.firestore.ListenerRegistration
 import java.util.Locale
+import RetrofitClient
 
 class ShoppingCart : Fragment() {
 
     private lateinit var rvCartItems: RecyclerView
     private lateinit var cartAdapter: CartAdapter
+
     private val cartItemsList = mutableListOf<cartItem>()
 
+    private val firebaseHelper = FirebaseHelper()
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_shopping_cart, container, false)
+
+        return inflater.inflate(
+            R.layout.fragment_shopping_cart,
+            container,
+            false
+        )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         rvCartItems = view.findViewById(R.id.rvCartItems)
+
         val btnCheckout = view.findViewById<Button>(R.id.checkoutButton)
 
-        // Setup the adapter with a listener to remove items
+        // Setup the adapter
         cartAdapter = CartAdapter(cartItemsList) { itemToRemove ->
+
             removeFromCart(itemToRemove.productId)
         }
+
         rvCartItems.adapter = cartAdapter
 
-        // Fetch items from Firebase
-        listenToCart()
+        // Load cart from Firebase
+        loadCart()
 
         btnCheckout.setOnClickListener {
-            // TODO: Trigger Zach's API here for Checkout!
-            Toast.makeText(context, "Proceeding to checkout...", Toast.LENGTH_SHORT).show()
+            // TODO: Trigger Zach's checkout API later
+            Toast.makeText(context,"Proceeding to checkout...",Toast.LENGTH_SHORT).show()
         }
     }
 
-    private var cartListener: ListenerRegistration? = null
+    private fun loadCart() {
 
-    private fun listenToCart() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        firebaseHelper.getCartItems(
 
-        // Remove old listener if one exists
-        cartListener?.remove()
+            onSuccess = { cartItems ->
 
-        // This listens to Firebase in REAL-TIME! (Requirement 3.1)
-        cartListener = FirebaseFirestore.getInstance()
-            .collection("Cart").document(userId)
-            .collection("Items")
-            .addSnapshotListener { snapshot, e ->
-                if (e != null || snapshot == null) return@addSnapshotListener
+                // Make sure the fragment is still attached
+                if (!isAdded || view == null) {
+                    return@getCartItems
+                }
 
-                // Safety check: Don't launch coroutine or update UI if fragment is not attached!
-                if (!isAdded || view == null) return@addSnapshotListener
-
-                // Use coroutines to fetch product details from Spring Boot API for each cart item
                 lifecycleScope.launch {
+
                     val newItems = mutableListOf<cartItem>()
+
                     var totalPrice = 0.0
 
-                    for (document in snapshot.documents) {
-                        val productId = document.getLong("productId")?.toInt() ?: continue
-                        val quantity = document.getLong("quantity")?.toInt() ?: 1
+                    // Get product details from Spring Boot API
+                    for (cartItem in cartItems) {
+
+                        val productId = cartItem.productId
+                        val quantity = cartItem.quantity
 
                         try {
-                            // Fetch product info from Spring Boot PostgreSQL API
+
                             val product = RetrofitClient.instance.getProductDetails(productId)
+
                             val item = cartItem(
                                 productId = product.id,
                                 name = product.name,
@@ -89,41 +97,74 @@ class ShoppingCart : Fragment() {
                                 quantity = quantity,
                                 imageUrl = product.imageUrl
                             )
+
                             newItems.add(item)
-                            totalPrice += (product.price * quantity)
+
+                            totalPrice += product.price * quantity
+
                         } catch (ex: Exception) {
                             ex.printStackTrace()
                         }
                     }
 
-                    if (isAdded && view != null) {
-                        cartItemsList.clear()
-                        cartItemsList.addAll(newItems)
-                        cartAdapter.notifyDataSetChanged()
-
-                        // Update the UI with the new total
-                        val tvTotal = view?.findViewById<TextView>(R.id.tvCartTotal)
-                        tvTotal?.text = String.format(Locale.getDefault(), "Total: R %.2f", totalPrice)
+                    if (!isAdded || view == null) {
+                        return@launch
                     }
-                }
-            }
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // Crucial: Detach the Firebase listener when the view is destroyed to prevent crashes!
-        cartListener?.remove()
+                    // Update cart list
+                    cartItemsList.clear()
+
+                    cartItemsList.addAll(newItems)
+
+                    cartAdapter.notifyDataSetChanged()
+
+                    // Update total
+                    val tvTotal =
+                        view?.findViewById<TextView>(
+                            R.id.tvCartTotal
+                        )
+
+                    tvTotal?.text = String.format(Locale.getDefault(), "Total: R %.2f",totalPrice)
+                }
+            },
+
+            onFailure = { exception ->
+
+                if (!isAdded) {
+                    return@getCartItems
+                }
+
+                Toast.makeText(context,exception.message?: "Failed to load cart",Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     private fun removeFromCart(productId: Int) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        FirebaseFirestore.getInstance()
-            .collection("Cart").document(userId)
-            .collection("Items").document(productId.toString())
-            .delete()
-            .addOnSuccessListener {
-                Toast.makeText(context, "Removed from cart", Toast.LENGTH_SHORT).show()
+        firebaseHelper.removeFromCart(
+
+            productId = productId,
+
+            onSuccess = {
+
+                if (!isAdded) {
+                    return@removeFromCart
+                }
+
+                Toast.makeText( context,"Removed from cart",Toast.LENGTH_SHORT).show()
+
+                // Reload cart after removing item
+                loadCart()
+            },
+
+            onFailure = { exception ->
+
+                if (!isAdded) {
+                    return@removeFromCart
+                }
+
+                Toast.makeText(context,exception.message?: "Failed to remove item",Toast.LENGTH_SHORT).show()
             }
+        )
     }
 }

@@ -68,8 +68,8 @@ class ShopActivity : AppCompatActivity() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         FirebaseFirestore.getInstance()
-            .collection("Cart").document(userId)
-            .collection("Items")
+            .collection("carts").document(userId)
+            .collection("items")
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     try {
