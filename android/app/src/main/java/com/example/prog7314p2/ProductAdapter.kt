@@ -55,4 +55,12 @@ class ProductAdapter(
         products = newProducts
         notifyDataSetChanged()
     }
+
+    fun appendProducts(moreProducts: List<Product>) {
+        val startPos = products.size
+        val mutableList = products.toMutableList()
+        mutableList.addAll(moreProducts)
+        products = mutableList
+        notifyItemRangeInserted(startPos, moreProducts.size)
+    }
 }

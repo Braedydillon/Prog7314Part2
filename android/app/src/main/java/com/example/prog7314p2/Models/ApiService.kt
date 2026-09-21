@@ -4,10 +4,11 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @GET("api/products")
-    suspend fun getProducts(): ProductResponse
+    suspend fun getProducts(@Query("page") page: Int = 0): ProductResponse
 
     @GET("api/categories")
     suspend fun getCategories(): List<Category>

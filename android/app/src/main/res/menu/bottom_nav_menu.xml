@@ -9,7 +9,11 @@
         android:icon="@drawable/cart"
         android:title="Cart" />
     <item
-        android:id="@+id/nav_profile"
+        android:id="@+id/nav_order"
+        android:icon="@drawable/order"
+        android:title="Orders" />
+    <item
+        android:id="@+id/nav_Profile"
         android:icon="@drawable/gear"
         android:title="Profile" />
 </menu>
