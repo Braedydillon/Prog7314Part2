@@ -46,7 +46,7 @@ class Settings : Fragment() {
             // Fetch Name and Surname from Firestore
             if (userId != null) {
                 FirebaseFirestore.getInstance()
-                    .collection("Users").document(userId).get()
+                    .collection("users").document(userId).get()
                     .addOnSuccessListener { document ->
                         if (document != null && document.exists()) {
                             etName.setText(document.getString("name"))

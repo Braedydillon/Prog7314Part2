@@ -75,7 +75,7 @@ class RegisterActivity : AppCompatActivity() {
                             )
                             
                             FirebaseFirestore.getInstance()
-                                .collection("Users")
+                                .collection("users")
                                 .document(userId)
                                 .set(userMap)
                                 .addOnSuccessListener {
