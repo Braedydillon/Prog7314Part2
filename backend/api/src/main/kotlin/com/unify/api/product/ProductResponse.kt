@@ -30,3 +30,9 @@ fun Product.toResponse(): ProductResponse = ProductResponse(
         name = this.category?.name ?: ""
     )
 )
+
+data class ProductPageResponse(
+    val page: Int,
+    val totalPages: Int,
+    val products: List<ProductResponse>
+)
