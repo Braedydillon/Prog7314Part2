@@ -9,6 +9,7 @@ import com.example.prog7314p2.HomeFragment
 import com.example.prog7314p2.R
 import com.example.prog7314p2.Settings
 import com.example.prog7314p2.ShoppingCart
+import com.example.prog7314p2.orderHistory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -50,7 +51,13 @@ class ShopActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
-                R.id.nav_profile -> {
+                R.id.nav_order -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, orderHistory())
+                        .commit()
+                    true
+                }
+                R.id.nav_Profile -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, Settings())
                         .commit()

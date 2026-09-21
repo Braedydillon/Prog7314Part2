@@ -12,4 +12,7 @@
     <string name="unify">Unify</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="order_placed">!!Order Placed!!</string>
+    <string name="view_orders">View Orders</string>
+    <string name="orders_placed">Orders Placed</string>
 </resources>

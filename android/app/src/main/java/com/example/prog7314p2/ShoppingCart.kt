@@ -15,7 +15,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import RetrofitClient
+import com.example.prog7314p2.Models.OrderHistoryModel
 import com.google.firebase.firestore.ListenerRegistration
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class ShoppingCart : Fragment() {
@@ -47,8 +50,11 @@ class ShoppingCart : Fragment() {
         listenToCart()
 
         btnCheckout.setOnClickListener {
-            // TODO: Trigger Zach's API here for Checkout!
-            Toast.makeText(context, "Proceeding to checkout...", Toast.LENGTH_SHORT).show()
+            if (cartItemsList.isEmpty()) {
+                Toast.makeText(context, "Your cart is empty!", Toast.LENGTH_SHORT).show()
+            } else {
+                processCheckout()
+            }
         }
     }
 
@@ -124,6 +130,66 @@ class ShoppingCart : Fragment() {
             .delete()
             .addOnSuccessListener {
                 Toast.makeText(context, "Removed from cart", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun processCheckout() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        var totalCost = 0.0
+        var totalItems = 0
+        for (item in cartItemsList) {
+            totalCost += (item.price * item.quantity)
+            totalItems += item.quantity
+        }
+
+        val orderId = System.currentTimeMillis().toString().takeLast(6)
+        val currentDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
+
+        val orderData = OrderHistoryModel(
+            orderId = orderId,
+            datePlaced = currentDate,
+            totalCost = totalCost,
+            eta = "3-5 Business Days",
+            itemCount = totalItems,
+            status = "Processing"
+        )
+
+        val db = FirebaseFirestore.getInstance()
+        
+        // 1. Save order to Firestore Users -> {userId} -> Orders -> {orderId}
+        db.collection("Users").document(userId)
+            .collection("Orders").document(orderId)
+            .set(orderData)
+            .addOnSuccessListener {
+                // 2. Clear the cart from Firestore
+                db.collection("Cart").document(userId)
+                    .collection("Items")
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+                        for (doc in snapshot.documents) {
+                            doc.reference.delete()
+                        }
+                        
+                        // 3. Navigate to OrderSucessFull fragment with bundle!
+                        if (isAdded) {
+                            val successFragment = OrderSucessFull()
+                            val bundle = Bundle().apply {
+                                putString("ORDER_ID", orderId)
+                                putString("DATE_PLACED", currentDate)
+                                putDouble("TOTAL_COST", totalCost)
+                                putString("ETA", "3-5 Business Days")
+                            }
+                            successFragment.arguments = bundle
+
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.fragmentContainer, successFragment)
+                                .commit()
+                        }
+                    }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Checkout failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }
