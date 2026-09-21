@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import RetrofitClient
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -65,6 +66,9 @@ class HomeFragment : Fragment() {
                 // Update the adapter with the fresh products!
                 productAdapter.updateData(products)
 
+            } catch (e: CancellationException) {
+                // Ignore this. This happens naturally when you switch tabs quickly!
+                throw e
             } catch (e: Exception) {
                 // If it fails, print the exact error to the console so we can see what really happened
                 e.printStackTrace()

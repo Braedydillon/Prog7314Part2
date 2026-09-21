@@ -8,7 +8,11 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.prog7314p2.HomeFragment
 import com.example.prog7314p2.R
 import com.example.prog7314p2.Settings
+import com.example.prog7314p2.ShoppingCart
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
 // Removed okhttp settings import
 
 class ShopActivity : AppCompatActivity() {
@@ -41,7 +45,9 @@ class ShopActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_cart -> {
-                    // TODO: Replace with CartFragment later
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, ShoppingCart())
+                        .commit()
                     true
                 }
                 R.id.nav_profile -> {
@@ -53,5 +59,37 @@ class ShopActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        // Listen to Firestore cart and update the badge counter on the Cart icon
+        listenToCartBadge(bottomNav)
+    }
+
+    private fun listenToCartBadge(bottomNav: BottomNavigationView) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        FirebaseFirestore.getInstance()
+            .collection("Cart").document(userId)
+            .collection("Items")
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    try {
+                        var totalCount = 0
+                        for (doc in snapshot.documents) {
+                            val qty = doc.getLong("quantity")?.toInt() ?: 1
+                            totalCount += qty
+                        }
+
+                        if (totalCount > 0) {
+                            val badge = bottomNav.getOrCreateBadge(R.id.nav_cart)
+                            badge.number = totalCount
+                            badge.isVisible = true
+                        } else {
+                            bottomNav.removeBadge(R.id.nav_cart)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
     }
 }

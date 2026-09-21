@@ -40,7 +40,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.recyclerview)
+// Removed legacy cardview
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.googleid)

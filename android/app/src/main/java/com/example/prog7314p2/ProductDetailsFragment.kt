@@ -13,6 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.example.prog7314p2.Models.Product
 import RetrofitClient
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -68,8 +71,56 @@ class ProductDetailsFragment : Fragment() {
 
                 // Click listener for the Cart button
                 btnAddCart.setOnClickListener {
-                    // We will hook this up to Firebase Firestore soon!
-                    Toast.makeText(context, "${fetchedProduct.name} added to cart!", Toast.LENGTH_SHORT).show()
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                    if (userId != null) {
+                        val cartDocRef = FirebaseFirestore.getInstance()
+                            .collection("Cart").document(userId)
+                            .collection("Items").document(fetchedProduct.id.toString())
+
+                        // Check if the item is already in the cart to increment quantity
+                        cartDocRef.get().addOnSuccessListener { document ->
+                            val currentQty = if (document.exists()) {
+                                (document.getLong("quantity") ?: 1L).toInt()
+                            } else {
+                                0
+                            }
+                            val newQty = currentQty + 1
+
+                            // Save ONLY productId and quantity in Firestore (matching your PDF Schema)
+                            val cartItem = hashMapOf(
+                                "productId" to fetchedProduct.id,
+                                "quantity" to newQty
+                            )
+
+                            cartDocRef.set(cartItem)
+                                .addOnSuccessListener {
+                                    // Use context/view safely
+                                    val currentContext = context
+                                    val currentView = view
+                                    if (currentContext != null && currentView != null && isAdded) {
+                                        try {
+                                            Snackbar.make(
+                                                currentView,
+                                                "${fetchedProduct.name} added to cart! (Qty: $newQty)",
+                                                Snackbar.LENGTH_LONG
+                                            ).setAction("GO TO CART") {
+                                                parentFragmentManager.beginTransaction()
+                                                    .replace(R.id.fragmentContainer, ShoppingCart())
+                                                    .addToBackStack(null)
+                                                    .commit()
+                                            }.show()
+                                        } catch (ex: Exception) {
+                                            Toast.makeText(currentContext, "${fetchedProduct.name} added to cart!", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(context, "Failed to add to cart: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                    } else {
+                        Toast.makeText(context, "Please log in to add to cart.", Toast.LENGTH_SHORT).show()
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
