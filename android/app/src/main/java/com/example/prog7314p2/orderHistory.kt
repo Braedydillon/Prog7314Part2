@@ -6,18 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.prog7314p2.Models.OrderHistoryModel
-import com.example.prog7314p2.Firestore.FirebaseHelper
-import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.launch
 
 class orderHistory : Fragment() {
 
     private lateinit var rvOrderHistory: RecyclerView
     private lateinit var orderAdapter: OrderHistoryAdapter
     private val ordersList = mutableListOf<OrderHistoryModel>()
-    private val firebaseHelper = FirebaseHelper()
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,39 +34,34 @@ class orderHistory : Fragment() {
         fetchOrderHistory()
     }
 
-    private var ordersListener: ListenerRegistration? = null
-
     private fun fetchOrderHistory() {
+        lifecycleScope.launch {
+            try {
+                val orders = RetrofitClient.instance.getOrders()
 
-        ordersListener?.remove()
+                if (!isAdded || view == null){
+                    return@launch
+                }
 
-        ordersListener = firebaseHelper.listenToOrderHistory(
-
-            onUpdate = { orders ->
-
-                if (!isAdded || view == null) {
-                    return@listenToOrderHistory
+                val mapped = orders.map{ order ->
+                    OrderHistoryModel(
+                        orderId = order.id.toString(),
+                        datePlaced = order.createdAt,
+                        totalCost = order.total,
+                        eta = order.estimatedDelivery ?: "3-5 Business Days",
+                        itemCount = order.items.sumOf { it.quantity },
+                        status = order.status
+                    )
                 }
 
                 ordersList.clear()
-                ordersList.addAll(orders)
-
-                orderAdapter.notifyDataSetChanged()
-            },
-
-            onFailure = { exception ->
-
-                if (!isAdded) {
-                    return@listenToOrderHistory
-                }
-
-                Toast.makeText(context,exception.message ?: "Failed to load order history",Toast.LENGTH_SHORT).show()
+                ordersList.addAll(mapped)
+                orderAdapter.updateData(ordersList)
+            } catch (e: Exception){
+                if (!isAdded) return@launch
+                Toast.makeText(context, e.message ?: "Failed to load order history", Toast.LENGTH_SHORT).show()
             }
-        )
+        }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        ordersListener?.remove()
-    }
 }
