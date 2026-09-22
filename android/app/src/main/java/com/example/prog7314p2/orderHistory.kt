@@ -16,9 +16,8 @@ class orderHistory : Fragment() {
     private lateinit var rvOrderHistory: RecyclerView
     private lateinit var orderAdapter: OrderHistoryAdapter
     private val ordersList = mutableListOf<OrderHistoryModel>()
-
     private val firebaseHelper = FirebaseHelper()
-    private var orderListener: ListenerRegistration? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
