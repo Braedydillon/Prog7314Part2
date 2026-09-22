@@ -2,6 +2,8 @@ package com.example.prog7314p2.Firestore
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.prog7314p2.Models.OrderHistoryModel
+import com.google.firebase.firestore.ListenerRegistration
 
 class FirebaseHelper {
 
@@ -187,6 +189,68 @@ class FirebaseHelper {
             }
             .addOnFailureListener {
                 onFailure(it)
+            }
+    }
+
+    // Orders
+    fun saveOrder(
+        order: OrderHistoryModel,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return
+        }
+
+        db.collection("users")
+            .document(userId)
+            .collection("orders")
+            .document(order.orderId)
+            .set(order)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    fun listenToOrderHistory(
+        onUpdate: (List<OrderHistoryModel>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration? {
+
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return null
+        }
+
+        return db.collection("users")
+            .document(userId)
+            .collection("orders")
+            .addSnapshotListener { snapshot, exception ->
+
+                if (exception != null) {
+                    onFailure(exception)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null) {
+                    onFailure(Exception("Failed to retrieve orders"))
+                    return@addSnapshotListener
+                }
+
+                val orders = snapshot.documents.mapNotNull { document ->
+                    document.toObject(OrderHistoryModel::class.java)
+                }
+
+                onUpdate(orders)
             }
     }
 
