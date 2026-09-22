@@ -49,7 +49,7 @@ The android application provides the interface and handles the user interaction.
 Firebase provides authentication and user specific real time data
 Spring Boot backend provides the REST API used to access the product and data stored in the PostgreSQL
 GitHub Actions:
-GitHub actions test the front-end service whenever push or pull requests are made. This helps identify any issues before changes are merged
+GitHub actions test the back-end service whenever push or pull requests are made. This helps identify any issues before changes are merged
 
 Structural and Architectural 
 Unify uses a 3-part architectural system which consists of the android front end, firebase services and Spring Boot for the backend. This structure separates the responsibilities of each of the components, making the application easier to maintain and allows the specific part of the system to perform its function
