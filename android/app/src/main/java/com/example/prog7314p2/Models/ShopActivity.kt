@@ -3,6 +3,7 @@ package com.example.prog7314p2.Models
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.prog7314p2.HomeFragment
@@ -10,6 +11,7 @@ import com.example.prog7314p2.R
 import com.example.prog7314p2.Settings
 import com.example.prog7314p2.ShoppingCart
 import com.example.prog7314p2.orderHistory
+import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,6 +20,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class ShopActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Force app to stay in Light Mode
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activitybar)
@@ -48,6 +53,12 @@ class ShopActivity : AppCompatActivity() {
                 R.id.nav_cart -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, ShoppingCart())
+                        .commit()
+                    true
+                }
+                R.id.scanner -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, scanner())
                         .commit()
                     true
                 }

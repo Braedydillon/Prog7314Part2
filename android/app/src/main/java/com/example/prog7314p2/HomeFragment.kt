@@ -17,6 +17,7 @@ import android.widget.EditText
 import androidx.core.widget.NestedScrollView
 import com.example.prog7314p2.Models.Product
 import com.example.prog7314p2.Models.ProductResponse
+import com.google.gson.Gson
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -146,6 +147,9 @@ class HomeFragment : Fragment() {
                 // Fetch real products from the API with optional Search filter
                 val productResponse = RetrofitClient.instance.getProducts(search = currentSearchQuery, page = page)
                 
+                // Save to Local Offline Storage (Requirement 6.3 - Fault Tolerance / Offline Mode)
+                saveProductsToLocalCache(productResponse)
+
                 // Apply Recommendation/Personalization Algorithm
                 val personalizedProducts = applyRecommendationAlgorithm(productResponse.products)
                 
@@ -156,9 +160,39 @@ class HomeFragment : Fragment() {
                 throw e
             } catch (e: Exception) {
                 e.printStackTrace()
+                // OFFLINE BACKUP: Load from Local Storage if network call fails!
+                loadProductsFromLocalCache()
             } finally {
                 isLoading = false
             }
+        }
+    }
+
+    private fun saveProductsToLocalCache(response: ProductResponse) {
+        try {
+            val json = Gson().toJson(response)
+            requireContext().getSharedPreferences("OfflineCache", Context.MODE_PRIVATE)
+                .edit().putString("CACHED_PRODUCTS", json).apply()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun loadProductsFromLocalCache() {
+        try {
+            val prefs = context?.getSharedPreferences("OfflineCache", Context.MODE_PRIVATE)
+            val json = prefs?.getString("CACHED_PRODUCTS", null)
+
+            if (!json.isNullOrEmpty()) {
+                val cachedResponse = Gson().fromJson(json, ProductResponse::class.java)
+                val personalizedProducts = applyRecommendationAlgorithm(cachedResponse.products)
+                productAdapter.updateData(personalizedProducts)
+                Toast.makeText(context, "Offline Mode: Displaying cached products", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(context, "Unable to load data. Please check connection.", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

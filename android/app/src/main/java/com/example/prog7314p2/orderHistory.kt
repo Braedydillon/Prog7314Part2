@@ -1,5 +1,6 @@
 package com.example.prog7314p2
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +10,8 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.prog7314p2.Models.OrderHistoryModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 
 class orderHistory : Fragment() {
@@ -57,10 +60,46 @@ class orderHistory : Fragment() {
                 ordersList.clear()
                 ordersList.addAll(mapped)
                 orderAdapter.updateData(ordersList)
-            } catch (e: Exception){
+
+                // Save Orders to Local Offline Storage (Requirement 6.3 - Fault Tolerance)
+                saveOrdersToLocalCache(mapped)
+
+            } catch (e: Exception) {
                 if (!isAdded) return@launch
-                Toast.makeText(context, e.message ?: "Failed to load order history", Toast.LENGTH_SHORT).show()
+                e.printStackTrace()
+                // OFFLINE BACKUP: Load cached orders if network is unavailable
+                loadOrdersFromLocalCache()
             }
+        }
+    }
+
+    private fun saveOrdersToLocalCache(orders: List<OrderHistoryModel>) {
+        try {
+            val json = Gson().toJson(orders)
+            requireContext().getSharedPreferences("OfflineCache", Context.MODE_PRIVATE)
+                .edit().putString("CACHED_ORDERS", json).apply()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun loadOrdersFromLocalCache() {
+        try {
+            val prefs = context?.getSharedPreferences("OfflineCache", Context.MODE_PRIVATE)
+            val json = prefs?.getString("CACHED_ORDERS", null)
+
+            if (!json.isNullOrEmpty()) {
+                val type = object : TypeToken<List<OrderHistoryModel>>() {}.type
+                val cachedOrders: List<OrderHistoryModel> = Gson().fromJson(json, type)
+                ordersList.clear()
+                ordersList.addAll(cachedOrders)
+                orderAdapter.updateData(ordersList)
+                Toast.makeText(context, "Offline Mode: Displaying cached order history", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(context, "Failed to load order history", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

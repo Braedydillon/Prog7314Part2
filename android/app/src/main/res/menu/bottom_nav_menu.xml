@@ -9,6 +9,10 @@
         android:icon="@drawable/cart"
         android:title="Cart" />
     <item
+        android:id="@+id/scanner"
+        android:icon="@drawable/camera"
+        android:title="Scan" />
+    <item
         android:id="@+id/nav_order"
         android:icon="@drawable/order"
         android:title="Orders" />
