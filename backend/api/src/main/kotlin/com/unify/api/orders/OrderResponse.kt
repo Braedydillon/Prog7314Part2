@@ -21,5 +21,5 @@ fun Orders.toResponse(): OrderResponse = OrderResponse(
     items = this.items.map { it.toResponse() },
     total = this.totalAmount!!,
     createdAt = this.createdAt!!,
-    updatedAt = this.updatedAt!!,
+    updatedAt = this.updatedAt
 )
