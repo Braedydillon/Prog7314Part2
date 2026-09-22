@@ -1,5 +1,6 @@
 package com.unify.api.orders
 
+import com.unify.api.address.AddressRepository
 import com.unify.api.product.Product
 import com.unify.api.product.ProductRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -15,7 +16,8 @@ import java.util.Optional
 class OrderServiceTests {
     private val orderRepository: OrderRepository = mock()
     private val productRepository: ProductRepository = mock()
-    private val service = OrderService(orderRepository, productRepository)
+    private val addressRepository: AddressRepository = mock()
+    private val service = OrderService(orderRepository, productRepository, addressRepository)
 
     @Test
     fun `fails when not enough stock`(){
