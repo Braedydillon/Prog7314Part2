@@ -1,5 +1,6 @@
 package com.unify.api.address
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -9,6 +10,8 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/addresses")
 class AddressController(private val addressRepository: AddressRepository) {
+
+    private val log = LoggerFactory.getLogger(AddressController::class.java)
 
     @GetMapping
     fun getMyAddresses(authentication: Authentication): List<AddressResponse> {
@@ -29,6 +32,7 @@ class AddressController(private val addressRepository: AddressRepository) {
             postalCode = request.postalCode
         }
         val saved = addressRepository.save(address)
+        log.info("Address created for user ${saved.id}")
         return ResponseEntity.ok(saved.toResponse())
     }
 
@@ -51,6 +55,7 @@ class AddressController(private val addressRepository: AddressRepository) {
         address.postalCode = request.postalCode
 
         val saved = addressRepository.save(address)
+        log.info("Address updated for user $id")
         return ResponseEntity.ok(saved.toResponse())
     }
 
@@ -66,6 +71,7 @@ class AddressController(private val addressRepository: AddressRepository) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found")
         }
         addressRepository.delete(address)
+        log.info("Address deleted for user $id")
         return ResponseEntity.noContent().build()
     }
 }

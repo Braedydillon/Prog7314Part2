@@ -16,9 +16,9 @@ class CategoryController(val categoryRepository: CategoryRepository) {
     fun findAll(): List<CategoryResponse> = categoryRepository.findAll().map { it.toResponse() }
 
     @GetMapping("/{id}")
-    fun getCategoryById(@PathVariable("id") id: Int): ResponseEntity<CategoryResponse>? {
+    fun getCategoryById(@PathVariable("id") id: Int): CategoryResponse {
         return categoryRepository.findById(id)
-            .map { ResponseEntity.ok(it.toResponse()) }
-            .orElseThrow{ (ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found")) }
+            .map { it.toResponse() }
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Category $id not found") }
     }
 }

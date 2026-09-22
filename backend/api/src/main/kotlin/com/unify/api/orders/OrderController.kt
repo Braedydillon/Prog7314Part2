@@ -1,5 +1,6 @@
 package com.unify.api.orders
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -11,6 +12,8 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/orders")
 class OrderController(val orderService: OrderService, val orderRepository: OrderRepository) {
+
+    private val log = LoggerFactory.getLogger(OrderController::class.java)
 
     @GetMapping("/{orderId}")
     fun getOrderById(authentication: Authentication, @PathVariable orderId: Int): ResponseEntity<OrderResponse> {
@@ -53,10 +56,12 @@ class OrderController(val orderService: OrderService, val orderRepository: Order
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid order status, ${request.status}")
         }
 
+        val previousStatus = order.orderStatus
         order.orderStatus = request.status
         order.updatedAt = LocalDateTime.now()
 
         val saved = orderRepository.save(order)
+        log.info("Order status changed from $previousStatus to ${request.status}")
         return ResponseEntity.ok(saved.toResponse())
     }
 }

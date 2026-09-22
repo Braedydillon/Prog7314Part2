@@ -4,6 +4,7 @@ import com.unify.api.address.AddressRepository
 import com.unify.api.orderitem.OrderItem
 import org.springframework.http.HttpStatus
 import com.unify.api.product.ProductRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -16,16 +17,19 @@ class OrderService(
     private val productRepository: ProductRepository,
     private val addressRepository: AddressRepository
 ){
+    private val log = LoggerFactory.getLogger(OrderService::class.java)
 
     @Transactional
     fun placeOrder(userId: String, request: CreateOrderRequest): Orders{
+        log.info("Placing order for $userId")
 
         if (request.items.isEmpty()) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Order must contain at least one item")
         }
 
         val address = addressRepository.findById(request.addressId)
-            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Address ${request.addressId} not found") }
+            .orElseThrow {
+                ResponseStatusException(HttpStatus.NOT_FOUND, "Address ${request.addressId} not found") }
 
         if (address.userId != userId) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Address ${request.addressId} not found")
@@ -49,15 +53,20 @@ class OrderService(
             }
 
             val product = productRepository.findById(item.productId)
-                .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Product ${item.productId} not found") }
+                .orElseThrow {
+                    ResponseStatusException(HttpStatus.NOT_FOUND, "Product ${item.productId} not found") }
 
             val currentStock = product.stockQuantity ?: 0
-
-            if (currentStock < item.quantity) { throw ResponseStatusException(HttpStatus.CONFLICT, "Insufficient stock. Requested: ${item.quantity}, Available: $currentStock")
+            if (currentStock < item.quantity)
+            {
+                throw ResponseStatusException(HttpStatus.CONFLICT, "Insufficient stock. Requested: ${item.quantity}, Available: $currentStock")
             }
 
             val unitPrice = product.price
-                ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product ${item.productId} has no price set")
+                ?: run {
+                    throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product ${item.productId} has no price set")
+                }
+
             val subtotal = unitPrice.multiply(BigDecimal(item.quantity))
 
             val orderItem = OrderItem().apply {
@@ -76,6 +85,7 @@ class OrderService(
 
         order.totalAmount = total
         order.items = orderItems
+        log.info("Order placed for $userId")
         return orderRepository.save(order)
     }
 
