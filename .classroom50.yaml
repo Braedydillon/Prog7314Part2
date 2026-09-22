@@ -1,0 +1,7 @@
+schema: "classroom50/repo-config/v1"
+classroom: "prog7314"
+assignment: "poe-part-2"
+owner:
+  username: "CraftyCrustacean"
+  id: 161468401
+  accepted_at: "2026-09-01T13:27:21Z"
