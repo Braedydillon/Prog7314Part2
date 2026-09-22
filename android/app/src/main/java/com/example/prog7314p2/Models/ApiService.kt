@@ -1,10 +1,8 @@
 package com.example.prog7314p2.Models
 
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -33,14 +31,5 @@ interface ApiService {
 
     @POST("api/addresses")
     suspend fun createAddress(@Body request: CreateAddressRequest): AddressResponse
-
-    @PUT("api/addresses/{id}")
-    suspend fun updateAddress(@Path("id") id: Int, @Body request: CreateAddressRequest): AddressResponse
-
-    @DELETE("api/addresses/{id}")
-    suspend fun deleteAddress(@Path("id") id: Int)
-
-    @PUT("api/orders/{id}/status")
-    suspend fun updateOrderStatus(@Path("id") id: Int, @Body request: UpdateOrderStatusRequest): OrderResponse
 }
 

@@ -7,11 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 // Removed EditText import
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.example.prog7314p2.Models.CreateAddressRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,13 +42,15 @@ class Settings : Fragment() {
 
             val btnLogout = view.findViewById<Button>(R.id.btnLogout)
             val btnResetPassword = view.findViewById<Button>(R.id.btnResetPassword)
+            val btnAddressAdd = view.findViewById<Button>(R.id.addressadd)
+            val etAddress = view.findViewById<EditText>(R.id.address)
             val tvName = view.findViewById<TextView>(R.id.name)
             val tvSurname = view.findViewById<TextView>(R.id.surname)
             
             val userId = FirebaseAuth.getInstance().currentUser?.uid
             val userEmail = FirebaseAuth.getInstance().currentUser?.email
 
-            // Fetch Name and Surname from Firestore
+            // Fetch Name, Surname, and Address from Firestore / API
             if (userId != null) {
                 FirebaseFirestore.getInstance()
                     .collection("users").document(userId).get()
@@ -52,8 +58,53 @@ class Settings : Fragment() {
                         if (document != null && document.exists()) {
                             tvName.text = document.getString("name")
                             tvSurname.text = document.getString("surname")
+                            val savedAddress = document.getString("address")
+                            if (!savedAddress.isNullOrEmpty()) {
+                                etAddress.setText(savedAddress)
+                            }
                         }
                     }
+            }
+
+            // Save Address Button Logic (Saves to Spring Boot API & Firestore)
+            btnAddressAdd.setOnClickListener {
+                val addressText = etAddress.text.toString().trim()
+                if (addressText.isEmpty()) {
+                    Toast.makeText(context, "Please enter an address", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        // 1. Create Address via Spring Boot REST API
+                        val request = CreateAddressRequest(
+                            addressLine = addressText,
+                            city = "Johannesburg",
+                            province = "Gauteng",
+                            postalCode = "2000"
+                        )
+                        RetrofitClient.instance.createAddress(request)
+
+                        // 2. Also save to Firestore for offline backup
+                        if (userId != null) {
+                            FirebaseFirestore.getInstance()
+                                .collection("users").document(userId)
+                                .update("address", addressText)
+                        }
+
+                        Toast.makeText(context, "Address saved successfully!", Toast.LENGTH_SHORT).show()
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        // Fallback: Save to Firestore if API fails
+                        if (userId != null) {
+                            FirebaseFirestore.getInstance()
+                                .collection("users").document(userId)
+                                .update("address", addressText)
+                        }
+                        Toast.makeText(context, "Address saved locally!", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
             // Reset Password Logic
