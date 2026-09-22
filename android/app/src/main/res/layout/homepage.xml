@@ -44,6 +44,21 @@
                     android:inputType="text"
                     android:paddingHorizontal="16dp" />
 
+                <!-- Categories Bar -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:scrollbars="none">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupCategories"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleLine="true"
+                        app:singleSelection="true" />
+                </HorizontalScrollView>
+
                 <!-- Special Offers -->
                 <TextView
                     android:layout_width="wrap_content"
@@ -66,35 +81,60 @@
                         android:orientation="horizontal">
 
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="240dp"
-                            android:layout_height="120dp"
+                            android:id="@+id/cardFashion"
+                            android:layout_width="220dp"
+                            android:layout_height="110dp"
                             android:layout_marginEnd="12dp"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:cardCornerRadius="16dp"
                             app:cardBackgroundColor="#EADDFF">
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="50% OFF Fashion"
+                                android:text="Fashion Deals"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#381E72" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="240dp"
-                            android:layout_height="120dp"
+                            android:id="@+id/cardTech"
+                            android:layout_width="220dp"
+                            android:layout_height="110dp"
                             android:layout_marginEnd="12dp"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:cardCornerRadius="16dp"
                             app:cardBackgroundColor="#D8E2FF">
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="New Tech Arrivals"
+                                android:text="Tech &amp; Electronics"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#001A41" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardTools"
+                            android:layout_width="220dp"
+                            android:layout_height="110dp"
+                            android:layout_marginEnd="12dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:cardCornerRadius="16dp"
+                            app:cardBackgroundColor="#FFD8E4">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="Tools &amp; Hardware"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#31111D" />
                         </com.google.android.material.card.MaterialCardView>
 
                     </LinearLayout>

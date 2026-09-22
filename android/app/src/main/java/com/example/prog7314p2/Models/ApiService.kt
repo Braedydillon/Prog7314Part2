@@ -10,6 +10,7 @@ interface ApiService {
     @GET("api/products")
     suspend fun getProducts(
         @Query("search") search: String? = null,
+        @Query("category") categoryId: Int? = null,
         @Query("page") page: Int = 0
     ): ProductResponse
 

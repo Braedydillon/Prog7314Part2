@@ -17,6 +17,8 @@ import android.widget.EditText
 import androidx.core.widget.NestedScrollView
 import com.example.prog7314p2.Models.Product
 import com.example.prog7314p2.Models.ProductResponse
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.gson.Gson
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -29,6 +31,7 @@ class HomeFragment : Fragment() {
     private lateinit var productAdapter: ProductAdapter
 
     private var currentSearchQuery: String? = null
+    private var selectedCategoryId: Int? = null
     private var currentPage = 0
     private var isLoading = false
     private var searchJob: Job? = null
@@ -46,6 +49,29 @@ class HomeFragment : Fragment() {
         // Setup RecyclerView
         rvProducts = view.findViewById(R.id.rvProducts)
         val etSearch = view.findViewById<EditText>(R.id.etSearch)
+        val cardFashion = view.findViewById<View>(R.id.cardFashion)
+        val cardTech = view.findViewById<View>(R.id.cardTech)
+        val cardTools = view.findViewById<View>(R.id.cardTools)
+
+        // Special Offers Discount Cards Auto-Filter
+        cardFashion?.setOnClickListener {
+            selectedCategoryId = 4 // Category 4 = Apparel & Fashion Accessories
+            etSearch.text.clear()
+            currentPage = 0
+            fetchData(page = 0)
+        }
+        cardTech?.setOnClickListener {
+            selectedCategoryId = 2 // Category 2 = Consumer Electronics
+            etSearch.text.clear()
+            currentPage = 0
+            fetchData(page = 0)
+        }
+        cardTools?.setOnClickListener {
+            selectedCategoryId = 1 // Category 1 = Tools
+            etSearch.text.clear()
+            currentPage = 0
+            fetchData(page = 0)
+        }
         
         // Search Input Listener with Debounce & Job Cancellation
         etSearch.addTextChangedListener(object : TextWatcher {
@@ -86,8 +112,51 @@ class HomeFragment : Fragment() {
         // Enable Infinite Scrolling (Native View Recycling)
         setupInfiniteScroll()
 
+        // Load Categories into Category Chips
+        loadCategories(view)
+
         // Fetch Data from DB (Spring Boot API)
         fetchData(page = 0)
+    }
+
+    private fun loadCategories(view: View) {
+        val chipGroup = view.findViewById<ChipGroup>(R.id.chipGroupCategories) ?: return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val categories = RetrofitClient.instance.getCategories()
+                chipGroup.removeAllViews()
+
+                // 1. Add "All" Chip
+                val allChip = Chip(context).apply {
+                    text = "All"
+                    isCheckable = true
+                    isChecked = true
+                    setOnClickListener {
+                        selectedCategoryId = null
+                        currentPage = 0
+                        fetchData(page = 0)
+                    }
+                }
+                chipGroup.addView(allChip)
+
+                // 2. Add Category Chips from Zach's API
+                for (cat in categories) {
+                    val chip = Chip(context).apply {
+                        text = cat.name
+                        isCheckable = true
+                        setOnClickListener {
+                            selectedCategoryId = cat.id
+                            currentPage = 0
+                            fetchData(page = 0)
+                        }
+                    }
+                    chipGroup.addView(chip)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun trackCategoryClick(product: Product) {
@@ -144,8 +213,12 @@ class HomeFragment : Fragment() {
             try {
                 isLoading = true
                 
-                // Fetch real products from the API with optional Search filter
-                val productResponse = RetrofitClient.instance.getProducts(search = currentSearchQuery, page = page)
+                // Fetch real products from the API with optional Search filter and Category filter
+                val productResponse = RetrofitClient.instance.getProducts(
+                    search = currentSearchQuery,
+                    categoryId = selectedCategoryId,
+                    page = page
+                )
                 
                 // Save to Local Offline Storage (Requirement 6.3 - Fault Tolerance / Offline Mode)
                 saveProductsToLocalCache(productResponse)
@@ -199,13 +272,17 @@ class HomeFragment : Fragment() {
     private fun loadMoreProducts() {
         if (isLoading) return
         
-        // IF SEARCHING: Fetch matching search results without looping
-        if (!currentSearchQuery.isNullOrEmpty()) {
+        // IF SEARCHING OR FILTERING BY CATEGORY: Fetch without looping
+        if (!currentSearchQuery.isNullOrEmpty() || selectedCategoryId != null) {
             isLoading = true
             currentPage++
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    val productResponse = RetrofitClient.instance.getProducts(search = currentSearchQuery, page = currentPage)
+                    val productResponse = RetrofitClient.instance.getProducts(
+                        search = currentSearchQuery,
+                        categoryId = selectedCategoryId,
+                        page = currentPage
+                    )
                     if (productResponse.products.isNotEmpty()) {
                         val personalizedProducts = applyRecommendationAlgorithm(productResponse.products)
                         productAdapter.appendProducts(personalizedProducts)
@@ -219,16 +296,16 @@ class HomeFragment : Fragment() {
             return
         }
 
-        // DEFAULT DISCOVERY FEED: Endless loop when NOT searching
+        // DEFAULT DISCOVERY FEED: Endless loop when NOT searching/filtering
         isLoading = true
         currentPage++
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // Fetch next page from API with optional Search filter
+                // Fetch next page from API
                 var targetPage = currentPage
                 var productResponse = try {
-                    RetrofitClient.instance.getProducts(search = currentSearchQuery, page = targetPage)
+                    RetrofitClient.instance.getProducts(search = currentSearchQuery, categoryId = selectedCategoryId, page = targetPage)
                 } catch (ex: Exception) {
                     null
                 }
@@ -237,7 +314,7 @@ class HomeFragment : Fragment() {
                 if (productResponse == null || productResponse.products.isEmpty() || targetPage >= responseTotalPages(productResponse) + 1) {
                     currentPage = 0
                     targetPage = 0
-                    productResponse = RetrofitClient.instance.getProducts(search = currentSearchQuery, page = 0)
+                    productResponse = RetrofitClient.instance.getProducts(search = currentSearchQuery, categoryId = selectedCategoryId, page = 0)
                 }
 
                 if (productResponse != null && productResponse.products.isNotEmpty()) {
