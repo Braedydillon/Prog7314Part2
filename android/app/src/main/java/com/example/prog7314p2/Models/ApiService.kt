@@ -21,5 +21,14 @@ interface ApiService {
 
     @POST("api/orders")
     suspend fun placeOrder(@Body orderRequest: OrderRequest): OrderResponse
+
+    @GET("api/orders")
+    suspend fun getOrders(): List<OrderResponse>
+
+    @GET("api/addresses")
+    suspend fun getAddresses(): List<AddressResponse>
+
+    @POST("api/addresses")
+    suspend fun createAddress(@Body request: CreateAddressRequest): AddressResponse
 }
 

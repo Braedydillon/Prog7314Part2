@@ -15,11 +15,15 @@ import com.example.prog7314p2.Models.cartItem
 import kotlinx.coroutines.launch
 import java.util.Locale
 import RetrofitClient
+import com.example.prog7314p2.Models.CreateAddressRequest
 import com.example.prog7314p2.Models.OrderHistoryModel
+import com.example.prog7314p2.Models.OrderItemRequest
+import com.example.prog7314p2.Models.OrderRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlin.apply
 
 
 class ShoppingCart : Fragment() {
@@ -166,60 +170,52 @@ class ShoppingCart : Fragment() {
     private fun processCheckout() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        var totalCost = 0.0
-        var totalItems = 0
-        for (item in cartItemsList) {
-            totalCost += (item.price * item.quantity)
-            totalItems += item.quantity
-        }
+        lifecycleScope.launch {
+            try{
 
-        val orderId = System.currentTimeMillis().toString().takeLast(6)
-        val currentDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
+                val addressId = RetrofitClient.instance.getAddresses().firstOrNull()?.id
+                    ?: RetrofitClient.instance.createAddress(
+                        CreateAddressRequest(
+                            addressLine = "123 Street Street",
+                            city = "City",
+                            province = "Province",
+                            postalCode = "1234"
+                        )
+                    ).id
 
-        val orderData = OrderHistoryModel(
-            orderId = orderId,
-            datePlaced = currentDate,
-            totalCost = totalCost,
-            eta = "3-5 Business Days",
-            itemCount = totalItems,
-            status = "Processing"
-        )
+                val orderItems = cartItemsList.map { OrderItemRequest(
+                    productId = it.productId,
+                    quantity = it.quantity) }
+                val orderRequest = OrderRequest(items = orderItems, addressId = addressId)
+                val order = RetrofitClient.instance.placeOrder(orderRequest)
 
-        val db = FirebaseFirestore.getInstance()
-
-        // 1. Save order to Firestore Users -> {userId} -> Orders -> {orderId}
-        db.collection("users").document(userId)
-            .collection("orders").document(orderId)
-            .set(orderData)
-            .addOnSuccessListener {
-                // 2. Clear the cart from Firestore
-                db.collection("carts").document(userId)
-                    .collection("items")
+                val db = FirebaseFirestore.getInstance()
+                db.collection("Cart").document(userId)
+                    .collection("Items")
                     .get()
                     .addOnSuccessListener { snapshot ->
-                        for (doc in snapshot.documents) {
+                        for (doc in snapshot.documents){
                             doc.reference.delete()
                         }
-
-                        // 3. Navigate to OrderSucessFull fragment with bundle!
-                        if (isAdded) {
-                            val successFragment = OrderSucessFull()
-                            val bundle = Bundle().apply {
-                                putString("ORDER_ID", orderId)
-                                putString("DATE_PLACED", currentDate)
-                                putDouble("TOTAL_COST", totalCost)
-                                putString("ETA", "3-5 Business Days")
-                            }
-                            successFragment.arguments = bundle
-
-                            parentFragmentManager.beginTransaction()
-                                .replace(R.id.fragmentContainer, successFragment)
-                                .commit()
-                        }
                     }
-            }
-            .addOnFailureListener { e ->
+
+                if (isAdded){
+                    val successFragment = OrderSucessFull()
+                    val bundle = Bundle().apply {
+                        putString("ORDER_ID", order.id.toString())
+                        putString("DATE_PLACED", order.createdAt)
+                        putDouble("TOTAL_COST", order.total)
+                        putString("ETA", order.estimatedDelivery ?: "3-5 Business Days")
+                    }
+                    successFragment.arguments = bundle
+
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, successFragment)
+                        .commit()
+                }
+            } catch (e: Exception){
                 Toast.makeText(context, "Checkout failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 }
