@@ -1,9 +1,10 @@
 package com.unify.api.product
 
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/products")
@@ -29,6 +30,6 @@ class ProductController(val productRepository: ProductRepository) {
     fun getProductById(@PathVariable("id") id: Int): ResponseEntity<ProductResponse>? {
         return productRepository.findById(id)
             .map { ResponseEntity.ok(it.toResponse()) }
-            .orElse(ResponseEntity.notFound().build())
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Product $id not found") }
     }
 }

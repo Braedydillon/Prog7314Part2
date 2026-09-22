@@ -1,6 +1,7 @@
 package com.unify.api.review
 
 import com.unify.api.product.ProductRepository
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 
 @RestController
@@ -27,10 +29,10 @@ class ReviewController(val reviewRepositroy: ReviewRepositroy, val productReposi
                  @RequestBody request: CreateReviewRequest
     ): ResponseEntity<ReviewResponse> {
         if(request.rating !in 0..5){
-            return ResponseEntity.badRequest().build()
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating must be between 0 and 5")
         }
-        val product = productRepository.findById(request.productId).orElse(null)
-            ?: return ResponseEntity.notFound().build()
+        val product = productRepository.findById(request.productId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Product ${request.productId} not found") }
 
         val review = Review().apply {
             this.userId = authentication.name
@@ -51,7 +53,7 @@ class ReviewController(val reviewRepositroy: ReviewRepositroy, val productReposi
         ?: return ResponseEntity.notFound().build()
 
         if (review.userId != authentication.name){
-            return ResponseEntity.notFound().build()
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Review $id not found")
         }
         reviewRepositroy.delete(review)
         return ResponseEntity.noContent().build()

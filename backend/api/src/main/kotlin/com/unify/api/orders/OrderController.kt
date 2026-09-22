@@ -1,8 +1,10 @@
 package com.unify.api.orders
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 
 
@@ -12,11 +14,11 @@ class OrderController(val orderService: OrderService, val orderRepository: Order
 
     @GetMapping("/{orderId}")
     fun getOrderById(authentication: Authentication, @PathVariable orderId: Int): ResponseEntity<OrderResponse> {
-        val order = orderRepository.findById(orderId).orElse(null)
-        ?: return ResponseEntity.notFound().build()
+        val order = orderRepository.findById(orderId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Order $orderId not found") }
 
         if (order.userId != authentication.name) {
-            return ResponseEntity.notFound().build()
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Order $orderId not found")
         }
 
         return ResponseEntity.ok(order.toResponse())
@@ -39,16 +41,16 @@ class OrderController(val orderService: OrderService, val orderRepository: Order
         @PathVariable id: Int,
         @RequestBody request: UpdateOrderStatus
     ): ResponseEntity<OrderResponse> {
-        val order = orderRepository.findById(id).orElse(null)
-        ?: return ResponseEntity.notFound().build()
+        val order = orderRepository.findById(id)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Order $id not found") }
 
         if (order.userId != authentication.name) {
-            return ResponseEntity.notFound().build()
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Order $id not found")
         }
 
         val validStatuses = setOf("Pending", "Processing", "Shipped", "Delivered", "Cancelled")
         if (request.status !in validStatuses) {
-            return ResponseEntity.badRequest().build()
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid order status, ${request.status}")
         }
 
         order.orderStatus = request.status

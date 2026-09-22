@@ -1,8 +1,10 @@
 package com.unify.api.address
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/addresses")
@@ -36,11 +38,11 @@ class AddressController(private val addressRepository: AddressRepository) {
         @PathVariable("id") id: Int,
         @RequestBody request: CreateAddressRequest
     ) : ResponseEntity<AddressResponse> {
-        val address = addressRepository.findById(id).orElse(null)
-        ?: return ResponseEntity.notFound().build()
+        val address = addressRepository.findById(id)
+            .orElseThrow { (ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found")) }
 
         if(address.userId != authentication.name) {
-            return ResponseEntity.notFound().build()
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found")
         }
 
         address.addressLine = request.addressLine
@@ -57,11 +59,11 @@ class AddressController(private val addressRepository: AddressRepository) {
         authentication: Authentication,
         @PathVariable("id") id: Int
     ): ResponseEntity<Void> {
-        val address = addressRepository.findById(id).orElse(null)
-        ?: return ResponseEntity.notFound().build()
+        val address = addressRepository.findById(id)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found") }
 
         if (address.userId != authentication.name) {
-            return ResponseEntity.notFound().build()
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found")
         }
         addressRepository.delete(address)
         return ResponseEntity.noContent().build()
