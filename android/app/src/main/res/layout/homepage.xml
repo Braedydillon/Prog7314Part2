@@ -30,14 +30,19 @@
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
-                <!-- Search Bar -->
-                <com.google.android.material.search.SearchBar
-                    android:id="@+id/searchBar"
+                <!-- Search Input -->
+                <EditText
+                    android:id="@+id/etSearch"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginTop="12dp"
+                    android:background="@drawable/text_border"
+                    android:drawableStart="@android:drawable/ic_menu_search"
+                    android:drawablePadding="12dp"
                     android:hint="Search products..."
-                    app:backgroundTint="?attr/colorSurfaceVariant" />
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:paddingHorizontal="16dp" />
 
                 <!-- Special Offers -->
                 <TextView

@@ -11,10 +11,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import RetrofitClient
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import androidx.core.widget.NestedScrollView
 import com.example.prog7314p2.Models.Product
 import com.example.prog7314p2.Models.ProductResponse
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -23,9 +27,10 @@ class HomeFragment : Fragment() {
     private lateinit var rvProducts: RecyclerView
     private lateinit var productAdapter: ProductAdapter
 
+    private var currentSearchQuery: String? = null
     private var currentPage = 0
     private var isLoading = false
-    private var isLastPage = false
+    private var searchJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +44,24 @@ class HomeFragment : Fragment() {
 
         // Setup RecyclerView
         rvProducts = view.findViewById(R.id.rvProducts)
+        val etSearch = view.findViewById<EditText>(R.id.etSearch)
         
+        // Search Input Listener with Debounce & Job Cancellation
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchJob?.cancel() // Cancel previous pending search
+                searchJob = viewLifecycleOwner.lifecycleScope.launch {
+                    delay(300) // Wait 300ms after user stops typing
+                    val query = s?.toString()?.trim()
+                    currentSearchQuery = if (query.isNullOrEmpty()) null else query
+                    currentPage = 0
+                    fetchData(page = 0)
+                }
+            }
+        })
+
         // Start with an empty list
         productAdapter = ProductAdapter(emptyList()) { clickedProduct ->
             // 1. Track User Interaction for the Recommendation Algorithm!
@@ -80,11 +102,23 @@ class HomeFragment : Fragment() {
     }
 
     private fun applyRecommendationAlgorithm(products: List<Product>): List<Product> {
-        val prefs = context?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE) ?: return products
-        val topCategory = prefs.getString("TOP_CATEGORY", null) ?: return products
+        val prefs = context?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE) ?: return products.shuffled()
+        val topCategory = prefs.getString("TOP_CATEGORY", null)
 
-        // Personalization Algorithm: Sort so items matching user's top category appear first!
-        return products.sortedByDescending { it.category?.name == topCategory }
+        // If user is new / hasn't expressed a preference, randomize the discovery feed!
+        if (topCategory == null) {
+            return products.shuffled()
+        }
+
+        // PERSONALIZATION ALGORITHM:
+        // 1. Filter items matching the user's top clicked category (shuffled among themselves)
+        val preferredItems = products.filter { it.category?.name == topCategory }.shuffled()
+        
+        // 2. Filter remaining discovery items (shuffled so the infinite loop always feels fresh!)
+        val otherItems = products.filter { it.category?.name != topCategory }.shuffled()
+
+        // Return preferred products first, followed by randomized discovery products!
+        return preferredItems + otherItems
     }
 
     private fun setupInfiniteScroll() {
@@ -109,8 +143,8 @@ class HomeFragment : Fragment() {
             try {
                 isLoading = true
                 
-                // Fetch real products from the API
-                val productResponse = RetrofitClient.instance.getProducts(page = page)
+                // Fetch real products from the API with optional Search filter
+                val productResponse = RetrofitClient.instance.getProducts(search = currentSearchQuery, page = page)
                 
                 // Apply Recommendation/Personalization Algorithm
                 val personalizedProducts = applyRecommendationAlgorithm(productResponse.products)
@@ -131,15 +165,36 @@ class HomeFragment : Fragment() {
     private fun loadMoreProducts() {
         if (isLoading) return
         
+        // IF SEARCHING: Fetch matching search results without looping
+        if (!currentSearchQuery.isNullOrEmpty()) {
+            isLoading = true
+            currentPage++
+            viewLifecycleOwner.lifecycleScope.launch {
+                try {
+                    val productResponse = RetrofitClient.instance.getProducts(search = currentSearchQuery, page = currentPage)
+                    if (productResponse.products.isNotEmpty()) {
+                        val personalizedProducts = applyRecommendationAlgorithm(productResponse.products)
+                        productAdapter.appendProducts(personalizedProducts)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    isLoading = false
+                }
+            }
+            return
+        }
+
+        // DEFAULT DISCOVERY FEED: Endless loop when NOT searching
         isLoading = true
         currentPage++
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // Fetch next page from API
+                // Fetch next page from API with optional Search filter
                 var targetPage = currentPage
                 var productResponse = try {
-                    RetrofitClient.instance.getProducts(page = targetPage)
+                    RetrofitClient.instance.getProducts(search = currentSearchQuery, page = targetPage)
                 } catch (ex: Exception) {
                     null
                 }
@@ -148,7 +203,7 @@ class HomeFragment : Fragment() {
                 if (productResponse == null || productResponse.products.isEmpty() || targetPage >= responseTotalPages(productResponse) + 1) {
                     currentPage = 0
                     targetPage = 0
-                    productResponse = RetrofitClient.instance.getProducts(page = 0)
+                    productResponse = RetrofitClient.instance.getProducts(search = currentSearchQuery, page = 0)
                 }
 
                 if (productResponse != null && productResponse.products.isNotEmpty()) {
