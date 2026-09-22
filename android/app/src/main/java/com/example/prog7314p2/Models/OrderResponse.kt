@@ -11,11 +11,3 @@ data class OrderResponse(
     val updatedAt: String?
 )
 
-data class OrderItemResponse(
-    val id: Int,
-    val productId: Int,
-    val productName: String,
-    val quantity: Int,
-    val unitPrice: Double,
-    val subtotal: Double
-)

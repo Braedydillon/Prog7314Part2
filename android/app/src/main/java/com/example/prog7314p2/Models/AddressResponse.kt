@@ -10,9 +10,3 @@ data class AddressResponse (
     val postalCode: String
 ) : Serializable
 
-data class CreateAddressRequest(
-    val addressLine: String,
-    val city: String,
-    val province: String,
-    val postalCode: String
-)
