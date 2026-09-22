@@ -20,11 +20,7 @@ The application makes use of a combination of android front end with firebase se
 
 
 # Purpose:
-The purpose of this application is to provide customers with an online mobile shopping experience where they can discover products, view product information, manage their shopping cart and complete orders using their mobile device. 
-
-This project was developed in demonstrating the development and integration of multiple technologies into a single solution.
-
-
+Unify's purpose is to provide customers with an online mobile shopping experience where they can discover products, view product information, manage their shopping cart and complete orders using their mobile device. 
 
 # Intended Users:
 Primary users of the application are retail customers
@@ -52,21 +48,21 @@ Firebase provides authentication and user specific real time data
 Spring Boot backend provides the REST API used to access the product and data stored in the PostgreSQL
 
 # GitHub Actions:
-GitHub actions test the front-end service whenever push or pull requests are made. This helps identify any issues before changes are merged
+GitHub actions test the back-end service whenever push or pull requests are made. This helps identify any issues before changes are merged by ensuring validation rules work as expected.
 
 # Structural and Architectural 
 Unify uses a 3-part architectural system which consists of the android front end, firebase services and Spring Boot for the backend. This structure separates the responsibilities of each of the components, making the application easier to maintain and allows the specific part of the system to perform its function
 
 
-# User Intended Features:
+# User Defined Features:
 
 Server-side validation 
 - Orders require valid items, addresses and products 
 - Stock and product prices are validated 
 
-Registration and session management 
-- Firebase handles user registration and authentication 
-- Authenticated requests require a valid Firebase token 
+Barcode Scanner 
+- Users can use their camera to scan product barcodes
+- Automatically opens product page in Unify
 
  Infinite product scrolling 
 - Products load 20 per page 
