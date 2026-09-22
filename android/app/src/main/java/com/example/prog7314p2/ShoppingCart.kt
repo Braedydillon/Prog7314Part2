@@ -16,13 +16,9 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import RetrofitClient
 import com.example.prog7314p2.Models.CreateAddressRequest
-import com.example.prog7314p2.Models.OrderHistoryModel
 import com.example.prog7314p2.Models.OrderItemRequest
 import com.example.prog7314p2.Models.OrderRequest
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
-import java.util.Date
 import kotlin.apply
 
 
@@ -189,15 +185,10 @@ class ShoppingCart : Fragment() {
                 val orderRequest = OrderRequest(items = orderItems, addressId = addressId)
                 val order = RetrofitClient.instance.placeOrder(orderRequest)
 
-                val db = FirebaseFirestore.getInstance()
-                db.collection("Cart").document(userId)
-                    .collection("Items")
-                    .get()
-                    .addOnSuccessListener { snapshot ->
-                        for (doc in snapshot.documents){
-                            doc.reference.delete()
-                        }
-                    }
+                firebaseHelper.clearCart(
+                    onSuccess = { },
+                    onFailure = { ex -> ex.printStackTrace() }
+                )
 
                 if (isAdded){
                     val successFragment = OrderSucessFull()
