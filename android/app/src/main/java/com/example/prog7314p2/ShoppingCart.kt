@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import RetrofitClient
 import com.example.prog7314p2.Models.OrderHistoryModel
-import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -116,10 +117,7 @@ class ShoppingCart : Fragment() {
                     cartAdapter.notifyDataSetChanged()
 
                     // Update total
-                    val tvTotal =
-                        view?.findViewById<TextView>(
-                            R.id.tvCartTotal
-                        )
+                    val tvTotal =view?.findViewById<TextView>(R.id.tvCartTotal)
 
                     tvTotal?.text = String.format(Locale.getDefault(), "Total: R %.2f",totalPrice)
                 }
@@ -190,13 +188,13 @@ class ShoppingCart : Fragment() {
         val db = FirebaseFirestore.getInstance()
 
         // 1. Save order to Firestore Users -> {userId} -> Orders -> {orderId}
-        db.collection("Users").document(userId)
-            .collection("Orders").document(orderId)
+        db.collection("users").document(userId)
+            .collection("orders").document(orderId)
             .set(orderData)
             .addOnSuccessListener {
                 // 2. Clear the cart from Firestore
-                db.collection("Cart").document(userId)
-                    .collection("Items")
+                db.collection("carts").document(userId)
+                    .collection("items")
                     .get()
                     .addOnSuccessListener { snapshot ->
                         for (doc in snapshot.documents) {

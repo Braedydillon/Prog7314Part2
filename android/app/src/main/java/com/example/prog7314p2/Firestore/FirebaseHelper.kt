@@ -154,6 +154,42 @@ class FirebaseHelper {
             }
     }
 
+    fun clearCart(
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return
+        }
+
+        db.collection("carts")
+            .document(userId)
+            .collection("items")
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                val batch = db.batch()
+
+                for (document in snapshot.documents) {
+                    batch.delete(document.reference)
+                }
+
+                batch.commit()
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onFailure(it)
+                    }
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
     // Wishlist
     fun addToWishlist(
         productId: Int,
