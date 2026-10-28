@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.math.RoundingMode
 import java.time.LocalDateTime
 
 @RestController
@@ -20,7 +21,7 @@ class ReviewController(val reviewRepository: ReviewRepository, val productReposi
 
     @GetMapping("/product/{productId}")
     fun getReviewsForProduct(@PathVariable("productId") productId: Int): List<ReviewResponse>{
-        return reviewRepository.findReviewByProductId(productId).map { it.toRespones() }
+        return reviewRepository.findReviewByProductIdOrderByCreatedAtDesc(productId).map { it.toRespones() }
     }
 
     @PostMapping
@@ -61,5 +62,17 @@ class ReviewController(val reviewRepository: ReviewRepository, val productReposi
         }
         reviewRepository.delete(review)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/product/{productId}/summary")
+    fun getReviewSummary(@PathVariable("productId") productId: Int): ReviewSummaryResponse {
+        val count = reviewRepository.countByProductId(productId)
+        val average = if (count == 0L) {
+            0.0
+        } else {
+            val raw = reviewRepository.averageRatingForProduct(productId) ?: 0.0
+            raw.toBigDecimal().setScale(1, RoundingMode.HALF_UP).toDouble()
+        }
+        return ReviewSummaryResponse(productId, average, count)
     }
 }
