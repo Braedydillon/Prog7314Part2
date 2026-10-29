@@ -20,6 +20,11 @@ import com.example.prog7314p2.Models.CreateAddressRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.AdapterView
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 
 class Settings : Fragment() {
 
@@ -39,6 +44,70 @@ class Settings : Fragment() {
         val etAddress = view.findViewById<EditText>(R.id.address)
         val tvName = view.findViewById<TextView>(R.id.name)
         val tvSurname = view.findViewById<TextView>(R.id.surname)
+
+
+        // Language selector
+        val spinnerLanguage =
+            view.findViewById<Spinner>(R.id.spinnerLanguage)
+
+        val languages = listOf(
+            "English",
+            "Afrikaans",
+            "isiZulu"
+        )
+
+        val languageCodes = listOf("en", "af", "zu")
+
+        val languageAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            languages
+        )
+
+        languageAdapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        spinnerLanguage.adapter = languageAdapter
+
+        // Get currently selected language
+        val currentLanguage =
+            AppCompatDelegate.getApplicationLocales()
+                .toLanguageTags()
+                .substringBefore(",")
+                .substringBefore("-")
+
+        val selectedIndex = languageCodes.indexOf(currentLanguage)
+            .takeIf { it >= 0 } ?: 0
+
+        spinnerLanguage.setSelection(selectedIndex)
+
+        // Change language when a different option is selected
+        spinnerLanguage.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    selectedView: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val selectedLanguage = languageCodes[position]
+
+                    if (selectedLanguage != currentLanguage) {
+                        AppCompatDelegate.setApplicationLocales(
+                            LocaleListCompat.forLanguageTags(selectedLanguage)
+                        )
+                    }
+                }
+
+                override fun onNothingSelected(
+                    parent: AdapterView<*>?
+                ) {
+                    // Nothing selected
+                }
+            }
+
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         val userEmail = FirebaseAuth.getInstance().currentUser?.email

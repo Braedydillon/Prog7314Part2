@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unify</string>
+    <string name="register">Registreer</string>
+    <string name="name">Naam</string>
+    <string name="surname">Van</string>
+    <string name="email">E-pos</string>
+    <string name="password">Wagwoord</string>
+    <string name="already_have_an_account_login">Het jy reeds \'n rekening? Meld aan</string>
+    <string name="dont_have_an_account_register_here">Het jy nie \'n rekening nie? Registreer hier</string>
+    <string name="login">Meld aan</string>
+    <string name="welcome_to_unify">Welkom by Unify</string>
+    <string name="unify">Unify</string>
+    <string name="hello_blank_fragment">Hallo, leë fragment</string>
+    <string name="order_placed">Bestelling geplaas!</string>
+    <string name="view_orders">Bekyk bestellings</string>
+    <string name="orders_placed">Bestellings geplaas</string>
+    <string name="address">Adres</string>
+    <string name="reset_password">Stel wagwoord terug</string>
+    <string name="surname2">Van</string>
+    <string name="Name2">Naam</string>
+    <string name="logout">Meld af</string>
+    <string name="profile_amp_settings">Profiel en instellings</string>
+    <string name="address2">Adres</string>
+    <string name="add">Voeg by</string>
+    <string name="google_login_button">Gaan voort met Google</string>
+    <string name="select_language">Kies taal</string>
+    <string name="language_english">English</string>
+    <string name="language_afrikaans">Afrikaans</string>
+    <string name="language_zulu">isiZulu</string>
+</resources>
+

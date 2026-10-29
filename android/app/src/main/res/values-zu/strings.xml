@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unify</string>
+    <string name="register">Bhalisa</string>
+    <string name="name">Igama</string>
+    <string name="surname">Isibongo</string>
+    <string name="email">I-imeyili</string>
+    <string name="password">Iphasiwedi</string>
+    <string name="already_have_an_account_login">Usunayo i-akhawunti? Ngena</string>
+    <string name="dont_have_an_account_register_here">Awunayo i-akhawunti? Bhalisa lapha</string>
+    <string name="login">Ngena</string>
+    <string name="welcome_to_unify">Siyakwamukela ku-Unify</string>
+    <string name="unify">Unify</string>
+    <string name="hello_blank_fragment">Sawubona, ingxenye engenalutho</string>
+    <string name="order_placed">I-oda lifakiwe!</string>
+    <string name="view_orders">Buka ama-oda</string>
+    <string name="orders_placed">Ama-oda afakiwe</string>
+    <string name="address">Ikheli</string>
+    <string name="reset_password">Setha kabusha iphasiwedi</string>
+    <string name="surname2">Isibongo</string>
+    <string name="Name2">Igama</string>
+    <string name="logout">Phuma</string>
+    <string name="profile_amp_settings">Iphrofayela nezilungiselelo</string>
+    <string name="address2">Ikheli</string>
+    <string name="add">Engeza</string>
+    <string name="google_login_button">Qhubeka nge-Google</string>
+    <string name="select_language">Khetha ulimi</string>
+    <string name="language_english">English</string>
+    <string name="language_afrikaans">Afrikaans</string>
+    <string name="language_zulu">isiZulu</string>
+</resources>
+

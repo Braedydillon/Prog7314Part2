@@ -20,8 +20,12 @@
     <string name="surname2">Surname</string>
     <string name="Name2">Name</string>
     <string name="logout">Logout</string>
-    <string name="profile_amp_settings"><![CDATA[Profile & Settings]]></string>
+    <string name="profile_amp_settings">Profile &amp; Settings</string>
     <string name="address2">Address</string>
     <string name="add">Add</string>
     <string name="google_login_button">Continue with Google</string>
+    <string name="select_language">Select Language</string>
+    <string name="language_english">English</string>
+    <string name="language_afrikaans">Afrikaans</string>
+    <string name="language_zulu">isiZulu</string>
 </resources>
