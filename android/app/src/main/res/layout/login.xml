@@ -81,13 +81,30 @@
         android:layout_width="317dp"
         android:layout_height="51dp"
         android:text="@string/login"
-        app:backgroundTint="#CDDE31"
+        android:textColor="@color/black"
+        app:backgroundTint="#F3D354"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.531"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.722" />
+        app:layout_constraintVertical_bias="0.723"
+        app:strokeColor="@color/black" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnGoogleSignIn"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="317dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/google_login_button"
+        android:textColor="@color/black"
+        app:icon="@drawable/googleg_standard_color_18"
+        app:iconSize="20dp"
+        app:iconTint="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loglogin" />
 
     <Button
         android:id="@+id/logregister"
@@ -101,7 +118,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loglogin"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoogleSignIn"
         app:layout_constraintVertical_bias="0.355" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
