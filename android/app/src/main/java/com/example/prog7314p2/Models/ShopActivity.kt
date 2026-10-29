@@ -1,3 +1,4 @@
+
 package com.example.prog7314p2.Models
 
 import android.os.Bundle
@@ -7,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.prog7314p2.HomeFragment
+import com.example.prog7314p2.NotificationPermissionHelper
 import com.example.prog7314p2.R
 import com.example.prog7314p2.Settings
 import com.example.prog7314p2.ShoppingCart
@@ -15,25 +17,31 @@ import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
-
-// Removed okhttp settings import
 
 class ShopActivity : AppCompatActivity() {
 
-    private var cartBadgeListener: ListenerRegistration? = null
+    // Register the permission launcher before the Activity starts.
+    private val notificationPermissionHelper =
+        NotificationPermissionHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         // Force app to stay in Light Mode
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        AppCompatDelegate.setDefaultNightMode(
+            AppCompatDelegate.MODE_NIGHT_NO
+        )
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activitybar)
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        val bottomNav =
+            findViewById<BottomNavigationView>(R.id.bottomNav)
+
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val systemBars =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
             v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
@@ -45,9 +53,10 @@ class ShopActivity : AppCompatActivity() {
                 .commit()
         }
 
-        // Setup bottom nav clicks
+        // Setup bottom navigation
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
+
                 R.id.nav_home -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, HomeFragment())
@@ -87,45 +96,52 @@ class ShopActivity : AppCompatActivity() {
             }
         }
 
+        // Listen to Firestore cart and update badge counter
+        listenToCartBadge(bottomNav)
+
+        // Request notification permission after the screen loads.
+        // Android 13+ will display a permission dialog if needed.
+        notificationPermissionHelper.requestPermissionIfNeeded()
+
     }
 
-    private fun listenToCartBadge(bottomNav: BottomNavigationView) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    private fun listenToCartBadge(
+        bottomNav: BottomNavigationView
+    ) {
+        val userId =
+            FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        cartBadgeListener = FirebaseFirestore.getInstance()
-            .collection("carts").document(userId)
+        FirebaseFirestore.getInstance()
+            .collection("carts")
+            .document(userId)
             .collection("items")
             .addSnapshotListener { snapshot, _ ->
+
                 if (snapshot != null) {
                     try {
                         var totalCount = 0
+
                         for (doc in snapshot.documents) {
-                            val qty = doc.getLong("quantity")?.toInt() ?: 1
+                            val qty =
+                                doc.getLong("quantity")?.toInt() ?: 1
+
                             totalCount += qty
                         }
 
                         if (totalCount > 0) {
-                            val badge = bottomNav.getOrCreateBadge(R.id.nav_cart)
+                            val badge =
+                                bottomNav.getOrCreateBadge(R.id.nav_cart)
+
                             badge.number = totalCount
                             badge.isVisible = true
                         } else {
                             bottomNav.removeBadge(R.id.nav_cart)
                         }
+
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
             }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        listenToCartBadge(findViewById(R.id.bottomNav))
-    }
-
-    override fun onStop() {
-        super.onStop()
-        cartBadgeListener?.remove()
-        cartBadgeListener = null
     }
 }
