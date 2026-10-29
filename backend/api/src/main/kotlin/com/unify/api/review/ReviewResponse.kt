@@ -17,6 +17,13 @@ data class CreateReviewRequest(
     val comment: String?
 )
 
+data class ReviewSummaryResponse(
+    val productId: Int,
+    val average: Double,
+    val count: Long
+
+)
+
 fun Review.toRespones(): ReviewResponse = ReviewResponse(
     id = this.id!!,
     productId = this.product?.id!!,
