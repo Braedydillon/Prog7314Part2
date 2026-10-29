@@ -15,10 +15,14 @@ import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 // Removed okhttp settings import
 
 class ShopActivity : AppCompatActivity() {
+
+    private var cartBadgeListener: ListenerRegistration? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Force app to stay in Light Mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -78,14 +82,12 @@ class ShopActivity : AppCompatActivity() {
             }
         }
 
-        // Listen to Firestore cart and update the badge counter on the Cart icon
-        listenToCartBadge(bottomNav)
     }
 
     private fun listenToCartBadge(bottomNav: BottomNavigationView) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        FirebaseFirestore.getInstance()
+        cartBadgeListener = FirebaseFirestore.getInstance()
             .collection("carts").document(userId)
             .collection("items")
             .addSnapshotListener { snapshot, _ ->
@@ -109,5 +111,16 @@ class ShopActivity : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        listenToCartBadge(findViewById(R.id.bottomNav))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        cartBadgeListener?.remove()
+        cartBadgeListener = null
     }
 }
