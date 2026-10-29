@@ -30,7 +30,7 @@ class ShopActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activitybar)
-        
+
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -54,30 +54,35 @@ class ShopActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
+
                 R.id.nav_cart -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, ShoppingCart())
                         .commit()
                     true
                 }
+
                 R.id.scanner -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, scanner())
                         .commit()
                     true
                 }
+
                 R.id.nav_order -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, orderHistory())
                         .commit()
                     true
                 }
+
                 R.id.nav_Profile -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, Settings())
                         .commit()
                     true
                 }
+
                 else -> false
             }
         }
