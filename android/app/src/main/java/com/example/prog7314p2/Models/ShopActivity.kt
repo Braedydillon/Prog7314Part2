@@ -15,10 +15,14 @@ import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 // Removed okhttp settings import
 
 class ShopActivity : AppCompatActivity() {
+
+    private var cartBadgeListener: ListenerRegistration? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Force app to stay in Light Mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -26,7 +30,7 @@ class ShopActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activitybar)
-        
+
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -50,42 +54,45 @@ class ShopActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
+
                 R.id.nav_cart -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, ShoppingCart())
                         .commit()
                     true
                 }
+
                 R.id.scanner -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, scanner())
                         .commit()
                     true
                 }
+
                 R.id.nav_order -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, orderHistory())
                         .commit()
                     true
                 }
+
                 R.id.nav_Profile -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, Settings())
                         .commit()
                     true
                 }
+
                 else -> false
             }
         }
 
-        // Listen to Firestore cart and update the badge counter on the Cart icon
-        listenToCartBadge(bottomNav)
     }
 
     private fun listenToCartBadge(bottomNav: BottomNavigationView) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        FirebaseFirestore.getInstance()
+        cartBadgeListener = FirebaseFirestore.getInstance()
             .collection("carts").document(userId)
             .collection("items")
             .addSnapshotListener { snapshot, _ ->
@@ -109,5 +116,16 @@ class ShopActivity : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        listenToCartBadge(findViewById(R.id.bottomNav))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        cartBadgeListener?.remove()
+        cartBadgeListener = null
     }
 }

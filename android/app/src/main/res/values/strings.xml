@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Prog7314P2</string>
+    <string name="app_name">Unify</string>
     <string name="register">Register</string>
     <string name="name">Name</string>
     <string name="surname">Surname</string>
@@ -23,5 +23,5 @@
     <string name="profile_amp_settings"><![CDATA[Profile & Settings]]></string>
     <string name="address2">Address</string>
     <string name="add">Add</string>
-    <string name="current_names">Current Names</string>
+    <string name="google_login_button">Continue with Google</string>
 </resources>
