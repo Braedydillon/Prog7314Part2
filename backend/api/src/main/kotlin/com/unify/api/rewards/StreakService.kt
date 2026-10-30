@@ -1,10 +1,13 @@
 package com.unify.api.rewards
 
-import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Clock
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
+@Service
 class StreakService (
     private val streakRepository: UserStreakRepository,
     private val transactionRepository: PointTransactionRepository,
@@ -58,5 +61,31 @@ class StreakService (
             this.reason = reason
             this.createdAt = now
         })
+    }
+
+    @Transactional(readOnly = true)
+    fun getStatus(userId: String): StreakStatusResponse {
+        val streak = streakRepository.findByIdOrNull(userId)
+            ?: UserStreak().apply { this.userId = userId }   // never checked in: all zeros
+        return toStatus(streak)
+    }
+
+    fun toStatus(streak: UserStreak): StreakStatusResponse {
+        val today = LocalDate.now(clock)
+        val live = StreakRules.liveStreak(streak.currentStreak, streak.lastCheckIn, streak.lastShieldUsed, today, props)
+        val shieldAvailable = StreakRules.isShieldAvailable(streak.lastShieldUsed, today, props)
+        val next = StreakRules.nextMilestone(live, props)
+
+        return StreakStatusResponse(
+            currentStreak = live,
+            longestStreak = streak.longestStreak,
+            checkedInToday = streak.lastCheckIn == today,
+            pointsBalance = streak.pointsBalance,
+            balanceInRand = props.pointsToRand(streak.pointsBalance),
+            shieldAvailable = shieldAvailable,
+            shieldAvailableOn = if (shieldAvailable) null else StreakRules.shieldOffCooldown(streak.lastShieldUsed, props),
+            nextMilestoneDay = next?.first,
+            nextMilestoneBonus = next?.second
+        )
     }
 }
