@@ -8,6 +8,12 @@ import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDateTime
 
+data class Redemption(val pointsSpent: Int, val discount: BigDecimal) {
+    companion object {
+        val NONE = Redemption(0, BigDecimal.ZERO)
+    }
+}
+
 @Service
 class PointsService(
     private val streakRepository: UserStreakRepository,
@@ -59,4 +65,18 @@ class PointsService(
             this.createdAt = LocalDateTime.now(clock)
         })
     }
+
+    @Transactional
+    fun redeemForOrder(userId: String, requestedPoints: Int, orderId: Int, orderTotal: BigDecimal): Redemption {
+        if (requestedPoints < 0) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Cant spend negative points")
+        }
+
+        val points = minOf(requestedPoints, props.pointsNeededFor(orderTotal))
+        if (points == 0) return Redemption.NONE
+
+        val value = spend(userId, points, orderId)
+        return Redemption(points, value.min(orderTotal))
+    }
+
 }

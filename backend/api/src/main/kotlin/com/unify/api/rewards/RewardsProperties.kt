@@ -24,4 +24,10 @@ data class RewardsProperties(
 
     fun pointsToRand(points: Int): BigDecimal =
         BigDecimal(points).divide(BigDecimal(pointsPerRand), 2, RoundingMode.DOWN)
+
+    fun pointsNeededFor(amount: BigDecimal): Int =
+        amount.multiply(BigDecimal(pointsPerRand))
+            .setScale(0, RoundingMode.CEILING)
+            .intValueExact()
+
 }
