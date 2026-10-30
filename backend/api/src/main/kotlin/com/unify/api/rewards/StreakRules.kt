@@ -78,4 +78,23 @@ object StreakRules {
                 !today.isBefore(lastShieldUsed.plusDays(props.shieldCooldownDays.toLong()))
 
     fun cycleDay(streak: Int, cycleDays: Int): Int = ((streak - 1) % cycleDays) + 1
+
+    fun liveStreak(
+        currentStreak: Int,
+        lastCheckIn: LocalDate?,
+        lastShieldUsed: LocalDate?,
+        today: LocalDate,
+        props: RewardsProperties
+    ): Int = when (evaluate(currentStreak, lastCheckIn, lastShieldUsed, today, props).type) {
+        CheckInType.FIRST_EVER, CheckInType.RESET -> 0
+        else -> currentStreak
+    }
+
+    fun shieldOffCooldown(lastShieldUsed: LocalDate?, props: RewardsProperties): LocalDate? =
+        lastShieldUsed?.plusDays(props.shieldCooldownDays.toLong())
+
+    fun nextMilestone(streak: Int, props: RewardsProperties): Pair<Int, Int>? =
+        ((streak + 1)..(streak + props.milestoneCycleDays))
+            .firstOrNull { props.milestones.containsKey(cycleDay(it, props.milestoneCycleDays)) }
+            ?.let { day -> day to props.milestones.getValue(cycleDay(day, props.milestoneCycleDays)) }
 }

@@ -1,6 +1,8 @@
 package com.unify.api.rewards
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 @ConfigurationProperties(prefix = "rewards")
 data class RewardsProperties(
@@ -19,4 +21,7 @@ data class RewardsProperties(
         }
         require(shieldCooldownDays > 0) { "rewards.shield-cooldown-days must be greater than 0" }
     }
+
+    fun pointsToRand(points: Int): BigDecimal =
+        BigDecimal(points).divide(BigDecimal(pointsPerRand), 2, RoundingMode.DOWN)
 }
