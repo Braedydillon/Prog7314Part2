@@ -27,7 +27,7 @@ class StreakRulesTests {
     }
 
     @Test
-    fun `second check in on same day equals streak 1`() {
+    fun `second check in on same day equals no change`() {
         val result = checkIn(streak = 4, lastCheckIn = today)
         assertEquals(CheckInType.ALREADY_CHECKED_IN, result.type)
         assertEquals(4, result.newStreak)
