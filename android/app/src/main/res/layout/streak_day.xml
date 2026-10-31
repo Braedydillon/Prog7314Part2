@@ -11,11 +11,11 @@
         android:id="@+id/ivDayCircle"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:background="@drawable/bg_day_circle"
-        android:backgroundTint="@color/streak_track"
+        android:background="@drawable/bg_day_empty"
         android:contentDescription="@null"
         android:padding="6dp"
         app:tint="@android:color/white"
+        tools:background="@drawable/bg_day_circle"
         tools:backgroundTint="@color/streak_accent"
         tools:src="@drawable/ic_check" />
 

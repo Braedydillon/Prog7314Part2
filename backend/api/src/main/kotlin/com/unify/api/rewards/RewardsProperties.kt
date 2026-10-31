@@ -14,7 +14,7 @@ data class RewardsProperties(
 ) {
     init {
         require(pointsPerRand > 0) { "rewards.points-per-rand must be greater than 0" }
-        require(dailyPoints >= 0) { "rewards.daily-points cant be negative" }
+        require(dailyPoints > 0) { "rewards.daily-points must be greater than 0 (the week view relies on daily check-in rows)" }
         require(milestoneCycleDays > 0) { "rewards.milestone-cycle-days must be greater than 0" }
         require(milestones.keys.all { it in 1..milestoneCycleDays }) {
             "Every milestone day must be between 1 and rewards.milestone-cycle-days"

@@ -30,6 +30,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
@@ -182,6 +183,7 @@ class Settings : Fragment() {
         val nextDay = s.nextMilestoneDay
 
         if (nextDay != null) {
+            progress.setProgressCompat(0, false)
             progress.max = nextDay
             progress.setProgressCompat(s.currentStreak, true)
             tvNext.text = getString(R.string.streak_msg_next, nextDay - s.currentStreak, s.nextMilestoneBonus ?: 0)
@@ -192,7 +194,7 @@ class Settings : Fragment() {
             tvNext.visibility = View.GONE
         }
 
-        bindWeek(view, checkedInDays = emptySet())
+        bindWeek(view, s)
 
         view.findViewById<TextView>(R.id.tvPointsBalance).text =
             getString(R.string.streak_card_balance, s.pointsBalance)
@@ -206,14 +208,20 @@ class Settings : Fragment() {
         R.id.dayMon, R.id.dayTue, R.id.dayWed, R.id.dayThu, R.id.dayFri, R.id.daySat, R.id.daySun
     )
 
-    private fun bindWeek(view: View, checkedInDays: Set<LocalDate>) {
-        val today = LocalDate.now()
-        val monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        val accent = ContextCompat.getColor(requireContext(), R.color.streak_accent)
-        val track = ContextCompat.getColor(requireContext(), R.color.streak_track)
+    private fun bindWeek(view: View, s: StreakStatus) {
+        val sast = ZoneId.of("Africa/Johannesburg")
+        val today = LocalDate.now(sast)
+        val weekStart = s.weekStart?.let(LocalDate::parse)
+            ?: today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val checkedIn = s.checkInsThisWeek.orEmpty().map(LocalDate::parse).toSet()
+        val shieldDay = s.shieldSavedDay?.let(LocalDate::parse)
+
+        val ctx = requireContext()
+        val accent = ContextCompat.getColor(ctx, R.color.streak_accent)
+        val shieldBlue = ContextCompat.getColor(ctx, R.color.streak_shield)
 
         weekDayIds.forEachIndexed { index, id ->
-            val date = monday.plusDays(index.toLong())
+            val date = weekStart.plusDays(index.toLong())
             val day = view.findViewById<View>(id)
             val circle = day.findViewById<ImageView>(R.id.ivDayCircle)
             val label = day.findViewById<TextView>(R.id.tvDayLabel)
@@ -221,9 +229,26 @@ class Settings : Fragment() {
             label.text = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
             label.setTypeface(null, if (date == today) Typeface.BOLD else Typeface.NORMAL)
 
-            val done = date in checkedInDays
-            circle.backgroundTintList = ColorStateList.valueOf(if (done) accent else track)
-            if (done) circle.setImageResource(R.drawable.ic_check) else circle.setImageDrawable(null)
+            when {
+                date in checkedIn -> {
+                    circle.setBackgroundResource(R.drawable.bg_day_circle)
+                    circle.backgroundTintList = ColorStateList.valueOf(accent)
+                    circle.setImageResource(R.drawable.ic_check)
+                }
+                date == shieldDay -> {
+                    circle.setBackgroundResource(R.drawable.bg_day_circle)
+                    circle.backgroundTintList = ColorStateList.valueOf(shieldBlue)
+                    circle.setImageDrawable(null)
+                }
+                else -> {
+                    circle.setBackgroundResource(R.drawable.bg_day_empty)
+                    circle.backgroundTintList = null
+                    circle.setImageDrawable(null)
+                }
+            }
+
+            circle.foreground =
+                if (date == today) ContextCompat.getDrawable(ctx, R.drawable.ring_day_today) else null
         }
     }
 

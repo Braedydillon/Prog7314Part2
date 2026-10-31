@@ -1,9 +1,11 @@
 package com.unify.api.rewards
 
 import org.springframework.data.repository.findByIdOrNull
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Clock
+import java.time.temporal.TemporalAdjusters
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -72,6 +74,19 @@ class StreakService (
 
     fun toStatus(streak: UserStreak): StreakStatusResponse {
         val today = LocalDate.now(clock)
+        val weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val nextWeekStart = weekStart.plusDays(7)
+
+        val checkInsThisWeek = transactionRepository.findTimesBetween(
+            userId = streak.userId!!,
+            reason = PointReason.DAILY_CHECK_IN,
+            from = weekStart.atStartOfDay(),
+            to = nextWeekStart.atStartOfDay()
+        ).map { it.toLocalDate() }.distinct().sorted()
+
+        val shieldSavedDay = streak.lastShieldUsed?.minusDays(1)
+            ?.takeIf { !it.isBefore(weekStart) && it.isBefore(nextWeekStart) }
+
         val live = StreakRules.liveStreak(streak.currentStreak, streak.lastCheckIn, streak.lastShieldUsed, today, props)
         val shieldAvailable = StreakRules.isShieldAvailable(streak.lastShieldUsed, today, props)
         val next = StreakRules.nextMilestone(live, props)
@@ -85,7 +100,10 @@ class StreakService (
             shieldAvailable = shieldAvailable,
             shieldAvailableOn = if (shieldAvailable) null else StreakRules.shieldOffCooldown(streak.lastShieldUsed, props),
             nextMilestoneDay = next?.first,
-            nextMilestoneBonus = next?.second
+            nextMilestoneBonus = next?.second,
+            weekStart = weekStart,
+            checkInsThisWeek = checkInsThisWeek,
+            shieldSavedDay = shieldSavedDay
         )
     }
 }

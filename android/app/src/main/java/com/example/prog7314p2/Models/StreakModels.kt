@@ -11,7 +11,10 @@ data class StreakStatus(
     val shieldAvailable: Boolean,
     val shieldAvailableOn: String?,
     val nextMilestoneDay: Int?,
-    val nextMilestoneBonus: Int?
+    val nextMilestoneBonus: Int?,
+    val weekStart: String?,
+    val checkInsThisWeek: List<String>?,
+    val shieldSavedDay: String?
 )
 
 data class CheckInResponse(

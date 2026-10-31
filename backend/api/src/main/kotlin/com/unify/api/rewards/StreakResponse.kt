@@ -12,7 +12,10 @@ data class StreakStatusResponse(
     val shieldAvailable: Boolean,
     val shieldAvailableOn: LocalDate?,
     val nextMilestoneDay: Int?,
-    val nextMilestoneBonus: Int?
+    val nextMilestoneBonus: Int?,
+    val weekStart: LocalDate,
+    val checkInsThisWeek: List<LocalDate>,
+    val shieldSavedDay: LocalDate?
 )
 
 data class CheckInResponse(

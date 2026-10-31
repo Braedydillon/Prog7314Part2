@@ -13,4 +13,8 @@
     <color name="streak_card_stroke">#E8E8E8</color>
     <color name="streak_text_primary">#1A1A1A</color>
     <color name="streak_text_secondary">#757575</color>
+    <color name="streak_day_empty">#F4EEDA</color>
+    <color name="streak_day_empty_stroke">#DDD2AE</color>
+    <color name="streak_shield">#4A90E2</color>
+    <color name="streak_today_ring">#C79A00</color>
 </resources>
