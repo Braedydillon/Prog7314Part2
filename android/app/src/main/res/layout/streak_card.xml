@@ -1,6 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/streak_card_bg"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/streak_card_stroke"
+    app:strokeWidth="1dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:minWidth="88dp"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/bg_streak_badge">
+
+                    <ImageView
+                        android:id="@+id/ivStreakFlame"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_fire"
+                        app:tint="@android:color/white" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvStreakDays"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/streak_text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="5 day" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/streak_card_label"
+                    android:textColor="@color/streak_text_secondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/progressText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/streak_text_secondary"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:text="@string/streak_card_progress_label"
+                    tools:text="Milestone Progress" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progressNextBonus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:max="7"
+                    android:progress="5"
+                    app:indicatorColor="@color/streak_accent"
+                    app:trackColor="@color/streak_track"
+                    app:trackCornerRadius="10dp"
+                    app:trackThickness="20dp"
+                    app:indicatorTrackGapSize="0dp"
+                    app:trackStopIndicatorSize="0dp"/>
+
+                <TextView
+                    android:id="@+id/tvNextBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/streak_text_secondary"
+                    android:textSize="12sp"
+                    tools:text="2 more day(s) until your 75 point bonus." />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/weekRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_streak_week"
+            android:orientation="horizontal"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="10dp">
+
+            <include android:id="@+id/dayMon" layout="@layout/streak_day"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+            <include android:id="@+id/dayTue" layout="@layout/streak_day"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+            <include android:id="@+id/dayWed" layout="@layout/streak_day"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+            <include android:id="@+id/dayThu" layout="@layout/streak_day"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+            <include android:id="@+id/dayFri" layout="@layout/streak_day"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+            <include android:id="@+id/daySat" layout="@layout/streak_day"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+            <include android:id="@+id/daySun" layout="@layout/streak_day"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="14dp"
+            android:background="@color/streak_card_stroke" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvPointsBalance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/streak_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="120 points" />
+
+                <TextView
+                    android:id="@+id/tvShieldStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/streak_text_secondary"
+                    android:textSize="12sp"
+                    tools:text="Streak shield available" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnPointsHistory"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/points_history_title"
+                android:textColor="#000000" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

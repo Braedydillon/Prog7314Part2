@@ -10,8 +10,6 @@
     <string name="login">login</string>
     <string name="welcome_to_unify">Welcome to Unify</string>
     <string name="unify">Unify</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="order_placed">!!Order Placed!!</string>
     <string name="view_orders">View Orders</string>
     <string name="orders_placed">Orders Placed</string>
@@ -26,6 +24,7 @@
     <string name="current_names">Current Names</string>
     <string name="google_login_button">Continue with Google</string>
 
+    <!-- Streak popup -->
     <string name="streak_title_first">Welcome, login every day to earn rewards</string>
     <string name="streak_title_day">You\'re on a %1$d-day streak</string>
     <string name="streak_title_shield">Shield used, streak saved</string>
@@ -37,4 +36,38 @@
     <string name="streak_msg_next">%1$d more day(s) until your %2$d point bonus.</string>
     <string name="streak_msg_balance">Balance: %1$d points.</string>
     <string name="streak_ok">Well done</string>
+
+    <!-- Streak card -->
+    <string name="streak_card_none">No streak yet. Open Unify tomorrow to keep going!</string>
+    <plurals name="streak_best">
+        <item quantity="one">Best: %d day</item>
+        <item quantity="other">Best: %d days</item>
+    </plurals>
+    <string name="streak_card_balance">%1$d points</string>
+    <string name="streak_card_shield_ready">Streak shield available</string>
+    <string name="streak_card_shield_recharging">Shield on cooldown, available again on %1$s</string>
+    <string name="streak_card_progress_label">Milestone progress</string>
+
+    <!-- Point history -->
+    <string name="points_history_title">Points history</string>
+    <string name="points_history_empty">No points yet</string>
+    <string name="points_history_failed">Couldn\'t load your points history</string>
+    <string name="reason_daily">Daily check in</string>
+    <string name="reason_milestone">Streak bonus</string>
+    <string name="reason_redeemed">Spent on order</string>
+    <string name="reason_refund">Refund (cancelled order)</string>
+    <string name="reason_other">Other</string>
+
+    <string name="streak_card_label">Login streak</string>
+    <plurals name="streak_card_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="streak_card_bonus_target">/ %1$d days</string>
+
+    <!-- Points checkout -->
+    <string name="cart_use_points">Use points (%1$d available)</string>
+    <string name="cart_total_with_points">Total: R %1$.2f (R%2$.2f off with points)</string>
+    <string name="checkout_failed">Checkout failed: %1$s</string>
+
 </resources>
