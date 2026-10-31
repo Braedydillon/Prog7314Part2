@@ -1,26 +1,27 @@
 package com.example.prog7314p2.Models
 
+import RetrofitClient
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import com.example.prog7314p2.HomeFragment
 import com.example.prog7314p2.R
 import com.example.prog7314p2.Settings
 import com.example.prog7314p2.ShoppingCart
+import com.example.prog7314p2.StreakPopup
 import com.example.prog7314p2.orderHistory
 import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import RetrofitClient
-import android.util.Log
-import androidx.lifecycle.lifecycleScope
-import com.example.prog7314p2.Models.CheckInType
-import com.example.prog7314p2.StreakPopup
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -92,6 +93,15 @@ class ShopActivity : AppCompatActivity() {
 
                 else -> false
             }
+        }
+
+        val fragmentContainer = findViewById<View>(R.id.fragmentContainer)
+        ViewCompat.setOnApplyWindowInsetsListener(fragmentContainer) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(top = bars.top)
+            insets
         }
 
     }

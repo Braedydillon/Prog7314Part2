@@ -2,6 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="screen_bg">#F6F6F8</color>
+    <color name="danger">#C62828</color>
 
     <!-- Streak card -->
     <color name="streak_accent">#f2cf22</color>

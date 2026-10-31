@@ -52,9 +52,11 @@ class Settings : Fragment() {
         val etAddress = view.findViewById<EditText>(R.id.address)
         val tvName = view.findViewById<TextView>(R.id.name)
         val tvSurname = view.findViewById<TextView>(R.id.surname)
+        val tvEmail = view.findViewById<TextView>(R.id.tvEmail)
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         val userEmail = FirebaseAuth.getInstance().currentUser?.email
+        tvEmail.text = userEmail
 
         // Fetch Name, Surname, and Address from Firestore / API
         if (userId != null) {
