@@ -44,7 +44,7 @@ interface ApiService {
     suspend fun updateOrderStatus(@Path("id") id: Int, @Body request: UpdateOrderStatusRequest): OrderResponse
 
     // Streaks and points endpoints
-    @POST("api/streak/check-in")
+    @POST("api/streak/checkin")
     suspend fun checkIn(): CheckInResponse
 
     @GET("api/streak")
