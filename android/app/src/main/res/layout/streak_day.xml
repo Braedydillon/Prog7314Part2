@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/ivDayCircle"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/bg_day_circle"
+        android:backgroundTint="@color/streak_track"
+        android:contentDescription="@null"
+        android:padding="6dp"
+        app:tint="@android:color/white"
+        tools:backgroundTint="@color/streak_accent"
+        tools:src="@drawable/ic_check" />
+
+    <TextView
+        android:id="@+id/tvDayLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/streak_text_secondary"
+        android:textSize="11sp"
+        tools:text="Mon" />
+</LinearLayout>

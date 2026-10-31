@@ -16,12 +16,19 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-
-// Removed okhttp settings import
+import RetrofitClient
+import android.util.Log
+import androidx.lifecycle.lifecycleScope
+import com.example.prog7314p2.Models.CheckInType
+import com.example.prog7314p2.StreakPopup
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ShopActivity : AppCompatActivity() {
 
     private var cartBadgeListener: ListenerRegistration? = null
+    private var checkInJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Force app to stay in Light Mode
@@ -121,11 +128,30 @@ class ShopActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         listenToCartBadge(findViewById(R.id.bottomNav))
+        checkInStreak()
     }
 
     override fun onStop() {
         super.onStop()
         cartBadgeListener?.remove()
         cartBadgeListener = null
+    }
+
+    private fun checkInStreak() {
+        if (checkInJob?.isActive == true) return
+
+        checkInJob = lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.instance.checkIn()
+                Log.d("Streak", "Check in response: $response")
+                if (response.type != null && response.type != CheckInType.ALREADY_CHECKED_IN) {
+                    StreakPopup.show(this@ShopActivity, response)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("Streak", "Check in failed", e)
+            }
+        }
     }
 }

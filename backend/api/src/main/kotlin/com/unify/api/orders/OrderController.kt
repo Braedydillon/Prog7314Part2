@@ -44,24 +44,7 @@ class OrderController(val orderService: OrderService, val orderRepository: Order
         @PathVariable id: Int,
         @RequestBody request: UpdateOrderStatus
     ): ResponseEntity<OrderResponse> {
-        val order = orderRepository.findById(id)
-            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Order $id not found") }
-
-        if (order.userId != authentication.name) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Order $id not found")
-        }
-
-        val validStatuses = setOf("Pending", "Processing", "Shipped", "Delivered", "Cancelled")
-        if (request.status !in validStatuses) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid order status, ${request.status}")
-        }
-
-        val previousStatus = order.orderStatus
-        order.orderStatus = request.status
-        order.updatedAt = LocalDateTime.now()
-
-        val saved = orderRepository.save(order)
-        log.info("Order status changed from $previousStatus to ${request.status}")
+        val saved = orderService.updateStatus(authentication.name, id, request.status)
         return ResponseEntity.ok(saved.toResponse())
     }
 }

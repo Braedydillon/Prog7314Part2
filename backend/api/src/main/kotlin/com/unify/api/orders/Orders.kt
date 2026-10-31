@@ -26,6 +26,10 @@ class Orders {
     var createdAt: LocalDateTime? = null
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null
+    @Column(name = "points_spent", nullable = false)
+    var pointsSpent: Int = 0
+    @Column(name = "points_discount", nullable = false)
+    var pointsDiscount: BigDecimal = BigDecimal.ZERO
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     var items: List<OrderItem> = emptyList()

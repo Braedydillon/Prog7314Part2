@@ -1,25 +1,30 @@
 package com.example.prog7314p2
 
+import RetrofitClient
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.prog7314p2.Firestore.FirebaseHelper
-import com.example.prog7314p2.Models.cartItem
-import kotlinx.coroutines.launch
-import java.util.Locale
-import RetrofitClient
 import com.example.prog7314p2.Models.CreateAddressRequest
 import com.example.prog7314p2.Models.OrderItemRequest
 import com.example.prog7314p2.Models.OrderRequest
+import com.example.prog7314p2.Models.StreakStatus
+import com.example.prog7314p2.Models.cartItem
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.auth.FirebaseAuth
-import kotlin.apply
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import retrofit2.HttpException
+import java.util.Locale
 
 
 class ShoppingCart : Fragment() {
@@ -27,6 +32,8 @@ class ShoppingCart : Fragment() {
     private lateinit var rvCartItems: RecyclerView
     private lateinit var cartAdapter: CartAdapter
     private val cartItemsList = mutableListOf<cartItem>()
+    private var cartTotal = 0.0
+    private var streakStatus: StreakStatus? = null
 
     private val firebaseHelper = FirebaseHelper()
 
@@ -51,6 +58,9 @@ class ShoppingCart : Fragment() {
 
         // Load cart from Firebase
         loadCart()
+        loadPoints()
+        view.findViewById<MaterialSwitch>(R.id.switchUsePoints)
+            .setOnCheckedChangeListener { _, _ -> updateTotal() }
 
         btnCheckout.setOnClickListener {
             if (cartItemsList.isEmpty()) {
@@ -117,9 +127,8 @@ class ShoppingCart : Fragment() {
                     cartAdapter.notifyDataSetChanged()
 
                     // Update total
-                    val tvTotal =view?.findViewById<TextView>(R.id.tvCartTotal)
-
-                    tvTotal?.text = String.format(Locale.getDefault(), "Total: R %.2f",totalPrice)
+                    cartTotal = totalPrice
+                    updateTotal()
                 }
             },
 
@@ -182,7 +191,12 @@ class ShoppingCart : Fragment() {
                 val orderItems = cartItemsList.map { OrderItemRequest(
                     productId = it.productId,
                     quantity = it.quantity) }
-                val orderRequest = OrderRequest(items = orderItems, addressId = addressId)
+                val usePoints = view?.findViewById<MaterialSwitch>(R.id.switchUsePoints)?.isChecked == true
+                val orderRequest = OrderRequest(
+                    items = orderItems,
+                    addressId = addressId,
+                    pointsToSpend = if (usePoints) streakStatus?.pointsBalance ?: 0 else 0
+                )
                 val order = RetrofitClient.instance.placeOrder(orderRequest)
 
                 firebaseHelper.clearCart(
@@ -204,9 +218,57 @@ class ShoppingCart : Fragment() {
                         .replace(R.id.fragmentContainer, successFragment)
                         .commit()
                 }
-            } catch (e: Exception){
-                Toast.makeText(context, "Checkout failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                val message = e.serverMessage() ?: e.message
+                Toast.makeText(context, getString(R.string.checkout_failed, message), Toast.LENGTH_LONG).show()
+                if ((e as? HttpException)?.code() == 409) loadPoints()
             }
         }
     }
+
+    private fun loadPoints() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val status = RetrofitClient.instance.getStreakStatus()
+                streakStatus = status
+
+                val switch = view?.findViewById<MaterialSwitch>(R.id.switchUsePoints) ?: return@launch
+                if (status.pointsBalance > 0) {
+                    switch.text = getString(R.string.cart_use_points, status.pointsBalance)
+                    switch.visibility = View.VISIBLE
+                } else {
+                    switch.isChecked = false
+                    switch.visibility = View.GONE
+                }
+                updateTotal()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("Streak", "Failed to load points", e)
+            }
+        }
+    }
+
+    private fun updateTotal() {
+        val tvTotal = view?.findViewById<TextView>(R.id.tvCartTotal) ?: return
+        val usePoints = view?.findViewById<MaterialSwitch>(R.id.switchUsePoints)?.isChecked == true
+        val discount = if (usePoints) minOf(streakStatus?.balanceInRand ?: 0.0, cartTotal) else 0.0
+
+        tvTotal.text = if (discount > 0) {
+            getString(R.string.cart_total_with_points, cartTotal - discount, discount)
+        } else {
+            String.format(Locale.getDefault(), "Total: R %.2f", cartTotal)
+        }
+    }
+
+    private fun Throwable.serverMessage(): String? {
+        val body = (this as? HttpException)?.response()?.errorBody()?.string() ?: return null
+        return runCatching {
+            val json = JSONObject(body)
+            json.optString("message").ifBlank { json.optString("detail") }
+        }.getOrNull()?.takeIf { it.isNotBlank() }
+    }
+
 }

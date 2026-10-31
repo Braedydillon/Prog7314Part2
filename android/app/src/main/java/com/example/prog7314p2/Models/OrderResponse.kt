@@ -8,6 +8,8 @@ data class OrderResponse(
     val total: Double,
     val estimatedDelivery: String?,
     val createdAt: String,
-    val updatedAt: String?
+    val updatedAt: String?,
+    val pointsSpent: Int,
+    val pointsDiscount: Double
 )
 
