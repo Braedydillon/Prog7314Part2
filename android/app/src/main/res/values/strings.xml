@@ -25,4 +25,16 @@
     <string name="add">Add</string>
     <string name="current_names">Current Names</string>
     <string name="google_login_button">Continue with Google</string>
+
+    <string name="streak_title_first">Welcome, login every day to earn rewards</string>
+    <string name="streak_title_day">You\'re on a %1$d-day streak</string>
+    <string name="streak_title_shield">Shield used, streak saved</string>
+    <string name="streak_title_reset">Streak reset</string>
+    <string name="streak_msg_shield">You missed a day, so your streak shield was used. Miss another day before %1$s and your streak resets.</string>
+    <string name="streak_msg_reset">Your %1$d-day streak has ended.</string>
+    <string name="streak_msg_points">You earned %1$d points for opening Unify today.</string>
+    <string name="streak_msg_milestone">That includes a %1$d point bonus for reaching %2$d days.</string>
+    <string name="streak_msg_next">%1$d more day(s) until your %2$d point bonus.</string>
+    <string name="streak_msg_balance">Balance: %1$d points.</string>
+    <string name="streak_ok">Well done</string>
 </resources>
