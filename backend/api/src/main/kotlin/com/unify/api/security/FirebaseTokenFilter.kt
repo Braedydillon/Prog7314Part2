@@ -1,6 +1,7 @@
 package com.unify.api.security
 
 import com.google.firebase.auth.FirebaseAuth
+import com.unify.api.admin.AdminAccess
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -15,8 +16,10 @@ import org.springframework.http.MediaType
 import org.springframework.http.ProblemDetail
 
 @Component
-class FirebaseTokenFilter(private val firebaseAuth: FirebaseAuth,
-                          private val objectMapper: ObjectMapper
+class FirebaseTokenFilter(
+    private val firebaseAuth: FirebaseAuth,
+    private val objectMapper: ObjectMapper,
+    private val adminAccess: AdminAccess
 ) : OncePerRequestFilter() {
 
     private companion object {
@@ -32,7 +35,8 @@ class FirebaseTokenFilter(private val firebaseAuth: FirebaseAuth,
             val userId = extractUserIdFromToken(token)
 
             if (userId != null) {
-                val authentication = UsernamePasswordAuthenticationToken(userId, null, emptyList())
+                val authorities = adminAccess.authoritiesFor(userId)
+                val authentication = UsernamePasswordAuthenticationToken(userId, null, authorities)
                 SecurityContextHolder.getContext().authentication = authentication
             }else {
                 setAuthErrorDetails(res)
