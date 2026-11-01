@@ -76,4 +76,26 @@
     <string name="settings_save_address">Save address</string>
     <string name="profile_picture">Profile picture</string>
 
+    <string name="admin_add_product">Add product</string>
+    <string name="admin_section_details">Details</string>
+    <string name="admin_product_photo">Product photo</string>
+    <string name="admin_tap_to_choose_photo">Tap to choose a photo</string>
+    <string name="admin_name">Product name</string>
+    <string name="admin_description">Description (optional)</string>
+    <string name="admin_price">Price</string>
+    <string name="admin_sale_price">Sale price (optional)</string>
+    <string name="admin_stock">Stock</string>
+    <string name="admin_brand">Brand (optional)</string>
+    <string name="admin_category">Category</string>
+    <string name="admin_choose_category">Choose a category</string>
+    <string name="admin_save_product">Save product</string>
+    <string name="admin_product_added">Product added</string>
+    <string name="admin_save_failed">Couldn\'t save the product. Please try again.</string>
+    <string name="admin_categories_failed">Couldn\'t load categories</string>
+    <string name="admin_error_image">Please choose a photo</string>
+    <string name="admin_error_name">Name is required</string>
+    <string name="admin_error_price">Enter a price above 0 (max 2 decimals)</string>
+    <string name="admin_error_sale_price">Must be above 0 and lower than the price</string>
+    <string name="admin_error_stock">Enter 0 or more</string>
+    <string name="admin_error_category">Please choose a category</string>
 </resources>
