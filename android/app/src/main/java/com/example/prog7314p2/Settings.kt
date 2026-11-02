@@ -4,6 +4,7 @@ import RetrofitClient
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,20 +15,29 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.exceptions.ClearCredentialException
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import coil.load
 import com.example.prog7314p2.Models.CreateAddressRequest
 import com.example.prog7314p2.Models.StreakStatus
+import com.example.prog7314p2.util.ImageCompressor
+import com.example.prog7314p2.util.serverMessage
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
@@ -36,6 +46,10 @@ import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 class Settings : Fragment() {
+
+    private val pickAvatar = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) uploadAvatar(uri)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -66,6 +80,7 @@ class Settings : Fragment() {
                     if (document != null && document.exists()) {
                         tvName.text = document.getString("name")
                         tvSurname.text = document.getString("surname")
+                        document.getString("avatarUrl")?.let { showAvatar(view, it) }
                         val savedAddress = document.getString("address")
                         if (!savedAddress.isNullOrEmpty()) {
                             etAddress.setText(savedAddress)
@@ -143,6 +158,58 @@ class Settings : Fragment() {
                 .commit()
         }
         loadAdminAccess(view)
+
+        view.findViewById<View>(R.id.avatarFrame).setOnClickListener {
+            pickAvatar.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+    }
+
+    private fun showAvatar(view: View, url: String) {
+        val avatar = view.findViewById<ImageView>(R.id.ivAvatar)
+        avatar.imageTintList = null
+        avatar.setPadding(0, 0, 0, 0)
+        avatar.scaleType = ImageView.ScaleType.CENTER_CROP
+        avatar.load(url) { crossfade(true) }
+    }
+
+    private fun uploadAvatar(uri: Uri) {
+        val view = view ?: return
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val frame = view.findViewById<View>(R.id.avatarFrame)
+        val progress = view.findViewById<View>(R.id.progressAvatar)
+
+        frame.isEnabled = false
+        progress.visibility = View.VISIBLE
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val jpeg = ImageCompressor.toJpeg(requireContext(), uri, maxSide = 512)
+                val part = MultipartBody.Part.createFormData(
+                    "image", "avatar.jpg", jpeg.toRequestBody("image/jpeg".toMediaType())
+                )
+                val url = RetrofitClient.instance.uploadAvatar(part).url
+
+                showAvatar(view, url)
+
+                FirebaseFirestore.getInstance().collection("users").document(userId)
+                    .set(mapOf("avatarUrl" to url), SetOptions.merge())
+                    .addOnFailureListener { e ->
+                        Log.w("Settings", "Couldn't save avatar link", e)
+                        context?.let { Toast.makeText(it, R.string.avatar_save_failed, Toast.LENGTH_LONG).show() }
+                    }
+
+                Toast.makeText(requireContext(), R.string.avatar_updated, Toast.LENGTH_SHORT).show()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("Settings", "Avatar upload failed", e)
+                val message = e.serverMessage() ?: getString(R.string.avatar_upload_failed)
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            } finally {
+                frame.isEnabled = true
+                progress.visibility = View.GONE
+            }
+        }
     }
 
     private fun loadAdminAccess(view: View) {

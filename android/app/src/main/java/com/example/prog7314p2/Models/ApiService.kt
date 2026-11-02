@@ -67,4 +67,8 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Product
 
+    @Multipart
+    @POST("api/me/avatar")
+    suspend fun uploadAvatar(@Part image: MultipartBody.Part): AvatarResponse
+
 }

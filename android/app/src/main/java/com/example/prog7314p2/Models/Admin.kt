@@ -7,6 +7,8 @@ data class MeResponse(
     val admin: Boolean
 )
 
+data class AvatarResponse(val url: String)
+
 data class CreateProductRequest(
     val name: String,
     val description: String?,

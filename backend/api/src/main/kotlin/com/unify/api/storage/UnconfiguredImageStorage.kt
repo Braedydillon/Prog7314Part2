@@ -9,4 +9,6 @@ class UnconfiguredImageStorage : ImageStorage {
         throw ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Image storage isn't configured")
 
     override fun delete(url: String) = Unit
+
+    override fun deleteFolderExcept(folder: String, keepUrl: String) = Unit
 }
