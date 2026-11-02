@@ -4,6 +4,7 @@ import com.azure.core.util.BinaryData
 import com.azure.core.util.Context
 import com.azure.storage.blob.BlobContainerClient
 import com.azure.storage.blob.models.BlobHttpHeaders
+import com.azure.storage.blob.models.ListBlobsOptions
 import com.azure.storage.blob.options.BlobParallelUploadOptions
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -41,6 +42,18 @@ class AzureBlobImageStorage(private val container: BlobContainerClient) : ImageS
             container.getBlobClient(url.removePrefix(prefix)).deleteIfExists()
         } catch (e: Exception) {
             log.warn("Couldn't delete image $url", e)
+        }
+    }
+
+    override fun deleteFolderExcept(folder: String, keepUrl: String) {
+        val keepName = keepUrl.removePrefix(container.blobContainerUrl + "/")
+        try {
+            container.listBlobs(ListBlobsOptions().setPrefix("$folder/"), null)
+                .map { it.name }
+                .filter { it != keepName }
+                .forEach { container.getBlobClient(it).deleteIfExists() }
+        } catch (e: Exception) {
+            log.warn("Couldn't clean up $folder", e)
         }
     }
 }

@@ -98,4 +98,8 @@
     <string name="admin_error_sale_price">Must be above 0 and lower than the price</string>
     <string name="admin_error_stock">Enter 0 or more</string>
     <string name="admin_error_category">Please choose a category</string>
+    <string name="avatar_change">Change profile photo</string>
+    <string name="avatar_updated">Profile photo updated</string>
+    <string name="avatar_upload_failed">Couldn\'t upload your photo. Please try again.</string>
+    <string name="avatar_save_failed">Photo uploaded but couldn\'t be saved to your profile</string>
 </resources>
