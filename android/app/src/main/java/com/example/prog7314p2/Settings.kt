@@ -135,6 +135,29 @@ class Settings : Fragment() {
 
         loadStreakCard(view)
         view.findViewById<Button>(R.id.btnPointsHistory).setOnClickListener { showPointsHistory() }
+
+        view.findViewById<Button>(R.id.btnAddProduct).setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, AdminAddProductFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+        loadAdminAccess(view)
+    }
+
+    private fun loadAdminAccess(view: View) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val isAdmin = try {
+                RetrofitClient.instance.getMe().admin
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                false
+            }
+            val visibility = if (isAdmin) View.VISIBLE else View.GONE
+            view.findViewById<View>(R.id.btnAddProduct).visibility = visibility
+            view.findViewById<View>(R.id.dividerAddProduct).visibility = visibility
+        }
     }
 
     private fun signOut() {

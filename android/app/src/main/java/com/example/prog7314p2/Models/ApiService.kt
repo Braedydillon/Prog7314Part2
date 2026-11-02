@@ -1,10 +1,14 @@
 package com.example.prog7314p2.Models
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -52,5 +56,15 @@ interface ApiService {
 
     @GET("api/points/transactions")
     suspend fun getPointTransactions(): List<PointTransaction>
+
+    @GET("api/me")
+    suspend fun getMe(): MeResponse
+
+    @Multipart
+    @POST("api/admin/products")
+    suspend fun createProduct(
+        @Part("product") product: RequestBody,
+        @Part image: MultipartBody.Part
+    ): Product
 
 }

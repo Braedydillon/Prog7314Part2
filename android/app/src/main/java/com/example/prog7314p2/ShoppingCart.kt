@@ -18,11 +18,11 @@ import com.example.prog7314p2.Models.OrderItemRequest
 import com.example.prog7314p2.Models.OrderRequest
 import com.example.prog7314p2.Models.StreakStatus
 import com.example.prog7314p2.Models.cartItem
+import com.example.prog7314p2.util.serverMessage
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.util.Locale
 
@@ -261,14 +261,6 @@ class ShoppingCart : Fragment() {
         } else {
             String.format(Locale.getDefault(), "Total: R %.2f", cartTotal)
         }
-    }
-
-    private fun Throwable.serverMessage(): String? {
-        val body = (this as? HttpException)?.response()?.errorBody()?.string() ?: return null
-        return runCatching {
-            val json = JSONObject(body)
-            json.optString("message").ifBlank { json.optString("detail") }
-        }.getOrNull()?.takeIf { it.isNotBlank() }
     }
 
 }
