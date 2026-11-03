@@ -6,13 +6,12 @@
     <string name="surname">Van</string>
     <string name="email">E-pos</string>
     <string name="password">Wagwoord</string>
-    <string name="already_have_an_account_login">Het jy reeds \'n rekening? Meld aan</string>
-    <string name="dont_have_an_account_register_here">Het jy nie \'n rekening nie? Registreer hier</string>
+    <string name="already_have_an_account_login">Het jy reeds n rekening? Meld aan</string>
+    <string name="dont_have_an_account_register_here">Het jy nie n rekening nie? Registreer hier</string>
     <string name="login">Meld aan</string>
     <string name="welcome_to_unify">Welkom by Unify</string>
     <string name="unify">Unify</string>
-    <string name="hello_blank_fragment">Hallo, leë fragment</string>
-    <string name="order_placed">Bestelling geplaas!</string>
+    <string name="order_placed">!!Bestelling geplaas!!</string>
     <string name="view_orders">Bekyk bestellings</string>
     <string name="orders_placed">Bestellings geplaas</string>
     <string name="address">Adres</string>
@@ -23,10 +22,123 @@
     <string name="profile_amp_settings">Profiel en instellings</string>
     <string name="address2">Adres</string>
     <string name="add">Voeg by</string>
+    <string name="current_names">Huidige name</string>
     <string name="google_login_button">Gaan voort met Google</string>
+
+    <string name="streak_notification_title">Daaglikse reeks opgedateer!</string>
+    <string name="streak_notification_message">Jou reeks is %1$d dae. Jy het %2$d punte verdien.</string>
+    <string name="streak_notification_channel">Reekskennisgewings</string>
+    <string name="streak_notification_description">Opdaterings oor jou daaglikse aanmeldreeks en belonings.</string>
+
+    <!-- Streak popup -->
+    <string name="streak_title_first">Welkom! Meld daagliks aan om punte te verdien.</string>
+    <string name="streak_title_day">Jy is op n reeks van %1$d dae</string>
+    <string name="streak_title_shield">Skild gebruik, reeks gered</string>
+    <string name="streak_title_reset">Reeks teruggestel</string>
+    <string name="streak_msg_shield">Jy het n dag gemis, daarom is jou reeksbeskerming gebruik. As jy nog n dag voor %1$s mis, sal jou reeks teruggestel word.</string>
+    <string name="streak_msg_reset">Jou reeks van %1$d dae het geëindig.</string>
+    <string name="streak_msg_points">Jy het %1$d punte verdien omdat jy vandag Unify oopgemaak het.</string>
+    <string name="streak_msg_milestone">Dit sluit n bonus van %1$d punte in omdat jy %2$d dae bereik het.</string>
+
+    <string name="streak_msg_next">%1$d nog dag(e) totdat jy jou bonus van %2$d punte kry.</string>
+    <string name="streak_msg_balance">Saldo: %1$d punte.</string>
+    <string name="streak_ok">Reg so</string>
+
+    <!-- Streak card -->
+    <string name="streak_card_none">Nog geen reeks nie. Maak Unify môre oop om voort te gaan!</string>
+    <plurals name="streak_best">
+        <item quantity="one">Beste: %d dag</item>
+        <item quantity="other">Beste: %d dae</item>
+    </plurals>
+    <string name="streak_card_balance">%1$d punte</string>
+    <string name="streak_card_shield_ready">Reeksbeskerming beskikbaar</string>
+    <string name="streak_card_shield_recharging">Beskerming is tans nie beskikbaar nie. Weer beskikbaar op %1$s</string>
+    <string name="streak_card_progress_label">Mylpaalvordering</string>
+
+    <!-- Point history -->
+    <string name="points_history_title">Puntegeskiedenis</string>
+    <string name="points_history_empty">Nog geen punte nie</string>
+    <string name="points_history_failed">Kon nie jou puntegeskiedenis laai nie</string>
+    <string name="reason_daily">Daaglikse aanmelding</string>
+    <string name="reason_milestone">Reeksbonus</string>
+    <string name="reason_redeemed">Aan bestelling bestee</string>
+    <string name="reason_refund">Terugbetaling (gekanselleerde bestelling)</string>
+    <string name="reason_other">Ander</string>
+
+    <string name="streak_card_label">Aanmeldreeks</string>
+    <plurals name="streak_card_days">
+        <item quantity="one">%d dag</item>
+        <item quantity="other">%d dae</item>
+    </plurals>
+    <string name="streak_card_bonus_target">/ %1$d dae</string>
+
+    <!-- Points checkout -->
+    <string name="cart_use_points">Gebruik punte (%1$d beskikbaar)</string>
+    <string name="cart_total_with_points">Totaal: R %1$.2f (R%2$.2f afslag met punte)</string>
+    <string name="checkout_failed">Uitbetaling het misluk: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_section_address">Afleweringsadres</string>
+    <string name="settings_section_account">Rekening</string>
+    <string name="settings_save_address">Stoor adres</string>
+    <string name="profile_picture">Profielfoto</string>
+
+    <string name="admin_add_product">Voeg produk by</string>
+    <string name="admin_section_details">Besonderhede</string>
+    <string name="admin_product_photo">Produkfoto</string>
+    <string name="admin_tap_to_choose_photo">Tik om n foto te kies</string>
+    <string name="admin_name">Produknaam</string>
+    <string name="admin_description">Beskrywing (opsioneel)</string>
+    <string name="admin_price">Prys</string>
+    <string name="admin_sale_price">Uitverkopingsprys (opsioneel)</string>
+    <string name="admin_stock">Voorraad</string>
+    <string name="admin_brand">Handelsmerk (opsioneel)</string>
+    <string name="admin_category">Kategorie</string>
+    <string name="admin_choose_category">Kies n kategorie</string>
+    <string name="admin_save_product">Stoor produk</string>
+    <string name="admin_product_added">Produk bygevoeg</string>
+    <string name="admin_save_failed">Kon nie die produk stoor nie. Probeer asseblief weer.</string>
+    <string name="admin_categories_failed">Kon nie kategorieë laai nie</string>
+    <string name="admin_error_image">Kies asseblief n foto</string>
+    <string name="admin_error_name">Naam is verpligtend</string>
+    <string name="admin_error_price">Voer n prys bo 0 in (maksimum 2 desimale plekke)</string>
+    <string name="admin_error_sale_price">Moet bo 0 en laer as die gewone prys wees</string>
+    <string name="admin_error_stock">Voer 0 of meer in</string>
+    <string name="admin_error_category">Kies asseblief n kategorie</string>
+    <string name="avatar_change">Verander profielfoto</string>
+    <string name="avatar_updated">Profielfoto opgedateer</string>
+    <string name="avatar_upload_failed">Kon nie jou foto oplaai nie. Probeer asseblief weer.</string>
+    <string name="avatar_save_failed">Foto opgelaai, maar kon nie op jou profiel gestoor word nie</string>
     <string name="select_language">Kies taal</string>
     <string name="language_english">English</string>
     <string name="language_afrikaans">Afrikaans</string>
     <string name="language_zulu">isiZulu</string>
-</resources>
 
+
+    <!-- Home / Shop -->
+    <string name="store_title">Unify Winkel</string>
+    <string name="search_products">Soek produkte...</string>
+    <string name="special_offers">Spesiale aanbiedinge</string>
+    <string name="fashion_deals">Mode-aanbiedinge</string>
+    <string name="tech_electronics">Tegnologie en elektronika</string>
+    <string name="tools_hardware">Gereedskap en hardeware</string>
+    <string name="products_for_you">Produkte vir jou</string>
+
+    <!-- Shopping Cart -->
+    <string name="cart_title">Jou mandjie</string>
+    <string name="cart_total_default">Totaal: R 0.00</string>
+    <string name="proceed_checkout">Gaan voort na betaling</string>
+
+    <!-- Scanner -->
+    <string name="scan_align_barcode">Plaas die strepieskode binne die raam</string>
+    <string name="scan_manual_entry">Of voer die strepieskode/produk-ID in:</string>
+    <string name="scan_barcode_hint">bv. 1 of Hammer</string>
+    <string name="scan_match">Soek</string>
+
+    <!-- Order Success -->
+    <string name="order_number">Bestelling #%1$s</string>
+    <string name="order_placed_on">Geplaas op: %1$s</string>
+    <string name="order_delivery_estimate">Geskatte aflewering: %1$s</string>
+    <string name="order_total_paid">Totaal betaal: R %1$s</string>
+
+</resources>

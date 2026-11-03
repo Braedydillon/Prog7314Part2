@@ -17,6 +17,7 @@ import com.example.prog7314p2.NotificationPermissionHelper
 import com.example.prog7314p2.R
 import com.example.prog7314p2.Settings
 import com.example.prog7314p2.ShoppingCart
+import com.example.prog7314p2.StreakNotificationHelper
 import com.example.prog7314p2.StreakPopup
 import com.example.prog7314p2.orderHistory
 import com.example.prog7314p2.scanner
@@ -108,8 +109,7 @@ class ShopActivity : AppCompatActivity() {
             }
         }
 
-        // Listen to Firestore cart and update badge counter
-        listenToCartBadge(bottomNav)
+
 
         // Request notification permission after the screen loads.
         // Android 13+ will display a permission dialog if needed.
@@ -126,38 +126,37 @@ class ShopActivity : AppCompatActivity() {
 
     }
 
-    private fun listenToCartBadge(
-        bottomNav: BottomNavigationView
-    ) {
-        val userId =
-            FirebaseAuth.getInstance().currentUser?.uid ?: return
+    private fun listenToCartBadge(bottomNav: BottomNavigationView) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        FirebaseFirestore.getInstance()
+        cartBadgeListener = FirebaseFirestore.getInstance()
             .collection("carts")
             .document(userId)
             .collection("items")
-            .addSnapshotListener { snapshot, _ ->
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("CartBadge", "Failed to listen to cart", error)
+                    return@addSnapshotListener
+                }
+
                 if (snapshot != null) {
                     try {
                         var totalCount = 0
-                        for (doc in snapshot.documents) {
-                            val qty =
-                                doc.getLong("quantity")?.toInt() ?: 1
 
+                        for (doc in snapshot.documents) {
+                            val qty = doc.getLong("quantity")?.toInt() ?: 1
                             totalCount += qty
                         }
 
                         if (totalCount > 0) {
-                            val badge =
-                                bottomNav.getOrCreateBadge(R.id.nav_cart)
-
+                            val badge = bottomNav.getOrCreateBadge(R.id.nav_cart)
                             badge.number = totalCount
                             badge.isVisible = true
                         } else {
                             bottomNav.removeBadge(R.id.nav_cart)
                         }
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        Log.e("CartBadge", "Error updating badge", e)
                     }
                 }
             }
@@ -182,8 +181,16 @@ class ShopActivity : AppCompatActivity() {
             try {
                 val response = RetrofitClient.instance.checkIn()
                 Log.d("Streak", "Check in response: $response")
-                if (response.type != null && response.type != CheckInType.ALREADY_CHECKED_IN) {
+                if (response.type != null &&
+                    response.type != CheckInType.ALREADY_CHECKED_IN
+                ) {
                     StreakPopup.show(this@ShopActivity, response)
+
+                    StreakNotificationHelper.show(
+                        context = this@ShopActivity,
+                        streak = response.newStreak,
+                        points = response.pointsEarned + response.milestoneBonus
+                    )
                 }
             } catch (e: CancellationException) {
                 throw e

@@ -23,6 +23,10 @@
     <string name="add">Add</string>
     <string name="current_names">Current Names</string>
     <string name="google_login_button">Continue with Google</string>
+    <string name="streak_notification_title">Daily streak updated!</string>
+    <string name="streak_notification_message">Your streak is %1$d days. You earned %2$d points.</string>
+    <string name="streak_notification_channel">Streak Notifications</string>
+    <string name="streak_notification_description">Updates about your daily login streak and rewards.</string>
 
     <!-- Streak popup -->
     <string name="streak_title_first">Welcome! login daily to earn points.</string>
@@ -106,4 +110,31 @@
     <string name="language_english">English</string>
     <string name="language_afrikaans">Afrikaans</string>
     <string name="language_zulu">isiZulu</string>
+
+    <!-- Home / Shop -->
+    <string name="store_title">Unify Store</string>
+    <string name="search_products">Search products...</string>
+    <string name="special_offers">Special Offers</string>
+    <string name="fashion_deals">Fashion Deals</string>
+    <string name="tech_electronics">Tech &amp; Electronics</string>
+    <string name="tools_hardware">Tools &amp; Hardware</string>
+    <string name="products_for_you">Products for You</string>
+
+    <!-- Shopping Cart -->
+    <string name="cart_title">Your Cart</string>
+    <string name="cart_total_default">Total: R 0.00</string>
+    <string name="proceed_checkout">Proceed to Checkout</string>
+
+    <!-- Scanner -->
+    <string name="scan_align_barcode">Align Barcode Within Frame</string>
+    <string name="scan_manual_entry">Or Enter Barcode/Product ID:</string>
+    <string name="scan_barcode_hint">e.g. 1 or Hammer</string>
+    <string name="scan_match">Match</string>
+
+    <!-- Order Success -->
+    <string name="order_number">Order #%1$s</string>
+    <string name="order_placed_on">Placed on: %1$s</string>
+    <string name="order_delivery_estimate">Est. Delivery: %1$s</string>
+    <string name="order_total_paid">Total Paid: R %1$s</string>
+
 </resources>

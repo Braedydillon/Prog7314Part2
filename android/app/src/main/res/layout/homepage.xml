@@ -25,7 +25,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Unify Store"
+                    android:text="@string/store_title"
                     android:textColor="@color/black"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -39,7 +39,7 @@
                     android:background="@drawable/text_border"
                     android:drawableStart="@android:drawable/ic_menu_search"
                     android:drawablePadding="12dp"
-                    android:hint="Search products..."
+                    android:hint="@string/search_products"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:paddingHorizontal="16dp" />
@@ -64,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="Special Offers"
+                    android:text="@string/special_offers"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -93,7 +93,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="Fashion Deals"
+                                android:text="@string/fashion_deals"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#381E72" />
@@ -112,7 +112,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="Tech &amp; Electronics"
+                                android:text="@string/tech_electronics"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#001A41" />
@@ -131,7 +131,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="Tools &amp; Hardware"
+                                android:text="@string/tools_hardware"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#31111D" />
@@ -144,7 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="Products for You"
+                    android:text="@string/products_for_you"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
