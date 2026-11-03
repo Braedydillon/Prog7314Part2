@@ -4,6 +4,7 @@ import com.unify.api.address.Address
 import com.unify.api.address.AddressRepository
 import com.unify.api.product.Product
 import com.unify.api.product.ProductRepository
+import com.unify.api.rewards.PointsService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -19,7 +20,8 @@ class OrderServiceTests {
     private val orderRepository: OrderRepository = mock()
     private val productRepository: ProductRepository = mock()
     private val addressRepository: AddressRepository = mock()
-    private val service = OrderService(orderRepository, productRepository, addressRepository)
+    private val pointsService: PointsService = mock()
+    private val service = OrderService(orderRepository, productRepository, addressRepository, pointsService)
 
     private fun stubValidAddress(userId: String) {
         val address = Address().apply { id = 1; this.userId = userId }

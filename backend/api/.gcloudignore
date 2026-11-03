@@ -1,0 +1,9 @@
+.gcloudignore
+.git
+.gitignore
+.env
+.gradle/
+.kotlin/
+.idea/
+bin/
+build/

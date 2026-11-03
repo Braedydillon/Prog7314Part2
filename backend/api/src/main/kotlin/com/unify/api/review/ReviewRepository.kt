@@ -9,7 +9,7 @@ interface ReviewRepository: JpaRepository<Review, Int>{
     fun existsByUserIdAndProductId(userId: String, productId: Int): Boolean
     fun countByProductId(productId: Int): Long
 
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product_id = :productId")
+    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product.id = :productId")
     fun averageRatingForProduct(@Param("productId") productId: Int): Double?
 }
 

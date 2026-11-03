@@ -52,7 +52,7 @@ class ReviewController(val reviewRepository: ReviewRepository, val productReposi
 
     }
 
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     fun deleteReview(authentication: Authentication, @PathVariable("id") id: Int): ResponseEntity<Void> {
         val review = reviewRepository.findById(id).orElse(null)
         ?: return ResponseEntity.notFound().build()

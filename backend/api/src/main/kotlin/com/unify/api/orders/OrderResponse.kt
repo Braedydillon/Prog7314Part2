@@ -11,7 +11,9 @@ data class OrderResponse(
     val items: List<OrderItemResponse>,
     val total: BigDecimal,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
+    val pointsSpent: Int,
+    val pointsDiscount: BigDecimal
 
     )
 
@@ -21,5 +23,7 @@ fun Orders.toResponse(): OrderResponse = OrderResponse(
     items = this.items.map { it.toResponse() },
     total = this.totalAmount!!,
     createdAt = this.createdAt!!,
-    updatedAt = this.updatedAt
+    updatedAt = this.updatedAt,
+    pointsSpent = this.pointsSpent,
+    pointsDiscount = this.pointsDiscount
 )

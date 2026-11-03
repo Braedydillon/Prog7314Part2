@@ -4,6 +4,7 @@ import com.unify.api.address.AddressRepository
 import com.unify.api.orderitem.OrderItem
 import org.springframework.http.HttpStatus
 import com.unify.api.product.ProductRepository
+import com.unify.api.rewards.PointsService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,7 +16,8 @@ import org.springframework.web.server.ResponseStatusException
 class OrderService(
     private val orderRepository: OrderRepository,
     private val productRepository: ProductRepository,
-    private val addressRepository: AddressRepository
+    private val addressRepository: AddressRepository,
+    private val pointsService: PointsService
 ){
     private val log = LoggerFactory.getLogger(OrderService::class.java)
 
@@ -85,7 +87,48 @@ class OrderService(
 
         order.totalAmount = total
         order.items = orderItems
-        log.info("Order placed for $userId")
+        val saved = orderRepository.save(order)
+
+        if (request.pointsToSpend != 0) {
+            val redemption = pointsService.redeemForOrder(userId, request.pointsToSpend, saved.id!!, total)
+            saved.pointsSpent = redemption.pointsSpent
+            saved.pointsDiscount = redemption.discount
+            saved.totalAmount = total.subtract(redemption.discount)
+        }
+
+        log.info("Order ${saved.id} placed for $userId (points spent: ${saved.pointsSpent})")
+        return saved
+    }
+
+    companion object {
+        val VALID_STATUSES = setOf("Pending", "Processing", "Shipped", "Delivered", "Cancelled")
+    }
+
+    @Transactional
+    fun updateStatus(userId: String, orderId: Int, newStatus: String): Orders {
+        val order = orderRepository.findById(orderId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Order $orderId not found") }
+
+        if (order.userId != userId) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Order $orderId not found")
+        }
+        if (newStatus !in VALID_STATUSES) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid order status, $newStatus")
+        }
+
+        val previousStatus = order.orderStatus
+        if (previousStatus == "Cancelled" && newStatus != "Cancelled") {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Cant reopen canceled orders")
+        }
+
+        order.orderStatus = newStatus
+        order.updatedAt = LocalDateTime.now()
+
+        if (newStatus == "Cancelled" && previousStatus != "Cancelled") {
+            pointsService.refundOrder(orderId)
+        }
+
+        log.info("Order $orderId status changed from $previousStatus to $newStatus")
         return orderRepository.save(order)
     }
 

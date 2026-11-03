@@ -55,19 +55,19 @@ class HomeFragment : Fragment() {
 
         // Special Offers Discount Cards Auto-Filter
         cardFashion?.setOnClickListener {
-            selectedCategoryId = 4 // Category 4 = Apparel & Fashion Accessories
+            selectedCategoryId = 3 // Category 4 = Apparel & Fashion Accessories
             etSearch.text.clear()
             currentPage = 0
             fetchData(page = 0)
         }
         cardTech?.setOnClickListener {
-            selectedCategoryId = 2 // Category 2 = Consumer Electronics
+            selectedCategoryId = 1 // Category 2 = Consumer Electronics
             etSearch.text.clear()
             currentPage = 0
             fetchData(page = 0)
         }
         cardTools?.setOnClickListener {
-            selectedCategoryId = 1 // Category 1 = Tools
+            selectedCategoryId = 8 // Category 1 = Tools
             etSearch.text.clear()
             currentPage = 0
             fetchData(page = 0)

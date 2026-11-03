@@ -1,25 +1,37 @@
 
 package com.example.prog7314p2.Models
 
+import RetrofitClient
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import com.example.prog7314p2.HomeFragment
 import com.example.prog7314p2.NotificationPermissionHelper
 import com.example.prog7314p2.R
 import com.example.prog7314p2.Settings
 import com.example.prog7314p2.ShoppingCart
+import com.example.prog7314p2.StreakPopup
 import com.example.prog7314p2.orderHistory
 import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ShopActivity : AppCompatActivity() {
 
+    private var cartBadgeListener: ListenerRegistration? = null
+    private var checkInJob: Job? = null
     // Register the permission launcher before the Activity starts.
     private val notificationPermissionHelper =
         NotificationPermissionHelper(this)
@@ -103,6 +115,15 @@ class ShopActivity : AppCompatActivity() {
         // Android 13+ will display a permission dialog if needed.
         notificationPermissionHelper.requestPermissionIfNeeded()
 
+        val fragmentContainer = findViewById<View>(R.id.fragmentContainer)
+        ViewCompat.setOnApplyWindowInsetsListener(fragmentContainer) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(top = bars.top)
+            insets
+        }
+
     }
 
     private fun listenToCartBadge(
@@ -116,11 +137,9 @@ class ShopActivity : AppCompatActivity() {
             .document(userId)
             .collection("items")
             .addSnapshotListener { snapshot, _ ->
-
                 if (snapshot != null) {
                     try {
                         var totalCount = 0
-
                         for (doc in snapshot.documents) {
                             val qty =
                                 doc.getLong("quantity")?.toInt() ?: 1
@@ -137,11 +156,40 @@ class ShopActivity : AppCompatActivity() {
                         } else {
                             bottomNav.removeBadge(R.id.nav_cart)
                         }
-
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
             }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        listenToCartBadge(findViewById(R.id.bottomNav))
+        checkInStreak()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        cartBadgeListener?.remove()
+        cartBadgeListener = null
+    }
+
+    private fun checkInStreak() {
+        if (checkInJob?.isActive == true) return
+
+        checkInJob = lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.instance.checkIn()
+                Log.d("Streak", "Check in response: $response")
+                if (response.type != null && response.type != CheckInType.ALREADY_CHECKED_IN) {
+                    StreakPopup.show(this@ShopActivity, response)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("Streak", "Check in failed", e)
+            }
+        }
     }
 }
