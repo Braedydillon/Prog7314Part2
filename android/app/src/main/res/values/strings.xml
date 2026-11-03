@@ -102,4 +102,26 @@
     <string name="avatar_updated">Profile photo updated</string>
     <string name="avatar_upload_failed">Couldn\'t upload your photo. Please try again.</string>
     <string name="avatar_save_failed">Photo uploaded but couldn\'t be saved to your profile</string>
+
+    <string name="reviews_title">Reviews</string>
+    <string name="reviews_empty">This product has no reviews yet.</string>
+    <string name="reviews_none_yet">No reviews yet</string>
+    <string name="reviews_load_failed">Couldn\'t load reviews</string>
+    <plurals name="reviews_summary">
+        <item quantity="one">%1$.1f (%2$d review)</item>
+        <item quantity="other">%1$.1f (%2$d reviews)</item>
+    </plurals>
+    <string name="review_write_title">Write a review</string>
+    <string name="review_comment_hint">What are your thoughts on this product?</string>
+    <string name="review_submit">Submit review</string>
+    <string name="review_pick_rating">Please choose a star rating</string>
+    <string name="review_thanks">Review submitted</string>
+    <string name="review_submit_failed">Couldn\'t submit your review</string>
+    <string name="review_already_reviewed">You\'ve reviewed this product</string>
+    <string name="review_delete">Delete</string>
+    <string name="review_cancel">Cancel</string>
+    <string name="review_delete_title">Delete your review?</string>
+    <string name="review_delete_message">This can\'t be undone.</string>
+    <string name="review_delete_failed">Couldn\'t delete your review</string>
+    <string name="review_anonymous">Anonymous</string>
 </resources>

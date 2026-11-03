@@ -71,4 +71,16 @@ interface ApiService {
     @POST("api/me/avatar")
     suspend fun uploadAvatar(@Part image: MultipartBody.Part): AvatarResponse
 
+    @GET("api/review/product/{productId}")
+    suspend fun getReviews(@Path("productId") productId: Int): List<Review>
+
+    @GET("api/review/product/{productId}/summary")
+    suspend fun getReviewSummary(@Path("productId") productId: Int): ReviewSummary
+
+    @POST("api/review")
+    suspend fun createReview(@Body request: CreateReviewRequest): Review
+
+    @DELETE("api/review/{id}")
+    suspend fun deleteReview(@Path("id") id: Int)
+
 }
