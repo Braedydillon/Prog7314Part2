@@ -75,67 +75,62 @@ class Settings : Fragment() {
         val tvEmail = view.findViewById<TextView>(R.id.tvEmail)
 
 
-        // Language selector
-        val spinnerLanguage =
-            view.findViewById<Spinner>(R.id.spinnerLanguage)
 
-        val languages = listOf(
-            "English",
-            "Afrikaans",
-            "isiZulu"
-        )
+        val spinnerLanguage = view.findViewById<Spinner>(R.id.spinnerLanguage)
 
+        val languages = listOf("English", "Afrikaans", "isiZulu")
         val languageCodes = listOf("en", "af", "zu")
 
-        val languageAdapter = ArrayAdapter(
+        val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
             languages
         )
 
-        languageAdapter.setDropDownViewResource(
+        adapter.setDropDownViewResource(
             android.R.layout.simple_spinner_dropdown_item
         )
 
-        spinnerLanguage.adapter = languageAdapter
+        spinnerLanguage.adapter = adapter
 
-        // Get currently selected language
-        val currentLanguage =
-            AppCompatDelegate.getApplicationLocales()
-                .toLanguageTags()
-                .substringBefore(",")
-                .substringBefore("-")
+        val appLanguage = AppCompatDelegate
+            .getApplicationLocales()
+            .get(0)?.language
+
+        val currentLanguage = appLanguage
+            ?: resources.configuration.locales[0].language
 
         val selectedIndex = languageCodes.indexOf(currentLanguage)
             .takeIf { it >= 0 } ?: 0
 
         spinnerLanguage.setSelection(selectedIndex)
 
-        // Change language when a different option is selected
         spinnerLanguage.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
 
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
-                    selectedView: View?,
+                    view: View?,
                     position: Int,
                     id: Long
                 ) {
                     val selectedLanguage = languageCodes[position]
 
-                    if (selectedLanguage != currentLanguage) {
+                    val activeLanguage = AppCompatDelegate
+                        .getApplicationLocales()
+                        .get(0)?.language
+                        ?: resources.configuration.locales[0].language
+
+                    if (selectedLanguage != activeLanguage) {
                         AppCompatDelegate.setApplicationLocales(
                             LocaleListCompat.forLanguageTags(selectedLanguage)
                         )
                     }
                 }
 
-                override fun onNothingSelected(
-                    parent: AdapterView<*>?
-                ) {
-                    // Nothing selected
-                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
+
 
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid

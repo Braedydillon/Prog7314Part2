@@ -4,6 +4,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.prog7314p2.Models.OrderHistoryModel
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
+
+
 
 class FirebaseHelper {
 
@@ -20,13 +24,22 @@ class FirebaseHelper {
         productId: Int,
         quantity: Int = 1,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (Exception) -> Unit,
+        name: String = "",
+        price: Double = 0.0,
+        imageUrl: String? = null
     ) {
-
         val userId = getUserId()
 
         if (userId == null) {
             onFailure(Exception("User is not logged in"))
+            return
+        }
+
+        if (quantity <= 0) {
+            onFailure(
+                IllegalArgumentException("Quantity must be positive")
+            )
             return
         }
 
@@ -35,33 +48,67 @@ class FirebaseHelper {
             .collection("items")
             .document(productId.toString())
 
-        cartRef.get()
-            .addOnSuccessListener { document ->
+        val updates = mutableMapOf<String, Any>(
+            "productId" to productId,
+            "quantity" to FieldValue.increment(quantity.toLong())
+        )
 
-                val currentQuantity =
-                    if (document.exists()) {
-                        document.getLong("quantity")?.toInt() ?: 0
-                    } else {
-                        0
-                    }
+        // Save product details when available.
+        // Do not overwrite cached details with empty values.
+        if (name.isNotBlank()) {
+            updates["name"] = name
+            updates["price"] = price
+        }
 
-                val cartItem = CartItem(
-                    productId = productId,
-                    quantity = currentQuantity + quantity
-                )
+        if (!imageUrl.isNullOrBlank()) {
+            updates["imageUrl"] = imageUrl
+        }
 
-                cartRef.set(cartItem)
-                    .addOnSuccessListener {
-                        onSuccess()
-                    }
-                    .addOnFailureListener {
-                        onFailure(it)
-                    }
+        cartRef.set(updates, SetOptions.merge())
+            .addOnSuccessListener {
+                onSuccess()
             }
             .addOnFailureListener {
                 onFailure(it)
             }
     }
+
+
+    fun listenToCart(
+        onUpdate: (List<CartItem>, Boolean) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration? {
+
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return null
+        }
+
+        return db.collection("carts")
+            .document(userId)
+            .collection("items")
+            .addSnapshotListener(
+                com.google.firebase.firestore.MetadataChanges.INCLUDE
+            ) { snapshot, exception ->
+
+                if (exception != null) {
+                    onFailure(exception)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null) return@addSnapshotListener
+
+                val items = snapshot.toObjects(CartItem::class.java)
+
+                val hasPendingWrites =
+                    snapshot.metadata.hasPendingWrites()
+
+                onUpdate(items, hasPendingWrites)
+            }
+    }
+
 
 
     fun getCartItems(

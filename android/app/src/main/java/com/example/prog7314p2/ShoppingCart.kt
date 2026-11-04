@@ -25,6 +25,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.util.Locale
+import com.google.firebase.firestore.ListenerRegistration
 
 
 class ShoppingCart : Fragment() {
@@ -34,6 +35,7 @@ class ShoppingCart : Fragment() {
     private val cartItemsList = mutableListOf<cartItem>()
     private var cartTotal = 0.0
     private var streakStatus: StreakStatus? = null
+    private var cartListener: ListenerRegistration? = null
 
     private val firebaseHelper = FirebaseHelper()
 
@@ -71,109 +73,138 @@ class ShoppingCart : Fragment() {
         }
     }
 
+
     private fun loadCart() {
 
-        firebaseHelper.getCartItems(
+        cartListener?.remove()
 
-            onSuccess = { cartItems ->
+        cartListener = firebaseHelper.listenToCart(
+            onUpdate = { items, hasPendingWrites ->
 
-                // Make sure the fragment is still attached
                 if (!isAdded || view == null) {
-                    return@getCartItems
+                    return@listenToCart
                 }
 
-                lifecycleScope.launch {
+                // Convert Firestore items to UI cart items
+                val updatedItems = items.map { item ->
+                    cartItem(
+                        productId = item.productId,
+                        name = item.name.ifBlank {
+                            "Product #${item.productId}"
+                        },
+                        price = item.price,
+                        quantity = item.quantity,
+                        imageUrl = item.imageUrl
+                    )
+                }
 
-                    val newItems = mutableListOf<cartItem>()
+                cartItemsList.clear()
+                cartItemsList.addAll(updatedItems)
 
-                    var totalPrice = 0.0
+                cartAdapter.notifyDataSetChanged()
 
-                    // Get product details from Spring Boot API
-                    for (cartItem in cartItems) {
+                // Calculate total using cached prices
+                cartTotal = updatedItems.sumOf {
+                    it.price * it.quantity
+                }
 
-                        val productId = cartItem.productId
-                        val quantity = cartItem.quantity
+                updateTotal()
 
-                        try {
-
-                            val product = RetrofitClient.instance.getProductDetails(productId)
-
-                            val item = cartItem(
-                                productId = product.id,
-                                name = product.name,
-                                price = product.price,
-                                quantity = quantity,
-                                imageUrl = product.imageUrl
-                            )
-
-                            newItems.add(item)
-
-                            totalPrice += product.price * quantity
-
-                        } catch (ex: Exception) {
-                            ex.printStackTrace()
-                        }
-                    }
-
-                    if (!isAdded || view == null) {
-                        return@launch
-                    }
-
-                    // Update cart list
-                    cartItemsList.clear()
-
-                    cartItemsList.addAll(newItems)
-
-                    cartAdapter.notifyDataSetChanged()
-
-                    // Update total
-                    cartTotal = totalPrice
-                    updateTotal()
+                if (hasPendingWrites) {
+                    Log.d(
+                        "OfflineCart",
+                        "Cart changes pending synchronization"
+                    )
+                } else {
+                    Log.d(
+                        "OfflineCart",
+                        "No pending local cart changes"
+                    )
                 }
             },
 
             onFailure = { exception ->
-
-                if (!isAdded) {
-                    return@getCartItems
-                }
-
-                Toast.makeText(context,exception.message?: "Failed to load cart",Toast.LENGTH_SHORT).show()
+                Log.e(
+                    "OfflineCart",
+                    "Failed to listen to cart",
+                    exception
+                )
             }
         )
     }
+
+
 
     private fun removeFromCart(productId: Int) {
 
         firebaseHelper.removeFromCart(
-
             productId = productId,
 
             onSuccess = {
-
-                if (!isAdded) {
-                    return@removeFromCart
-                }
-
-                Toast.makeText( context,"Removed from cart",Toast.LENGTH_SHORT).show()
-
-                // Reload cart after removing item
-                loadCart()
+                Log.d(
+                    "OfflineCart",
+                    "Cart item removal synchronized"
+                )
             },
 
             onFailure = { exception ->
+                Log.e(
+                    "OfflineCart",
+                    "Failed to remove cart item",
+                    exception
+                )
 
-                if (!isAdded) {
-                    return@removeFromCart
+                if (isAdded) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to remove item: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
-                Toast.makeText(context,exception.message?: "Failed to remove item",Toast.LENGTH_SHORT).show()
             }
+        )
+
+        // No loadCart() call required.
+        // The snapshot listener updates the UI automatically.
+    }
+
+
+    override fun onDestroyView() {
+        cartListener?.remove()
+        cartListener = null
+        super.onDestroyView()
+    }
+
+
+    private fun isNetworkAvailable(): Boolean {
+        val manager = requireContext().getSystemService(
+            android.content.Context.CONNECTIVITY_SERVICE
+        ) as android.net.ConnectivityManager
+
+        val network = manager.activeNetwork ?: return false
+        val capabilities = manager.getNetworkCapabilities(network)
+            ?: return false
+
+        return capabilities.hasCapability(
+            android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+        ) && capabilities.hasCapability(
+            android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
         )
     }
 
+
+
     private fun processCheckout() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        if (!isNetworkAvailable()) {
+            Toast.makeText(
+                requireContext(),
+                "Checkout requires an internet connection. Your cart is saved.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
 
         lifecycleScope.launch {
             try{
