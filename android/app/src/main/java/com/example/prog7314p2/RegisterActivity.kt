@@ -80,10 +80,11 @@ class RegisterActivity : AppCompatActivity() {
                                 .set(userMap)
                                 .addOnSuccessListener {
                                     Toast.makeText(baseContext, "Registration successful.", Toast.LENGTH_SHORT).show()
-                                    // Go back to login screen
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
+                                    BiometricHelper.promptToEnableBiometrics(this, email, password) {
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
                                 }
                                 .addOnFailureListener { e ->
                                     Toast.makeText(baseContext, "Failed to save details: ${e.message}", Toast.LENGTH_SHORT).show()

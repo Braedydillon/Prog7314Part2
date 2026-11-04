@@ -27,6 +27,7 @@
     <string name="streak_notification_message">Your streak is %1$d days. You earned %2$d points.</string>
     <string name="streak_notification_channel">Streak Notifications</string>
     <string name="streak_notification_description">Updates about your daily login streak and rewards.</string>
+    <string name="biometric_login_button">Sign in with Biometrics</string>
 
     <!-- Streak popup -->
     <string name="streak_title_first">Welcome! login daily to earn points.</string>
