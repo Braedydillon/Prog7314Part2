@@ -1,5 +1,8 @@
 package com.unify.api.orders
 
+
+import com.unify.api.notifications.OrderStatusChangedEvent
+import org.springframework.context.ApplicationEventPublisher
 import com.unify.api.address.AddressRepository
 import com.unify.api.orderitem.OrderItem
 import org.springframework.http.HttpStatus
@@ -17,7 +20,8 @@ class OrderService(
     private val orderRepository: OrderRepository,
     private val productRepository: ProductRepository,
     private val addressRepository: AddressRepository,
-    private val pointsService: PointsService
+    private val pointsService: PointsService,
+    private val eventPublisher: ApplicationEventPublisher
 ){
     private val log = LoggerFactory.getLogger(OrderService::class.java)
 
@@ -104,14 +108,13 @@ class OrderService(
         val VALID_STATUSES = setOf("Pending", "Processing", "Shipped", "Delivered", "Cancelled")
     }
 
+
     @Transactional
-    fun updateStatus(userId: String, orderId: Int, newStatus: String): Orders {
+    fun updateStatus(orderId: Int, newStatus: String): Orders {
         val order = orderRepository.findById(orderId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Order $orderId not found") }
 
-        if (order.userId != userId) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Order $orderId not found")
-        }
+
         if (newStatus !in VALID_STATUSES) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid order status, $newStatus")
         }
@@ -128,8 +131,25 @@ class OrderService(
             pointsService.refundOrder(orderId)
         }
 
-        log.info("Order $orderId status changed from $previousStatus to $newStatus")
-        return orderRepository.save(order)
+
+        val saved = orderRepository.save(order)
+
+        if (previousStatus != newStatus) {
+            eventPublisher.publishEvent(
+                OrderStatusChangedEvent(
+                    orderId = saved.id!!,
+                    userId = saved.userId!!,
+                    status = newStatus
+                )
+            )
+        }
+
+        log.info(
+            "Order $orderId status changed from $previousStatus to $newStatus"
+        )
+
+        return saved
+
     }
 
 }
