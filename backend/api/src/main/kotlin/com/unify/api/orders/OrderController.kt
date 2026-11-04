@@ -44,7 +44,7 @@ class OrderController(val orderService: OrderService, val orderRepository: Order
         @PathVariable id: Int,
         @RequestBody request: UpdateOrderStatus
     ): ResponseEntity<OrderResponse> {
-        val saved = orderService.updateStatus(authentication.name, id, request.status)
+        val saved = orderService.updateStatus(id, request.status)
         return ResponseEntity.ok(saved.toResponse())
     }
 }
