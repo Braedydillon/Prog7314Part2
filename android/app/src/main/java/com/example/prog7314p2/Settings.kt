@@ -230,6 +230,7 @@ class Settings : Fragment() {
     private fun signOut() {
         val activity = requireActivity()
         FirebaseAuth.getInstance().signOut()
+        BiometricHelper.clearCredentials(activity)
 
         activity.lifecycleScope.launch {
             try {

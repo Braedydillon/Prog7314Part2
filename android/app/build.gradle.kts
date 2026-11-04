@@ -62,6 +62,10 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.3.2")
     implementation("androidx.camera:camera-lifecycle:1.3.2")
     implementation("androidx.camera:camera-view:1.3.2")
+
+    // biometric security & Android KeyStore encryption
+    implementation("androidx.biometric:biometric-ktx:1.2.0-alpha05")
+    implementation("androidx.security:security-crypto:1.1.0")
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

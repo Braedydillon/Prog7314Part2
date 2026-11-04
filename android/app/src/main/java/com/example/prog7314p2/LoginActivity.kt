@@ -7,6 +7,10 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +36,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var edtEmail: EditText
     private lateinit var edtPassword: EditText
     private lateinit var btnLogin: Button
+    private lateinit var btnBiometricSignIn: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +50,7 @@ class LoginActivity : AppCompatActivity() {
         edtEmail = findViewById(R.id.logemail)
         edtPassword = findViewById(R.id.logpassword)
         btnLogin = findViewById(R.id.loglogin)
+        btnBiometricSignIn = findViewById(R.id.btnBiometricSignIn)
 
         btnLogin.setOnClickListener {
             val email = edtEmail.text.toString().trim()
@@ -56,6 +62,10 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 loginUser(email, password)
             }
+        }
+
+        btnBiometricSignIn.setOnClickListener {
+            checkAndPromptBiometrics()
         }
 
         register1 = findViewById<Button>(R.id.logregister)
@@ -76,13 +86,77 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkAndPromptBiometrics() {
+        if (!BiometricHelper.isBiometricSupported(this)) {
+            Toast.makeText(this, "Biometric authentication is not supported or set up on this device", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val savedCreds = BiometricHelper.getSavedCredentials(this)
+        if (savedCreds != null) {
+            showBiometricPrompt(savedCreds.first, savedCreds.second)
+        } else if (auth.currentUser != null) {
+            showBiometricPrompt(null, null)
+        } else {
+            Toast.makeText(this, "Please log in with email and password once to enable biometric login", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun showBiometricPrompt(savedEmail: String?, savedPass: String?) {
+        val executor = ContextCompat.getMainExecutor(this)
+
+        val biometricPrompt = BiometricPrompt(this, executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+
+                    if (auth.currentUser != null) {
+                        Toast.makeText(applicationContext, "Biometric login successful!", Toast.LENGTH_SHORT).show()
+                        goToMain()
+                    } else if (!savedEmail.isNullOrEmpty() && !savedPass.isNullOrEmpty()) {
+                        auth.signInWithEmailAndPassword(savedEmail, savedPass)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Toast.makeText(applicationContext, "Biometric login successful!", Toast.LENGTH_SHORT).show()
+                                    goToMain()
+                                } else {
+                                    Toast.makeText(applicationContext, "Biometric login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    } else {
+                        Toast.makeText(applicationContext, "Please log in with password once to save your session", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    Toast.makeText(applicationContext, "Authentication error: $errString", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    Toast.makeText(applicationContext, "Biometric not recognized", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Unify Biometric Login")
+            .setSubtitle("Confirm your fingerprint or face to log in")
+            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
+    }
+
     private fun loginUser(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                    BiometricHelper.promptToEnableBiometrics(this, email, password) {
+                        goToMain()
+                    }
                 } else {
                     Toast.makeText(
                         this,

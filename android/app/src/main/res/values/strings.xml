@@ -23,6 +23,7 @@
     <string name="add">Add</string>
     <string name="current_names">Current Names</string>
     <string name="google_login_button">Continue with Google</string>
+    <string name="biometric_login_button">Sign in with Biometrics</string>
 
     <!-- Streak popup -->
     <string name="streak_title_first">Welcome! login daily to earn points.</string>
