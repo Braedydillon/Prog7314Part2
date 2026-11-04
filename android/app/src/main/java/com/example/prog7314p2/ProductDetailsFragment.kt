@@ -109,6 +109,40 @@ class ProductDetailsFragment : Fragment() {
                     )
 
                 }
+
+                val btnWishlist =
+                    view.findViewById<Button>(R.id.btnAddWishlist)
+
+                btnWishlist.setOnClickListener {
+
+                    firebaseHelper.addToWishlist(
+                        productId = fetchedProduct.id,
+                        name = fetchedProduct.name,
+                        price = fetchedProduct.price,
+                        imageUrl = fetchedProduct.imageUrl,
+
+                        onSuccess = {
+                            if (isAdded) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Added to wishlist!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
+
+                        onFailure = { error ->
+                            if (isAdded) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Wishlist error: ${error.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    )
+                }
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(context, "Failed to load details: ${e.message}", Toast.LENGTH_SHORT).show()

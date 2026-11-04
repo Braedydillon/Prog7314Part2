@@ -35,7 +35,5 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-
-
     }
 }

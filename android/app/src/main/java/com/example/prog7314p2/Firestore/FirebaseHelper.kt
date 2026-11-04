@@ -6,6 +6,7 @@ import com.example.prog7314p2.Models.OrderHistoryModel
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.MetadataChanges
 
 
 
@@ -305,9 +306,11 @@ class FirebaseHelper {
     fun addToWishlist(
         productId: Int,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (Exception) -> Unit,
+        name: String = "",
+        price: Double = 0.0,
+        imageUrl: String? = null
     ) {
-
         val userId = getUserId()
 
         if (userId == null) {
@@ -315,22 +318,60 @@ class FirebaseHelper {
             return
         }
 
-        val wishlistItem = WishlistItem(
-            productId = productId
+        val data = mutableMapOf<String, Any>(
+            "productId" to productId
         )
+
+        if (name.isNotBlank()) {
+            data["name"] = name
+            data["price"] = price
+        }
+
+        if (!imageUrl.isNullOrBlank()) {
+            data["imageUrl"] = imageUrl
+        }
 
         db.collection("wishlists")
             .document(userId)
             .collection("items")
             .document(productId.toString())
-            .set(wishlistItem)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener {
-                onFailure(it)
+            .set(data, SetOptions.merge())
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onFailure(it) }
+    }
+
+
+    fun listenToWishlist(
+        onUpdate: (List<WishlistItem>, Boolean) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration? {
+
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return null
+        }
+
+        return db.collection("wishlists")
+            .document(userId)
+            .collection("items")
+            .addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, error ->
+
+                if (error != null) {
+                    onFailure(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null) return@addSnapshotListener
+
+                onUpdate(
+                    snapshot.toObjects(WishlistItem::class.java),
+                    snapshot.metadata.hasPendingWrites()
+                )
             }
     }
+
 
 
     fun getWishlistItems(
