@@ -75,8 +75,9 @@ class FirebaseHelper {
     }
 
 
+
     fun listenToCart(
-        onUpdate: (List<CartItem>, Boolean) -> Unit,
+        onUpdate: (List<CartItem>, Boolean, Boolean) -> Unit,
         onFailure: (Exception) -> Unit
     ): ListenerRegistration? {
 
@@ -103,12 +104,13 @@ class FirebaseHelper {
 
                 val items = snapshot.toObjects(CartItem::class.java)
 
-                val hasPendingWrites =
-                    snapshot.metadata.hasPendingWrites()
+                val hasPendingWrites = snapshot.metadata.hasPendingWrites()
+                val isFromCache = snapshot.metadata.isFromCache
 
-                onUpdate(items, hasPendingWrites)
+                onUpdate(items, hasPendingWrites, isFromCache)
             }
     }
+
 
 
 
@@ -177,6 +179,49 @@ class FirebaseHelper {
             }
     }
 
+
+    // Set an absolute cart quantity during RoomDB synchronization.
+    // Unlike addToCart(), this does not increment the existing quantity.
+    fun setCartQuantityForSync(
+        productId: Int,
+        quantity: Int,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return
+        }
+
+        if (quantity <= 0) {
+            removeFromCart(
+                productId,
+                onSuccess,
+                onFailure
+            )
+            return
+        }
+
+        db.collection("carts")
+            .document(userId)
+            .collection("items")
+            .document(productId.toString())
+            .set(
+                mapOf(
+                    "productId" to productId,
+                    "quantity" to quantity
+                ),
+                SetOptions.merge()
+            )
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
 
     fun removeFromCart(
         productId: Int,
