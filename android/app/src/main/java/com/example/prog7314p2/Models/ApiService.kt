@@ -45,7 +45,10 @@ interface ApiService {
     suspend fun deleteAddress(@Path("id") id: Int)
 
     @PUT("api/orders/{id}/status")
-    suspend fun updateOrderStatus(@Path("id") id: Int, @Body request: UpdateOrderStatusRequest): OrderResponse
+    suspend fun updateOrderStatus(
+        @Path("id") id: Int,
+        @Body request: UpdateOrderStatusRequest
+    ): OrderResponse
 
     // Streaks and points endpoints
     @POST("api/streak/checkin")

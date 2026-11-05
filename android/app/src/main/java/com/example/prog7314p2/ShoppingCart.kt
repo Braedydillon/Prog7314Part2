@@ -586,8 +586,8 @@ class ShoppingCart : Fragment() {
                     val successFragment = OrderSucessFull()
                     val bundle = Bundle().apply {
                         putString("ORDER_ID", order.id.toString())
-                        putString("DATE_PLACED", order.createdAt)
-                        putDouble("TOTAL_COST", order.total)
+                        putString("DATE_PLACED", order.createdAt ?: "")
+                        putDouble("TOTAL_COST", order.total ?: 0.0)
                         putString("ETA", order.estimatedDelivery ?: "3-5 Business Days")
                     }
                     successFragment.arguments = bundle

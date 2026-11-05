@@ -138,4 +138,17 @@
     <string name="order_delivery_estimate">Est. Delivery: %1$s</string>
     <string name="order_total_paid">Total Paid: R %1$s</string>
 
+    <!-- Admin Orders -->
+    <string name="admin_manage_orders" translatable="false">Manage Orders</string>
+    <string name="admin_orders_title" translatable="false">Admin Order Management</string>
+    <string name="admin_change_status" translatable="false">Change Status</string>
+    <string name="admin_select_status" translatable="false">Select New Status</string>
+    <string name="admin_confirm_status_change" translatable="false">Are you sure you want to change Order #%1$s status to %2$s?</string>
+    <string name="admin_status_updated" translatable="false">Order #%1$s status updated to %2$s</string>
+    <string name="admin_status_update_failed" translatable="false">Failed to update order status</string>
+    <string name="admin_no_orders" translatable="false">No orders found</string>
+    <string name="admin_orders_failed" translatable="false">Couldn\'t load orders. Please try again.</string>
+    <string name="admin_customer_id" translatable="false">Customer ID: %1$s</string>
+    <string name="admin_order_items_header" translatable="false">Ordered Items:</string>
+
 </resources>

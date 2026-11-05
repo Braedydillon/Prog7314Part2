@@ -221,6 +221,12 @@ class Settings : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+        view.findViewById<Button>(R.id.btnAdminOrders).setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, AdminOrdersFragment())
+                .addToBackStack(null)
+                .commit()
+        }
         loadAdminAccess(view)
 
         view.findViewById<View>(R.id.avatarFrame).setOnClickListener {
@@ -288,6 +294,8 @@ class Settings : Fragment() {
             val visibility = if (isAdmin) View.VISIBLE else View.GONE
             view.findViewById<View>(R.id.btnAddProduct).visibility = visibility
             view.findViewById<View>(R.id.dividerAddProduct).visibility = visibility
+            view.findViewById<View>(R.id.btnAdminOrders).visibility = visibility
+            view.findViewById<View>(R.id.dividerAdminOrders).visibility = visibility
         }
     }
 
