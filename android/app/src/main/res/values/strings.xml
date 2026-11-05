@@ -28,6 +28,7 @@
     <string name="streak_notification_channel">Streak Notifications</string>
     <string name="streak_notification_description">Updates about your daily login streak and rewards.</string>
     <string name="biometric_login_button">Sign in with Biometrics</string>
+    <string name="welcome_back">Welcome back</string>
 
     <!-- Streak popup -->
     <string name="streak_title_first">Welcome! login daily to earn points.</string>
@@ -150,5 +151,30 @@
     <string name="admin_orders_failed" translatable="false">Couldn\'t load orders. Please try again.</string>
     <string name="admin_customer_id" translatable="false">Customer ID: %1$s</string>
     <string name="admin_order_items_header" translatable="false">Ordered Items:</string>
+
+
+    <string name="login_fill_fields">Fill in all fields</string>
+    <string name="login_success_message">Login successful</string>
+    <string name="login_failed_message">Login failed: %1$s</string>
+    <string name="biometric_unavailable">Biometric authentication is not supported or set up on this device</string>
+    <string name="biometric_setup_required">Please log in with email and password once to enable biometric login</string>
+    <string name="biometric_success_message">Biometric login successful!</string>
+    <string name="biometric_failed_message">Biometric login failed: %1$s</string>
+    <string name="biometric_session_required">Please log in with password once to save your session</string>
+    <string name="biometric_auth_error">Authentication error: %1$s</string>
+    <string name="biometric_not_recognized">Biometric not recognized</string>
+    <string name="biometric_prompt_title">Unify Biometric Login</string>
+    <string name="biometric_prompt_subtitle">Confirm your fingerprint or face to log in</string>
+    <string name="google_signin_failed">Google sign in failed: %1$s</string>
+    <string name="google_signin_failed_generic">Google sign in failed</string>
+    <string name="signin_unexpected_error">Something unexpected happened when signing in</string>
+    <string name="firebase_signin_failed">Firebase sign in failed: %1$s</string>
+
+
+    <!-- Registration Messages -->
+    <string name="register_fill_fields">Please enter email and password.</string>
+    <string name="register_success_message">Registration successful.</string>
+    <string name="register_save_failed">Failed to save details: %1$s</string>
+    <string name="register_failed_message">Registration failed: %1$s</string>
 
 </resources>

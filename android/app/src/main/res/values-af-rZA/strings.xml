@@ -24,6 +24,7 @@
     <string name="add">Voeg by</string>
     <string name="current_names">Huidige name</string>
     <string name="google_login_button">Gaan voort met Google</string>
+    <string name="welcome_back">Welkom terug</string>
 
     <string name="streak_notification_title">Daaglikse reeks opgedateer!</string>
     <string name="streak_notification_message">Jou reeks is %1$d dae. Jy het %2$d punte verdien.</string>
@@ -140,5 +141,48 @@
     <string name="order_placed_on">Geplaas op: %1$s</string>
     <string name="order_delivery_estimate">Geskatte aflewering: %1$s</string>
     <string name="order_total_paid">Totaal betaal: R %1$s</string>
+
+
+
+    <!-- Admin Order Management -->
+    <string name="admin_change_status">Verander status</string>
+    <string name="admin_confirm_status_change">Is jy seker jy wil die status van bestelling #%1$s na %2$s verander?</string>
+    <string name="admin_customer_id">Kliënt-ID: %1$s</string>
+    <string name="admin_manage_orders">Bestuur bestellings</string>
+    <string name="admin_no_orders">Geen bestellings gevind nie</string>
+    <string name="admin_order_items_header">Bestelde items:</string>
+    <string name="admin_orders_failed">Kon nie bestellings laai nie. Probeer asseblief weer.</string>
+    <string name="admin_orders_title">Bestellingbestuur vir administrateurs</string>
+    <string name="admin_select_status">Kies nuwe status</string>
+    <string name="admin_status_update_failed">Kon nie bestellingstatus opdateer nie</string>
+    <string name="admin_status_updated">Bestelling #%1$s se status is na %2$s verander</string>
+
+    <!-- Biometrics -->
+    <string name="biometric_login_button">Meld aan met biometrie</string>
+
+
+    <string name="login_fill_fields">Vul alle velde in</string>
+    <string name="login_success_message">Aanmelding suksesvol</string>
+    <string name="login_failed_message">Aanmelding het misluk: %1$s</string>
+    <string name="biometric_unavailable">Biometriese verifikasie word nie op hierdie toestel ondersteun of opgestel nie</string>
+    <string name="biometric_setup_required">Meld asseblief een keer met jou e-posadres en wagwoord aan om biometriese aanmelding te aktiveer</string>
+    <string name="biometric_success_message">Biometriese aanmelding suksesvol!</string>
+    <string name="biometric_failed_message">Biometriese aanmelding het misluk: %1$s</string>
+    <string name="biometric_session_required">Meld asseblief een keer met jou wagwoord aan om jou sessie te stoor</string>
+    <string name="biometric_auth_error">Verifikasiefout: %1$s</string>
+    <string name="biometric_not_recognized">Biometriese herkenning het misluk</string>
+    <string name="biometric_prompt_title">Unify-biometriese aanmelding</string>
+    <string name="biometric_prompt_subtitle">Bevestig jou vingerafdruk of gesig om aan te meld</string>
+    <string name="google_signin_failed">Google-aanmelding het misluk: %1$s</string>
+    <string name="google_signin_failed_generic">Google-aanmelding het misluk</string>
+    <string name="signin_unexpected_error">Iets onverwags het tydens aanmelding gebeur</string>
+    <string name="firebase_signin_failed">Firebase-aanmelding het misluk: %1$s</string>
+
+
+    <!-- Registration Messages -->
+    <string name="register_fill_fields">Voer asseblief jou e-posadres en wagwoord in.</string>
+    <string name="register_success_message">Registrasie suksesvol.</string>
+    <string name="register_save_failed">Kon nie besonderhede stoor nie: %1$s</string>
+    <string name="register_failed_message">Registrasie het misluk: %1$s</string>
 
 </resources>
