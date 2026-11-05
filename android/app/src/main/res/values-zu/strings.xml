@@ -24,6 +24,7 @@
     <string name="add">Engeza</string>
     <string name="current_names">Amagama amanje</string>
     <string name="google_login_button">Qhubeka nge-Google</string>
+    <string name="welcome_back">Siyakwamukela futhi</string>
 
     <string name="streak_notification_title">Uchungechunge lwansuku zonke lubuyekeziwe!</string>
     <string name="streak_notification_message">Uchungechunge lwakho lunezinsuku ezingu-%1$d. Uthole amaphuzu angu-%2$d.</string>
@@ -139,5 +140,48 @@
     <string name="order_placed_on">Lifakwe ngo: %1$s</string>
     <string name="order_delivery_estimate">Ukulethwa okulindelekile: %1$s</string>
     <string name="order_total_paid">Isamba esikhokhiwe: R %1$s</string>
+
+
+
+    <!-- Admin Order Management -->
+    <string name="admin_change_status">Shintsha isimo</string>
+    <string name="admin_confirm_status_change">Uqinisekile ukuthi ufuna ukushintsha isimo se-oda #%1$s sibe ngu-%2$s?</string>
+    <string name="admin_customer_id">I-ID yekhasimende: %1$s</string>
+    <string name="admin_manage_orders">Phatha ama-oda</string>
+    <string name="admin_no_orders">Awekho ama-oda atholakele</string>
+    <string name="admin_order_items_header">Izinto ezi-odiwe:</string>
+    <string name="admin_orders_failed">Ayikwazanga ukulayisha ama-oda. Sicela uzame futhi.</string>
+    <string name="admin_orders_title">Ukuphathwa kwama-oda komlawuli</string>
+    <string name="admin_select_status">Khetha isimo esisha</string>
+    <string name="admin_status_update_failed">Yehlulekile ukubuyekeza isimo se-oda</string>
+    <string name="admin_status_updated">Isimo se-oda #%1$s sishintshelwe ku-%2$s</string>
+
+    <!-- Biometrics -->
+    <string name="biometric_login_button">Ngena usebenzisa izimpawu zomzimba</string>
+
+
+    <string name="login_fill_fields">Gcwalisa zonke izinkambu</string>
+    <string name="login_success_message">Ukungena ngemvume kuphumelele</string>
+    <string name="login_failed_message">Ukungena ngemvume kwehlulekile: %1$s</string>
+    <string name="biometric_unavailable">Ukuqinisekisa ngezimpawu zomzimba akusekelwa noma akukasethwa kule divayisi</string>
+    <string name="biometric_setup_required">Sicela ungene nge-imeyili nephasiwedi kanye ukuze uvule ukungena ngezimpawu zomzimba</string>
+    <string name="biometric_success_message">Ukungena ngezimpawu zomzimba kuphumelele!</string>
+    <string name="biometric_failed_message">Ukungena ngezimpawu zomzimba kwehlulekile: %1$s</string>
+    <string name="biometric_session_required">Sicela ungene ngephasiwedi kanye ukuze ulondoloze isikhathi sakho sokungena</string>
+    <string name="biometric_auth_error">Iphutha lokuqinisekisa: %1$s</string>
+    <string name="biometric_not_recognized">Izimpawu zomzimba azibonwanga</string>
+    <string name="biometric_prompt_title">Ukungena ku-Unify ngezimpawu zomzimba</string>
+    <string name="biometric_prompt_subtitle">Qinisekisa ngesigxivizo somunwe noma ngobuso ukuze ungene</string>
+    <string name="google_signin_failed">Ukungena nge-Google kwehlulekile: %1$s</string>
+    <string name="google_signin_failed_generic">Ukungena nge-Google kwehlulekile</string>
+    <string name="signin_unexpected_error">Kwenzeke iphutha elingalindelekile ngesikhathi ungena</string>
+    <string name="firebase_signin_failed">Ukungena nge-Firebase kwehlulekile: %1$s</string>
+
+
+    <!-- Registration Messages -->
+    <string name="register_fill_fields">Sicela ufake i-imeyili nephasiwedi.</string>
+    <string name="register_success_message">Ukubhalisa kuphumelele.</string>
+    <string name="register_save_failed">Yehlulekile ukulondoloza imininingwane: %1$s</string>
+    <string name="register_failed_message">Ukubhalisa kwehlulekile: %1$s</string>
 
 </resources>
