@@ -1,9 +1,11 @@
 import java.util.concurrent.TimeUnit
+import android.util.Log
 import com.example.prog7314p2.Models.ApiService
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -27,8 +29,15 @@ object RetrofitClient {
         chain.proceed(request)
     }
 
+    private val loggingInterceptor = HttpLoggingInterceptor { message ->
+        Log.d("OkHttp", message)
+    }.apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
+        .addInterceptor(loggingInterceptor)
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
