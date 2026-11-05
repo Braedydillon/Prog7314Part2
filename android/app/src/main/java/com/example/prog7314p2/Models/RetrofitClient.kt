@@ -10,7 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://unify-api-743468044726.europe-west1.run.app/"
+    private const val BASE_URL = "http://127.0.0.1:8080/"
 
     private val authInterceptor = Interceptor { chain ->
         val user = FirebaseAuth.getInstance().currentUser

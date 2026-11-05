@@ -32,6 +32,12 @@ interface ApiService {
     @GET("api/orders")
     suspend fun getOrders(): List<OrderResponse>
 
+    @GET("api/admin/orders")
+    suspend fun getAdminOrders(): List<OrderResponse>
+
+    @GET("api/admin/orders")
+    suspend fun getAllAdminOrders(): List<OrderResponse>
+
     @GET("api/addresses")
     suspend fun getAddresses(): List<AddressResponse>
 
