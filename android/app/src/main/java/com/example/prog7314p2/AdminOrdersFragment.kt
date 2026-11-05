@@ -83,7 +83,15 @@ class AdminOrdersFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val fetchedOrders = RetrofitClient.instance.getOrders()
+                val fetchedOrders = try {
+                    RetrofitClient.instance.getAllAdminOrders()
+                } catch (e: HttpException) {
+                    if (e.code() == 404) {
+                        RetrofitClient.instance.getOrders()
+                    } else {
+                        throw e
+                    }
+                }
 
                 if (!isAdded || view == null) return@launch
 
