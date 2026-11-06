@@ -15,6 +15,9 @@ The Application includes the following features:
 - Order history
 - User addresses
 - Product barcode scanning
+- Offline shopping cart using RoomDB
+- Automatic cart synchronization when internet connectivity is restored
+- Offline cart persistence and product removal
 
 
 Purpose:
@@ -47,6 +50,7 @@ There is a usage of three major components being:
 
 The android application provides the interface and handles the user interaction.
 Firebase provides authentication and user specific real time data
+RoomDB is used to store shopping cart information locally on the device, allowing users to view their cart and remove products without an internet connection. When connectivity is restored, pending changes are synchronized with Firebase Firestore. Checkout requires an internet connection, and the local cart is cleared after a successful purchase.
 Spring Boot backend provides the REST API used to access the product and data stored in the PostgreSQL
 GitHub Actions:
 GitHub actions test the back-end service whenever push or pull requests are made. This helps identify any issues before changes are merged

@@ -1,3 +1,4 @@
+
 package com.example.prog7314p2.Models
 
 import RetrofitClient
@@ -11,14 +12,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
+import com.example.prog7314p2.AdminOrdersFragment
 import com.example.prog7314p2.HomeFragment
+import com.example.prog7314p2.NotificationPermissionHelper
 import com.example.prog7314p2.R
 import com.example.prog7314p2.Settings
 import com.example.prog7314p2.ShoppingCart
+import com.example.prog7314p2.StreakNotificationHelper
 import com.example.prog7314p2.StreakPopup
+import com.example.prog7314p2.UnifyFirebaseMessagingService
 import com.example.prog7314p2.orderHistory
 import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -30,18 +36,28 @@ class ShopActivity : AppCompatActivity() {
 
     private var cartBadgeListener: ListenerRegistration? = null
     private var checkInJob: Job? = null
+    // Register the permission launcher before the Activity starts.
+    private val notificationPermissionHelper =
+        NotificationPermissionHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         // Force app to stay in Light Mode
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        AppCompatDelegate.setDefaultNightMode(
+            AppCompatDelegate.MODE_NIGHT_NO
+        )
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activitybar)
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        val bottomNav =
+            findViewById<BottomNavigationView>(R.id.bottomNav)
+
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val systemBars =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
             v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
@@ -53,9 +69,10 @@ class ShopActivity : AppCompatActivity() {
                 .commit()
         }
 
-        // Setup bottom nav clicks
+        // Setup bottom navigation
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
+
                 R.id.nav_home -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, HomeFragment())
@@ -95,6 +112,25 @@ class ShopActivity : AppCompatActivity() {
             }
         }
 
+
+
+        // Request notification permission after the screen loads.
+        // Android 13+ will display a permission dialog if needed.
+        notificationPermissionHelper.requestPermissionIfNeeded()
+
+        // Register FCM device token with backend
+        UnifyFirebaseMessagingService.registerCurrentTokenWithBackend()
+
+        val fabAdminOrders = findViewById<ExtendedFloatingActionButton>(R.id.fabAdminOrders)
+        fabAdminOrders?.setOnClickListener {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, AdminOrdersFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        checkAdminAccess()
+
         val fragmentContainer = findViewById<View>(R.id.fragmentContainer)
         ViewCompat.setOnApplyWindowInsetsListener(fragmentContainer) { v, insets ->
             val bars = insets.getInsets(
@@ -110,12 +146,19 @@ class ShopActivity : AppCompatActivity() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         cartBadgeListener = FirebaseFirestore.getInstance()
-            .collection("carts").document(userId)
+            .collection("carts")
+            .document(userId)
             .collection("items")
-            .addSnapshotListener { snapshot, _ ->
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("CartBadge", "Failed to listen to cart", error)
+                    return@addSnapshotListener
+                }
+
                 if (snapshot != null) {
                     try {
                         var totalCount = 0
+
                         for (doc in snapshot.documents) {
                             val qty = doc.getLong("quantity")?.toInt() ?: 1
                             totalCount += qty
@@ -129,7 +172,7 @@ class ShopActivity : AppCompatActivity() {
                             bottomNav.removeBadge(R.id.nav_cart)
                         }
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        Log.e("CartBadge", "Error updating badge", e)
                     }
                 }
             }
@@ -139,6 +182,24 @@ class ShopActivity : AppCompatActivity() {
         super.onStart()
         listenToCartBadge(findViewById(R.id.bottomNav))
         checkInStreak()
+        checkAdminAccess()
+    }
+
+    private fun checkAdminAccess() {
+        lifecycleScope.launch {
+            try {
+                val me = RetrofitClient.instance.getMe()
+                Log.d("AdminAccess", "GET /api/me response: uid=${me.uid}, admin=${me.admin}")
+                val fabAdminOrders = findViewById<ExtendedFloatingActionButton>(R.id.fabAdminOrders)
+                fabAdminOrders?.visibility = if (me.admin) View.VISIBLE else View.GONE
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("AdminAccess", "GET /api/me failed: ${e.message}", e)
+                val fabAdminOrders = findViewById<ExtendedFloatingActionButton>(R.id.fabAdminOrders)
+                fabAdminOrders?.visibility = View.GONE
+            }
+        }
     }
 
     override fun onStop() {
@@ -154,8 +215,16 @@ class ShopActivity : AppCompatActivity() {
             try {
                 val response = RetrofitClient.instance.checkIn()
                 Log.d("Streak", "Check in response: $response")
-                if (response.type != null && response.type != CheckInType.ALREADY_CHECKED_IN) {
+                if (response.type != null &&
+                    response.type != CheckInType.ALREADY_CHECKED_IN
+                ) {
                     StreakPopup.show(this@ShopActivity, response)
+
+                    StreakNotificationHelper.show(
+                        context = this@ShopActivity,
+                        streak = response.newStreak,
+                        points = response.pointsEarned + response.milestoneBonus
+                    )
                 }
             } catch (e: CancellationException) {
                 throw e

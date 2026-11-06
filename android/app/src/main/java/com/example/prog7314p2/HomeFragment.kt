@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import RetrofitClient
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.NestedScrollView
 import com.example.prog7314p2.Models.Product
@@ -49,28 +50,13 @@ class HomeFragment : Fragment() {
         // Setup RecyclerView
         rvProducts = view.findViewById(R.id.rvProducts)
         val etSearch = view.findViewById<EditText>(R.id.etSearch)
-        val cardFashion = view.findViewById<View>(R.id.cardFashion)
-        val cardTech = view.findViewById<View>(R.id.cardTech)
-        val cardTools = view.findViewById<View>(R.id.cardTools)
+        val btnWishlist = view.findViewById<Button>(R.id.btnWishlist)
 
-        // Special Offers Discount Cards Auto-Filter
-        cardFashion?.setOnClickListener {
-            selectedCategoryId = 3 // Category 4 = Apparel & Fashion Accessories
-            etSearch.text.clear()
-            currentPage = 0
-            fetchData(page = 0)
-        }
-        cardTech?.setOnClickListener {
-            selectedCategoryId = 1 // Category 2 = Consumer Electronics
-            etSearch.text.clear()
-            currentPage = 0
-            fetchData(page = 0)
-        }
-        cardTools?.setOnClickListener {
-            selectedCategoryId = 8 // Category 1 = Tools
-            etSearch.text.clear()
-            currentPage = 0
-            fetchData(page = 0)
+        btnWishlist.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, WishlistFragment())
+                .addToBackStack(null)
+                .commit()
         }
         
         // Search Input Listener with Debounce & Job Cancellation

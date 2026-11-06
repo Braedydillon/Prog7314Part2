@@ -22,15 +22,42 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Store Title and Wishlist Button -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Unify Store"
-                    android:textColor="@color/black"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <!-- Search Input -->
+                    <!-- Store Title - Left -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/store_title"
+                        android:textColor="@color/black"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <!-- Wishlist Button - Right -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnWishlist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
+                        android:text="My Wishlist"
+                        android:textAllCaps="false"
+                        android:textSize="13sp"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="#6750A4"
+                        app:cornerRadius="12dp"
+                        app:icon="@android:drawable/btn_star_big_off"
+                        app:iconTint="@android:color/white"
+                        app:iconSize="18dp"
+                        app:iconPadding="6dp" />
+
+                </LinearLayout>
+
                 <EditText
                     android:id="@+id/etSearch"
                     android:layout_width="match_parent"
@@ -39,7 +66,7 @@
                     android:background="@drawable/text_border"
                     android:drawableStart="@android:drawable/ic_menu_search"
                     android:drawablePadding="12dp"
-                    android:hint="Search products..."
+                    android:hint="@string/search_products"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:paddingHorizontal="16dp" />
@@ -59,92 +86,11 @@
                         app:singleSelection="true" />
                 </HorizontalScrollView>
 
-                <!-- Special Offers -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="Special Offers"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/cardFashion"
-                            android:layout_width="220dp"
-                            android:layout_height="110dp"
-                            android:layout_marginEnd="12dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="#EADDFF">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Fashion Deals"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textColor="#381E72" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/cardTech"
-                            android:layout_width="220dp"
-                            android:layout_height="110dp"
-                            android:layout_marginEnd="12dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="#D8E2FF">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Tech &amp; Electronics"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textColor="#001A41" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/cardTools"
-                            android:layout_width="220dp"
-                            android:layout_height="110dp"
-                            android:layout_marginEnd="12dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="#FFD8E4">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Tools &amp; Hardware"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textColor="#31111D" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                    </LinearLayout>
-                </HorizontalScrollView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="Products for You"
+                    android:text="@string/products_for_you"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />

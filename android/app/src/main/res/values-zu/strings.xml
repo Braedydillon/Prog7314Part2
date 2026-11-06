@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unify</string>
+    <string name="register">Bhalisa</string>
+    <string name="name">Igama</string>
+    <string name="surname">Isibongo</string>
+    <string name="email">I-imeyili</string>
+    <string name="password">Iphasiwedi</string>
+    <string name="already_have_an_account_login">Usunayo i-akhawunti? Ngena</string>
+    <string name="dont_have_an_account_register_here">Awunayo i-akhawunti? Bhalisa lapha</string>
+    <string name="login">Ngena</string>
+    <string name="welcome_to_unify">Siyakwamukela ku-Unify</string>
+    <string name="unify">Unify</string>
+    <string name="order_placed">!!I-oda lifakiwe!!</string>
+    <string name="view_orders">Buka ama-oda</string>
+    <string name="orders_placed">Ama-oda afakiwe</string>
+    <string name="address">Ikheli</string>
+    <string name="reset_password">Setha kabusha iphasiwedi</string>
+    <string name="surname2">Isibongo</string>
+    <string name="Name2">Igama</string>
+    <string name="logout">Phuma</string>
+    <string name="profile_amp_settings">Iphrofayela nezilungiselelo</string>
+    <string name="address2">Ikheli</string>
+    <string name="add">Engeza</string>
+    <string name="current_names">Amagama amanje</string>
+    <string name="google_login_button">Qhubeka nge-Google</string>
+    <string name="welcome_back">Siyakwamukela futhi</string>
+
+    <string name="streak_notification_title">Uchungechunge lwansuku zonke lubuyekeziwe!</string>
+    <string name="streak_notification_message">Uchungechunge lwakho lunezinsuku ezingu-%1$d. Uthole amaphuzu angu-%2$d.</string>
+    <string name="streak_notification_channel">Izaziso zochungechunge</string>
+    <string name="streak_notification_description">Izibuyekezo zochungechunge lwakho lwansuku zonke nemiklomelo.</string>
+
+    <!-- Streak popup -->
+    <string name="streak_title_first">Siyakwamukela! Ngena nsuku zonke ukuze uthole amaphuzu.</string>
+    <string name="streak_title_day">Unezinsuku ezingu-%1$d zilandelana</string>
+    <string name="streak_title_shield">Isivikelo sisetshenzisiwe, uchungechunge lulondoloziwe</string>
+    <string name="streak_title_reset">Uchungechunge luqaliswe kabusha</string>
+    <string name="streak_msg_shield">Uphuthelwe usuku olulodwa, ngakho kusetshenziswe isivikelo sochungechunge lwakho. Uma uphinda uphuthelwa olunye usuku ngaphambi kuka-%1$s, uchungechunge lwakho luzoqala kabusha.</string>
+    <string name="streak_msg_reset">Uchungechunge lwakho lwezinsuku ezingu-%1$d luphelile.</string>
+    <string name="streak_msg_points">Uthole amaphuzu angu-%1$d ngokuvula i-Unify namuhla.</string>
+    <string name="streak_msg_milestone">Lokhu kufaka phakathi ibhonasi yamaphuzu angu-%1$d ngokufinyelela ezinsukwini ezingu-%2$d.</string>
+    <string name="streak_msg_next">Sekusele izinsuku ezingu-%1$d ukuze uthole ibhonasi yamaphuzu angu-%2$d.</string>
+    <string name="streak_msg_balance">Ibhalansi: amaphuzu angu-%1$d.</string>
+    <string name="streak_ok">Kulungile</string>
+
+    <!-- Streak card -->
+    <string name="streak_card_none">Awukabi nalo uchungechunge. Vula i-Unify kusasa ukuze uqhubeke!</string>
+    <plurals name="streak_best">
+        <item quantity="one">Okuhle kakhulu: usuku olu-%d</item>
+        <item quantity="other">Okuhle kakhulu: izinsuku ezingu-%d</item>
+    </plurals>
+    <string name="streak_card_balance">Amaphuzu angu-%1$d</string>
+    <string name="streak_card_shield_ready">Isivikelo sochungechunge siyatholakala</string>
+    <string name="streak_card_shield_recharging">Isivikelo asikatholakali. Sizotholakala futhi ngo-%1$s</string>
+    <string name="streak_card_progress_label">Inqubekelaphambili yomgomo</string>
+
+    <!-- Point history -->
+    <string name="points_history_title">Umlando wamaphuzu</string>
+    <string name="points_history_empty">Awunawo amaphuzu okwamanje</string>
+    <string name="points_history_failed">Ayikwazanga ukulayisha umlando wamaphuzu akho</string>
+    <string name="reason_daily">Ukungena kwansuku zonke</string>
+    <string name="reason_milestone">Ibhonasi yochungechunge</string>
+    <string name="reason_redeemed">Kusetshenziswe ekuthengeni</string>
+    <string name="reason_refund">Imbuyiselo (i-oda elikhanseliwe)</string>
+    <string name="reason_other">Okunye</string>
+
+    <string name="streak_card_label">Uchungechunge lokungena</string>
+    <plurals name="streak_card_days">
+        <item quantity="one">Usuku olu-%d</item>
+        <item quantity="other">Izinsuku ezingu-%d</item>
+    </plurals>
+    <string name="streak_card_bonus_target">/ izinsuku ezingu-%1$d</string>
+
+    <!-- Points checkout -->
+    <string name="cart_use_points">Sebenzisa amaphuzu (%1$d atholakalayo)</string>
+    <string name="cart_total_with_points">Isamba: R %1$.2f (isaphulelo sika-R%2$.2f ngamaphuzu)</string>
+    <string name="checkout_failed">Ukukhokha kuhlulekile: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_section_address">Ikheli lokulethwa</string>
+    <string name="settings_section_account">I-akhawunti</string>
+    <string name="settings_save_address">Londoloza ikheli</string>
+    <string name="profile_picture">Isithombe sephrofayela</string>
+
+    <string name="admin_add_product">Engeza umkhiqizo</string>
+    <string name="admin_section_details">Imininingwane</string>
+    <string name="admin_product_photo">Isithombe somkhiqizo</string>
+    <string name="admin_tap_to_choose_photo">Thepha ukuze ukhethe isithombe</string>
+    <string name="admin_name">Igama lomkhiqizo</string>
+    <string name="admin_description">Incazelo (akuphoqelekile)</string>
+    <string name="admin_price">Intengo</string>
+    <string name="admin_sale_price">Intengo yesaphulelo (akuphoqelekile)</string>
+    <string name="admin_stock">Isitokwe</string>
+    <string name="admin_brand">Uhlobo lomkhiqizo (akuphoqelekile)</string>
+    <string name="admin_category">Isigaba</string>
+    <string name="admin_choose_category">Khetha isigaba</string>
+    <string name="admin_save_product">Londoloza umkhiqizo</string>
+    <string name="admin_product_added">Umkhiqizo ungeziwe</string>
+    <string name="admin_save_failed">Ayikwazanga ukulondoloza umkhiqizo. Sicela uzame futhi.</string>
+    <string name="admin_categories_failed">Ayikwazanga ukulayisha izigaba</string>
+    <string name="admin_error_image">Sicela ukhethe isithombe</string>
+    <string name="admin_error_name">Igama liyadingeka</string>
+    <string name="admin_error_price">Faka intengo engaphezu kuka-0 (izinombolo zamadesimali ezingafika kwezingu-2)</string>
+    <string name="admin_error_sale_price">Kufanele ibe ngaphezu kuka-0 futhi ibe ngaphansi kwentengo evamile</string>
+    <string name="admin_error_stock">Faka u-0 noma inombolo enkulu kuno-0</string>
+    <string name="admin_error_category">Sicela ukhethe isigaba</string>
+    <string name="avatar_change">Shintsha isithombe sephrofayela</string>
+    <string name="avatar_updated">Isithombe sephrofayela sibuyekeziwe</string>
+    <string name="avatar_upload_failed">Ayikwazanga ukulayisha isithombe sakho. Sicela uzame futhi.</string>
+    <string name="avatar_save_failed">Isithombe silayishiwe kodwa asikwazanga ukulondolozwa kuphrofayela yakho</string>
+    <string name="select_language">Khetha ulimi</string>
+    <string name="language_english">English</string>
+    <string name="language_afrikaans">Afrikaans</string>
+    <string name="language_zulu">isiZulu</string>
+
+
+    <!-- Home / Shop -->
+    <string name="store_title">Isitolo se-Unify</string>
+    <string name="search_products">Sesha imikhiqizo...</string>
+    <string name="products_for_you">Imikhiqizo ekhethelwe wena</string>
+
+    <!-- Shopping Cart -->
+    <string name="cart_title">Inqola yakho</string>
+    <string name="cart_total_default">Isamba: R 0.00</string>
+    <string name="proceed_checkout">Qhubekela ekukhokheni</string>
+
+    <!-- Scanner -->
+    <string name="scan_align_barcode">Qondanisa ibhakhodi phakathi kohlaka</string>
+    <string name="scan_manual_entry">Noma faka ibhakhodi noma i-ID yomkhiqizo:</string>
+    <string name="scan_barcode_hint">isib. 1 noma Hammer</string>
+    <string name="scan_match">Sesha</string>
+
+    <!-- Order Success -->
+    <string name="order_number">I-oda #%1$s</string>
+    <string name="order_placed_on">Lifakwe ngo: %1$s</string>
+    <string name="order_delivery_estimate">Ukulethwa okulindelekile: %1$s</string>
+    <string name="order_total_paid">Isamba esikhokhiwe: R %1$s</string>
+
+
+
+    <!-- Admin Order Management -->
+    <string name="admin_change_status">Shintsha isimo</string>
+    <string name="admin_confirm_status_change">Uqinisekile ukuthi ufuna ukushintsha isimo se-oda #%1$s sibe ngu-%2$s?</string>
+    <string name="admin_customer_id">I-ID yekhasimende: %1$s</string>
+    <string name="admin_manage_orders">Phatha ama-oda</string>
+    <string name="admin_no_orders">Awekho ama-oda atholakele</string>
+    <string name="admin_order_items_header">Izinto ezi-odiwe:</string>
+    <string name="admin_orders_failed">Ayikwazanga ukulayisha ama-oda. Sicela uzame futhi.</string>
+    <string name="admin_orders_title">Ukuphathwa kwama-oda komlawuli</string>
+    <string name="admin_select_status">Khetha isimo esisha</string>
+    <string name="admin_status_update_failed">Yehlulekile ukubuyekeza isimo se-oda</string>
+    <string name="admin_status_updated">Isimo se-oda #%1$s sishintshelwe ku-%2$s</string>
+
+    <!-- Biometrics -->
+    <string name="biometric_login_button">Ngena usebenzisa izimpawu zomzimba</string>
+
+
+    <string name="login_fill_fields">Gcwalisa zonke izinkambu</string>
+    <string name="login_success_message">Ukungena ngemvume kuphumelele</string>
+    <string name="login_failed_message">Ukungena ngemvume kwehlulekile: %1$s</string>
+    <string name="biometric_unavailable">Ukuqinisekisa ngezimpawu zomzimba akusekelwa noma akukasethwa kule divayisi</string>
+    <string name="biometric_setup_required">Sicela ungene nge-imeyili nephasiwedi kanye ukuze uvule ukungena ngezimpawu zomzimba</string>
+    <string name="biometric_success_message">Ukungena ngezimpawu zomzimba kuphumelele!</string>
+    <string name="biometric_failed_message">Ukungena ngezimpawu zomzimba kwehlulekile: %1$s</string>
+    <string name="biometric_session_required">Sicela ungene ngephasiwedi kanye ukuze ulondoloze isikhathi sakho sokungena</string>
+    <string name="biometric_auth_error">Iphutha lokuqinisekisa: %1$s</string>
+    <string name="biometric_not_recognized">Izimpawu zomzimba azibonwanga</string>
+    <string name="biometric_prompt_title">Ukungena ku-Unify ngezimpawu zomzimba</string>
+    <string name="biometric_prompt_subtitle">Qinisekisa ngesigxivizo somunwe noma ngobuso ukuze ungene</string>
+    <string name="google_signin_failed">Ukungena nge-Google kwehlulekile: %1$s</string>
+    <string name="google_signin_failed_generic">Ukungena nge-Google kwehlulekile</string>
+    <string name="signin_unexpected_error">Kwenzeke iphutha elingalindelekile ngesikhathi ungena</string>
+    <string name="firebase_signin_failed">Ukungena nge-Firebase kwehlulekile: %1$s</string>
+
+
+    <!-- Registration Messages -->
+    <string name="register_fill_fields">Sicela ufake i-imeyili nephasiwedi.</string>
+    <string name="register_success_message">Ukubhalisa kuphumelele.</string>
+    <string name="register_save_failed">Yehlulekile ukulondoloza imininingwane: %1$s</string>
+    <string name="register_failed_message">Ukubhalisa kwehlulekile: %1$s</string>
+
+    <!-- Reviews -->
+    <string name="reviews_title">Izibuyekezo</string>
+    <string name="reviews_empty">Lo mkhiqizo awukabi nazo izibuyekezo.</string>
+    <string name="reviews_none_yet">Azikabikho izibuyekezo</string>
+    <string name="reviews_load_failed">Ayikwazanga ukulayisha izibuyekezo</string>
+    <plurals name="reviews_summary">
+        <item quantity="one">%1$.1f (isibuyekezo esingu-%2$d)</item>
+        <item quantity="other">%1$.1f (izibuyekezo ezingu-%2$d)</item>
+    </plurals>
+    <string name="review_write_title">Bhala isibuyekezo</string>
+    <string name="review_comment_hint">Ucabangani ngalo mkhiqizo?</string>
+    <string name="review_submit">Thumela isibuyekezo</string>
+    <string name="review_pick_rating">Sicela ukhethe isilinganiso sezinkanyezi</string>
+    <string name="review_thanks">Isibuyekezo sithunyelwe</string>
+    <string name="review_submit_failed">Ayikwazanga ukuthumela isibuyekezo sakho</string>
+    <string name="review_already_reviewed">Usuwubuyekezile lo mkhiqizo</string>
+    <string name="review_delete">Susa</string>
+    <string name="review_cancel">Khansela</string>
+    <string name="review_delete_title">Susa isibuyekezo sakho?</string>
+    <string name="review_delete_message">Lokhu akukwazi ukuhlehliswa.</string>
+    <string name="review_delete_failed">Ayikwazanga ukususa isibuyekezo sakho</string>
+    <string name="review_anonymous">Ongaziwa</string>
+
+</resources>

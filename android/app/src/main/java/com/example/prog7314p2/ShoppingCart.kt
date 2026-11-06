@@ -25,7 +25,19 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.util.Locale
-
+import com.google.firebase.firestore.ListenerRegistration
+import com.example.prog7314p2.RoomDB.AppDatabase
+import com.example.prog7314p2.RoomDB.OfflineCartEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import androidx.room.withTransaction
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 
 class ShoppingCart : Fragment() {
 
@@ -34,8 +46,16 @@ class ShoppingCart : Fragment() {
     private val cartItemsList = mutableListOf<cartItem>()
     private var cartTotal = 0.0
     private var streakStatus: StreakStatus? = null
+    private var cartListener: ListenerRegistration? = null
+    private var isCartSyncing = false
+    private var connectivityManager: ConnectivityManager? = null
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     private val firebaseHelper = FirebaseHelper()
+
+    private val roomDatabase by lazy {
+        AppDatabase.getDatabase(requireContext().applicationContext)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,9 +76,12 @@ class ShoppingCart : Fragment() {
         }
         rvCartItems.adapter = cartAdapter
 
-        // Load cart from Firebase
+        loadCartFromRoom()
         loadCart()
+        registerConnectivityCallback()
+        syncPendingCartChanges()
         loadPoints()
+
         view.findViewById<MaterialSwitch>(R.id.switchUsePoints)
             .setOnCheckedChangeListener { _, _ -> updateTotal() }
 
@@ -71,112 +94,452 @@ class ShoppingCart : Fragment() {
         }
     }
 
-    private fun loadCart() {
 
-        firebaseHelper.getCartItems(
+    private fun saveCartToRoom(items: List<cartItem>) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val database = roomDatabase
 
-            onSuccess = { cartItems ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    val dao = database.offlineCartDao()
 
-                // Make sure the fragment is still attached
-                if (!isAdded || view == null) {
-                    return@getCartItems
-                }
+                    database.withTransaction {
 
-                lifecycleScope.launch {
-
-                    val newItems = mutableListOf<cartItem>()
-
-                    var totalPrice = 0.0
-
-                    // Get product details from Spring Boot API
-                    for (cartItem in cartItems) {
-
-                        val productId = cartItem.productId
-                        val quantity = cartItem.quantity
-
-                        try {
-
-                            val product = RetrofitClient.instance.getProductDetails(productId)
-
-                            val item = cartItem(
-                                productId = product.id,
-                                name = product.name,
-                                price = product.price,
-                                quantity = quantity,
-                                imageUrl = product.imageUrl
+                        items.forEach { item ->
+                            val existing = dao.getCartItem(
+                                userId,
+                                item.productId
                             )
 
-                            newItems.add(item)
+                            // Never overwrite a pending local operation.
+                            if (existing?.pendingSync != true && existing?.isDeleted != true) {
+                                dao.insertCartItem(
+                                    OfflineCartEntity(
+                                        userId = userId,
+                                        productId = item.productId,
+                                        name = item.name,
+                                        price = item.price,
+                                        quantity = item.quantity,
+                                        imageUrl = item.imageUrl
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
 
-                            totalPrice += product.price * quantity
+                Log.d(
+                    "RoomDB",
+                    "Firestore cart cached without overwriting pending changes"
+                )
 
-                        } catch (ex: Exception) {
-                            ex.printStackTrace()
+                // Refresh the screen using the local database
+                loadCartFromRoom()
+
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("RoomDB", "Failed to cache cart", e)
+            }
+        }
+    }
+
+
+    private fun loadCart() {
+
+        cartListener?.remove()
+
+        cartListener = firebaseHelper.listenToCart(
+            onUpdate = { items, hasPendingWrites, isFromCache ->
+
+                if (!isAdded || view == null) {
+                    return@listenToCart
+                }
+
+                // Convert Firestore items to UI cart items
+                val updatedItems = items.map { item ->
+                    cartItem(
+                        productId = item.productId,
+                        name = item.name.ifBlank {
+                            "Product #${item.productId}"
+                        },
+                        price = item.price,
+                        quantity = item.quantity,
+                        imageUrl = item.imageUrl
+                    )
+                }
+
+
+                if (!isFromCache && !hasPendingWrites) {
+                    saveCartToRoom(updatedItems)
+                } else {
+                    Log.d(
+                        "RoomDB",
+                        "Skipping unconfirmed Firestore snapshot"
+                    )
+                }
+
+                if (hasPendingWrites) {
+                    Log.d(
+                        "OfflineCart",
+                        "Cart changes pending synchronization"
+                    )
+                } else {
+                    Log.d(
+                        "OfflineCart",
+                        "No pending local cart changes"
+                    )
+                }
+            },
+
+            onFailure = { exception ->
+                Log.e(
+                    "OfflineCart",
+                    "Failed to listen to cart",
+                    exception
+                )
+            }
+        )
+    }
+
+    private fun checkRoomCart() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val items = withContext(Dispatchers.IO) {
+                    roomDatabase.offlineCartDao().getCartItems(userId)
+                }
+
+                Log.d("RoomDB", "Stored cart items: ${items.size}")
+
+                items.forEach { item ->
+                    Log.d(
+                        "RoomDB",
+                        "Product: ${item.name}, Quantity: ${item.quantity}"
+                    )
+                }
+
+            } catch (e: Exception) {
+                Log.e("RoomDB", "Failed to read cart", e)
+            }
+        }
+    }
+
+
+    private fun displayCartItems(items: List<cartItem>) {
+        cartItemsList.clear()
+        cartItemsList.addAll(items)
+
+        cartAdapter.notifyDataSetChanged()
+
+        cartTotal = items.sumOf {
+            it.price * it.quantity
+        }
+
+        updateTotal()
+    }
+
+
+
+    private fun loadCartFromRoom() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val storedItems = withContext(Dispatchers.IO) {
+                    roomDatabase.offlineCartDao().getCartItems(userId)
+                }
+
+                if (!isAdded || view == null) return@launch
+
+                val localItems = storedItems.map { item ->
+                    cartItem(
+                        productId = item.productId,
+                        name = item.name,
+                        price = item.price,
+                        quantity = item.quantity,
+                        imageUrl = item.imageUrl
+                    )
+                }
+
+                displayCartItems(localItems)
+
+                Log.d(
+                    "RoomDB",
+                    "Loaded ${localItems.size} cart items from local database"
+                )
+
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("RoomDB", "Failed to load local cart", e)
+            }
+        }
+    }
+
+
+
+    private fun removeFromCart(productId: Int) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                // Save the deletion locally first.
+                withContext(Dispatchers.IO) {
+                    roomDatabase.offlineCartDao().markItemDeleted(
+                        userId = userId,
+                        productId = productId
+                    )
+                }
+
+                // Immediately update the UI from RoomDB.
+                loadCartFromRoom()
+
+                Log.d(
+                    "RoomDB",
+                    "Product $productId marked for offline deletion"
+                )
+
+                // Firestore synchronization will be handled separately.
+                // Do not call firebaseHelper.removeFromCart() here yet.
+
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("RoomDB", "Failed to remove cart item locally", e)
+
+                if (isAdded) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to remove item",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun syncPendingCartChanges() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        if (!isNetworkAvailable()) {
+            Log.d("RoomDB", "Offline: synchronization postponed")
+            return
+        }
+
+        if (isCartSyncing) {
+            Log.d("RoomDB", "Synchronization already running")
+            return
+        }
+
+        isCartSyncing = true
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val pendingItems = withContext(Dispatchers.IO) {
+                    roomDatabase.offlineCartDao().getPendingSyncItems(userId)
+                }
+
+                if (pendingItems.isEmpty()) {
+                    Log.d("RoomDB", "No pending cart changes")
+                    return@launch
+                }
+
+                Log.d(
+                    "RoomDB",
+                    "Synchronizing ${pendingItems.size} pending cart changes"
+                )
+
+                for (item in pendingItems) {
+                    val success = suspendCancellableCoroutine<Boolean> { continuation ->
+
+                        if (item.isDeleted) {
+                            firebaseHelper.removeFromCart(
+                                productId = item.productId,
+                                onSuccess = {
+                                    if (continuation.isActive) {
+                                        continuation.resume(true)
+                                    }
+                                },
+                                onFailure = { exception ->
+                                    Log.e("RoomDB", "Deletion sync failed", exception)
+                                    if (continuation.isActive) {
+                                        continuation.resume(false)
+                                    }
+                                }
+                            )
+                        } else {
+                            firebaseHelper.setCartQuantityForSync(
+                                productId = item.productId,
+                                quantity = item.quantity,
+                                onSuccess = {
+                                    if (continuation.isActive) {
+                                        continuation.resume(true)
+                                    }
+                                },
+                                onFailure = { exception ->
+                                    Log.e("RoomDB", "Quantity sync failed", exception)
+                                    if (continuation.isActive) {
+                                        continuation.resume(false)
+                                    }
+                                }
+                            )
                         }
                     }
 
-                    if (!isAdded || view == null) {
-                        return@launch
+                    if (success) {
+                        withContext(Dispatchers.IO) {
+                            val dao = roomDatabase.offlineCartDao()
+
+
+                            if (item.isDeleted) {
+                                dao.markAsSynced(
+                                    userId,
+                                    item.productId,
+                                    item.updatedAt
+                                )
+                            } else {
+                                dao.markAsSynced(
+                                    userId,
+                                    item.productId,
+                                    item.updatedAt
+                                )
+                            }
+
+                        }
+
+                        Log.d(
+                            "RoomDB",
+                            "Product ${item.productId} synchronized"
+                        )
                     }
-
-                    // Update cart list
-                    cartItemsList.clear()
-
-                    cartItemsList.addAll(newItems)
-
-                    cartAdapter.notifyDataSetChanged()
-
-                    // Update total
-                    cartTotal = totalPrice
-                    updateTotal()
-                }
-            },
-
-            onFailure = { exception ->
-
-                if (!isAdded) {
-                    return@getCartItems
                 }
 
-                Toast.makeText(context,exception.message?: "Failed to load cart",Toast.LENGTH_SHORT).show()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("RoomDB", "Cart synchronization failed", e)
+            } finally {
+                isCartSyncing = false
             }
+        }
+    }
+
+    private fun registerConnectivityCallback() {
+        if (networkCallback != null) return
+
+        val manager = requireContext().getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+
+        connectivityManager = manager
+
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onCapabilitiesChanged(
+                network: Network,
+                networkCapabilities: NetworkCapabilities
+            ) {
+                val hasInternet = networkCapabilities.hasCapability(
+                    NetworkCapabilities.NET_CAPABILITY_INTERNET
+                ) && networkCapabilities.hasCapability(
+                    NetworkCapabilities.NET_CAPABILITY_VALIDATED
+                )
+
+                if (hasInternet) {
+                    activity?.runOnUiThread {
+                        if (isAdded && view != null) {
+                            Log.d(
+                                "RoomDB",
+                                "Internet restored: checking pending cart changes"
+                            )
+                            syncPendingCartChanges()
+                        }
+                    }
+                }
+            }
+        }
+
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+
+        try {
+            manager.registerNetworkCallback(request, callback)
+            networkCallback = callback
+        } catch (e: Exception) {
+            Log.e("RoomDB", "Failed to register connectivity callback", e)
+        }
+    }
+
+    override fun onDestroyView() {
+        cartListener?.remove()
+        cartListener = null
+
+        networkCallback?.let { callback ->
+            try {
+                connectivityManager?.unregisterNetworkCallback(callback)
+            } catch (e: Exception) {
+                Log.w("RoomDB", "Failed to unregister connectivity callback", e)
+            }
+        }
+
+        networkCallback = null
+        connectivityManager = null
+
+        super.onDestroyView()
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val manager = requireContext().getSystemService(
+            android.content.Context.CONNECTIVITY_SERVICE
+        ) as android.net.ConnectivityManager
+
+        val network = manager.activeNetwork ?: return false
+        val capabilities = manager.getNetworkCapabilities(network)
+            ?: return false
+
+        return capabilities.hasCapability(
+            android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+        ) && capabilities.hasCapability(
+            android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
         )
     }
 
-    private fun removeFromCart(productId: Int) {
 
-        firebaseHelper.removeFromCart(
-
-            productId = productId,
-
-            onSuccess = {
-
-                if (!isAdded) {
-                    return@removeFromCart
-                }
-
-                Toast.makeText( context,"Removed from cart",Toast.LENGTH_SHORT).show()
-
-                // Reload cart after removing item
-                loadCart()
-            },
-
-            onFailure = { exception ->
-
-                if (!isAdded) {
-                    return@removeFromCart
-                }
-
-                Toast.makeText(context,exception.message?: "Failed to remove item",Toast.LENGTH_SHORT).show()
-            }
-        )
-    }
 
     private fun processCheckout() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
+        if (!isNetworkAvailable()) {
+            Toast.makeText(
+                requireContext(),
+                "Checkout requires an internet connection. Your cart is saved.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
         lifecycleScope.launch {
             try{
+
+                val hasPendingChanges = withContext(Dispatchers.IO) {
+                    roomDatabase.offlineCartDao()
+                        .getPendingSyncItems(userId)
+                        .isNotEmpty()
+                }
+
+                if (hasPendingChanges || isCartSyncing) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please wait for your cart to finish syncing before checkout.",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    syncPendingCartChanges()
+                    return@launch
+                }
 
                 val addressId = RetrofitClient.instance.getAddresses().firstOrNull()?.id
                     ?: RetrofitClient.instance.createAddress(
@@ -197,19 +560,34 @@ class ShoppingCart : Fragment() {
                     addressId = addressId,
                     pointsToSpend = if (usePoints) streakStatus?.pointsBalance ?: 0 else 0
                 )
+
                 val order = RetrofitClient.instance.placeOrder(orderRequest)
 
+                // The order was successfully created by Spring Boot.
+                // Clear the local cart so purchased items do not reappear offline.
+                withContext(Dispatchers.IO) {
+                    roomDatabase.offlineCartDao().clearCart(userId)
+                }
+
+                Log.d("RoomDB", "Local cart cleared after successful checkout")
+
+                // Keep the existing Firestore clearing behaviour.
                 firebaseHelper.clearCart(
-                    onSuccess = { },
-                    onFailure = { ex -> ex.printStackTrace() }
+                    onSuccess = {
+                        Log.d("RoomDB", "Firestore cart cleared after checkout")
+                    },
+                    onFailure = { exception ->
+                        Log.e("RoomDB", "Firestore cart clearing failed", exception)
+                    }
                 )
+
 
                 if (isAdded){
                     val successFragment = OrderSucessFull()
                     val bundle = Bundle().apply {
                         putString("ORDER_ID", order.id.toString())
-                        putString("DATE_PLACED", order.createdAt)
-                        putDouble("TOTAL_COST", order.total)
+                        putString("DATE_PLACED", order.createdAt ?: "")
+                        putDouble("TOTAL_COST", order.total ?: 0.0)
                         putString("ETA", order.estimatedDelivery ?: "3-5 Business Days")
                     }
                     successFragment.arguments = bundle

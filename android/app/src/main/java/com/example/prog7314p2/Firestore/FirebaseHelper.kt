@@ -4,6 +4,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.prog7314p2.Models.OrderHistoryModel
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.MetadataChanges
+
+
 
 class FirebaseHelper {
 
@@ -20,13 +25,22 @@ class FirebaseHelper {
         productId: Int,
         quantity: Int = 1,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (Exception) -> Unit,
+        name: String = "",
+        price: Double = 0.0,
+        imageUrl: String? = null
     ) {
-
         val userId = getUserId()
 
         if (userId == null) {
             onFailure(Exception("User is not logged in"))
+            return
+        }
+
+        if (quantity <= 0) {
+            onFailure(
+                IllegalArgumentException("Quantity must be positive")
+            )
             return
         }
 
@@ -35,33 +49,69 @@ class FirebaseHelper {
             .collection("items")
             .document(productId.toString())
 
-        cartRef.get()
-            .addOnSuccessListener { document ->
+        val updates = mutableMapOf<String, Any>(
+            "productId" to productId,
+            "quantity" to FieldValue.increment(quantity.toLong())
+        )
 
-                val currentQuantity =
-                    if (document.exists()) {
-                        document.getLong("quantity")?.toInt() ?: 0
-                    } else {
-                        0
-                    }
+        // Save product details when available.
+        // Do not overwrite cached details with empty values.
+        if (name.isNotBlank()) {
+            updates["name"] = name
+            updates["price"] = price
+        }
 
-                val cartItem = CartItem(
-                    productId = productId,
-                    quantity = currentQuantity + quantity
-                )
+        if (!imageUrl.isNullOrBlank()) {
+            updates["imageUrl"] = imageUrl
+        }
 
-                cartRef.set(cartItem)
-                    .addOnSuccessListener {
-                        onSuccess()
-                    }
-                    .addOnFailureListener {
-                        onFailure(it)
-                    }
+        cartRef.set(updates, SetOptions.merge())
+            .addOnSuccessListener {
+                onSuccess()
             }
             .addOnFailureListener {
                 onFailure(it)
             }
     }
+
+
+
+    fun listenToCart(
+        onUpdate: (List<CartItem>, Boolean, Boolean) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration? {
+
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return null
+        }
+
+        return db.collection("carts")
+            .document(userId)
+            .collection("items")
+            .addSnapshotListener(
+                com.google.firebase.firestore.MetadataChanges.INCLUDE
+            ) { snapshot, exception ->
+
+                if (exception != null) {
+                    onFailure(exception)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null) return@addSnapshotListener
+
+                val items = snapshot.toObjects(CartItem::class.java)
+
+                val hasPendingWrites = snapshot.metadata.hasPendingWrites()
+                val isFromCache = snapshot.metadata.isFromCache
+
+                onUpdate(items, hasPendingWrites, isFromCache)
+            }
+    }
+
+
 
 
     fun getCartItems(
@@ -129,6 +179,49 @@ class FirebaseHelper {
             }
     }
 
+
+    // Set an absolute cart quantity during RoomDB synchronization.
+    // Unlike addToCart(), this does not increment the existing quantity.
+    fun setCartQuantityForSync(
+        productId: Int,
+        quantity: Int,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return
+        }
+
+        if (quantity <= 0) {
+            removeFromCart(
+                productId,
+                onSuccess,
+                onFailure
+            )
+            return
+        }
+
+        db.collection("carts")
+            .document(userId)
+            .collection("items")
+            .document(productId.toString())
+            .set(
+                mapOf(
+                    "productId" to productId,
+                    "quantity" to quantity
+                ),
+                SetOptions.merge()
+            )
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
 
     fun removeFromCart(
         productId: Int,
@@ -258,9 +351,11 @@ class FirebaseHelper {
     fun addToWishlist(
         productId: Int,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (Exception) -> Unit,
+        name: String = "",
+        price: Double = 0.0,
+        imageUrl: String? = null
     ) {
-
         val userId = getUserId()
 
         if (userId == null) {
@@ -268,22 +363,60 @@ class FirebaseHelper {
             return
         }
 
-        val wishlistItem = WishlistItem(
-            productId = productId
+        val data = mutableMapOf<String, Any>(
+            "productId" to productId
         )
+
+        if (name.isNotBlank()) {
+            data["name"] = name
+            data["price"] = price
+        }
+
+        if (!imageUrl.isNullOrBlank()) {
+            data["imageUrl"] = imageUrl
+        }
 
         db.collection("wishlists")
             .document(userId)
             .collection("items")
             .document(productId.toString())
-            .set(wishlistItem)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener {
-                onFailure(it)
+            .set(data, SetOptions.merge())
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onFailure(it) }
+    }
+
+
+    fun listenToWishlist(
+        onUpdate: (List<WishlistItem>, Boolean) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration? {
+
+        val userId = getUserId()
+
+        if (userId == null) {
+            onFailure(Exception("User is not logged in"))
+            return null
+        }
+
+        return db.collection("wishlists")
+            .document(userId)
+            .collection("items")
+            .addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, error ->
+
+                if (error != null) {
+                    onFailure(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null) return@addSnapshotListener
+
+                onUpdate(
+                    snapshot.toObjects(WishlistItem::class.java),
+                    snapshot.metadata.hasPendingWrites()
+                )
             }
     }
+
 
 
     fun getWishlistItems(

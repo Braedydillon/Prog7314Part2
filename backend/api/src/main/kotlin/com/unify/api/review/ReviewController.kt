@@ -32,6 +32,7 @@ class ReviewController(val reviewRepository: ReviewRepository, val productReposi
         if(request.rating !in 1..5){
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating must be between 1 and 5")
         }
+        val comment = ReviewInput.cleanComment(request.comment)
         val product = productRepository.findById(request.productId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Product ${request.productId} not found") }
 
@@ -42,7 +43,8 @@ class ReviewController(val reviewRepository: ReviewRepository, val productReposi
         val review = Review().apply {
             this.userId = authentication.name
             this.rating = request.rating
-            this.comment = request.comment
+            this.comment = comment
+            this.reviewerName = ReviewInput.cleanName(request.reviewerName)
             this.createdAt = LocalDateTime.now()
             this.product = product
         }

@@ -32,6 +32,12 @@ interface ApiService {
     @GET("api/orders")
     suspend fun getOrders(): List<OrderResponse>
 
+    @GET("api/admin/orders")
+    suspend fun getAdminOrders(): List<OrderResponse>
+
+    @GET("api/admin/orders")
+    suspend fun getAllAdminOrders(): List<OrderResponse>
+
     @GET("api/addresses")
     suspend fun getAddresses(): List<AddressResponse>
 
@@ -45,7 +51,10 @@ interface ApiService {
     suspend fun deleteAddress(@Path("id") id: Int)
 
     @PUT("api/orders/{id}/status")
-    suspend fun updateOrderStatus(@Path("id") id: Int, @Body request: UpdateOrderStatusRequest): OrderResponse
+    suspend fun updateOrderStatus(
+        @Path("id") id: Int,
+        @Body request: UpdateOrderStatusRequest
+    ): OrderResponse
 
     // Streaks and points endpoints
     @POST("api/streak/checkin")
@@ -70,5 +79,23 @@ interface ApiService {
     @Multipart
     @POST("api/me/avatar")
     suspend fun uploadAvatar(@Part image: MultipartBody.Part): AvatarResponse
+
+    // Firebase notifications
+    @POST("api/notifications/token")
+    suspend fun registerDeviceToken(
+        @Body request: DeviceTokenRequest
+    )
+
+    @GET("api/review/product/{productId}")
+    suspend fun getReviews(@Path("productId") productId: Int): List<Review>
+
+    @GET("api/review/product/{productId}/summary")
+    suspend fun getReviewSummary(@Path("productId") productId: Int): ReviewSummary
+
+    @POST("api/review")
+    suspend fun createReview(@Body request: CreateReviewRequest): Review
+
+    @DELETE("api/review/{id}")
+    suspend fun deleteReview(@Path("id") id: Int)
 
 }

@@ -19,8 +19,17 @@ class SecurityConfig(private val firebaseTokenFilter: FirebaseTokenFilter) {
             auth.requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
             auth.requestMatchers("/error").permitAll()
             auth.requestMatchers(HttpMethod.GET, "/api/review/product/**").permitAll()
+
             auth.requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+
+            auth.requestMatchers(
+                HttpMethod.PUT,
+                "/api/orders/*/status"
+            ).hasRole("ADMIN")
+
             auth.anyRequest().authenticated()
+
         }
         http.addFilterBefore(firebaseTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
         http.csrf { it.disable() }

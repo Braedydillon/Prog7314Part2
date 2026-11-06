@@ -4,60 +4,229 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="@android:color/white">
 
-    <ImageView
-        android:id="@+id/ivDetailImage"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:scaleType="fitCenter"
-        android:src="@android:drawable/ic_menu_gallery"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvDetailName"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/detailsScroll"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        tools:text="Premium Hammer"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnAddWishlist"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivDetailImage" />
-
-    <TextView
-        android:id="@+id/tvDetailPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="20sp"
-        android:textColor="?attr/colorPrimary"
-        android:textStyle="bold"
-        tools:text="R 2499.00"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDetailName" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tvDetailDescription"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/ivDetailImage"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@android:drawable/ic_menu_gallery" />
+
+            <TextView
+                android:id="@+id/tvDetailName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                tools:text="Premium Hammer" />
+
+            <TextView
+                android:id="@+id/tvDetailPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="R 2499.00" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RatingBar
+                    android:id="@+id/rbAverage"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:progressBackgroundTint="@color/streak_track"
+                    android:progressTint="@color/streak_accent"
+                    android:secondaryProgressTint="@color/streak_accent"
+                    android:stepSize="0.1" />
+
+                <TextView
+                    android:id="@+id/tvRatingSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/streak_text_secondary"
+                    tools:text="4.3 (12 reviews)" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDetailDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textSize="16sp"
+                tools:text="Experience premium quality with this wonderful tool." />
+
+            <TextView
+                style="@style/Unify.SectionHeader"
+                android:text="@string/reviews_title" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardWriteReview"
+                style="@style/Unify.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/review_write_title"
+                        android:textColor="@color/streak_text_primary"
+                        android:textStyle="bold" />
+
+                    <RatingBar
+                        android:id="@+id/rbNewRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:numStars="5"
+                        android:progressBackgroundTint="@color/streak_track"
+                        android:progressTint="@color/streak_accent"
+                        android:rating="0"
+                        android:secondaryProgressTint="@color/streak_accent"
+                        android:stepSize="1" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:hint="@string/review_comment_hint"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="1000">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etReviewComment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="top"
+                            android:inputType="textMultiLine|textCapSentences"
+                            android:maxLength="1000"
+                            android:minLines="2" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSubmitReview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/review_submit" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMyReview"
+                style="@style/Unify.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/review_already_reviewed"
+                        android:textColor="@color/streak_text_primary" />
+
+                    <Button
+                        android:id="@+id/btnDeleteMyReview"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/review_delete"
+                        android:textColor="@color/danger" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvNoReviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/reviews_empty"
+                android:textColor="@color/streak_text_secondary"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvReviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_review" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+    <Button
+        android:id="@+id/btnAddWishlist"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_height="51dp"
+        android:layout_marginBottom="16dp"
+        android:text="♡ Add to Wishlist"
+        android:textAllCaps="false"
         android:textSize="16sp"
-        tools:text="Experience premium quality with this wonderful tool."
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/black"
+        app:backgroundTint="#CDDE31"
+        app:layout_constraintBottom_toTopOf="@+id/btnAddCart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDetailPrice" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnAddCart"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="Add to Cart"
         android:textSize="18sp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

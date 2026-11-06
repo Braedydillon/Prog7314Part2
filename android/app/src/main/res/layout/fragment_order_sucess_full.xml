@@ -49,7 +49,7 @@
                 android:id="@+id/tvSuccessOrderId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Order #123456"
+                android:text="@string/order_number"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -59,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Placed on: 21 Sep 2026"
+                android:text="@string/order_placed_on"
                 android:textColor="#666666"
                 android:textSize="14sp" />
 
@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Est. Delivery: 3-5 Business Days"
+                android:text="@string/order_delivery_estimate"
                 android:textColor="#381E72"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -83,7 +83,7 @@
                 android:id="@+id/tvSuccessTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total Paid: R 2,499.00"
+                android:text="@string/order_total_paid"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold" />
