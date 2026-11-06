@@ -23,6 +23,8 @@ import com.example.prog7314p2.UnifyFirebaseMessagingService
 import com.example.prog7314p2.orderHistory
 import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.example.prog7314p2.AdminOrdersFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -180,6 +182,24 @@ class ShopActivity : AppCompatActivity() {
         super.onStart()
         listenToCartBadge(findViewById(R.id.bottomNav))
         checkInStreak()
+        checkAdminAccess()
+    }
+
+    private fun checkAdminAccess() {
+        lifecycleScope.launch {
+            try {
+                val me = RetrofitClient.instance.getMe()
+                Log.d("AdminAccess", "GET /api/me response: uid=${me.uid}, admin=${me.admin}")
+                val fabAdminOrders = findViewById<ExtendedFloatingActionButton>(R.id.fabAdminOrders)
+                fabAdminOrders?.visibility = if (me.admin) View.VISIBLE else View.GONE
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("AdminAccess", "GET /api/me failed: ${e.message}", e)
+                val fabAdminOrders = findViewById<ExtendedFloatingActionButton>(R.id.fabAdminOrders)
+                fabAdminOrders?.visibility = View.GONE
+            }
+        }
     }
 
     override fun onStop() {
