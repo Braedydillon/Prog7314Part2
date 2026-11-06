@@ -204,13 +204,16 @@
 
     <Button
         android:id="@+id/btnAddWishlist"
-        android:layout_width="100dp"
+        android:layout_width="0dp"
         android:layout_height="51dp"
-        android:layout_marginBottom="28dp"
-        android:text="Add to Wishlist"
+        android:layout_marginBottom="16dp"
+        android:text="♡ Add to Wishlist"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        app:backgroundTint="#CDDE31"
         app:layout_constraintBottom_toTopOf="@+id/btnAddCart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
