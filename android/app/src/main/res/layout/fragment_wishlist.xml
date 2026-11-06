@@ -1,48 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F8F9FA"
-    android:padding="16dp">
+    android:background="@color/screen_bg"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvWishlistHeading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My Wishlist"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:textColor="#202124"
-        android:layout_marginBottom="6dp" />
+        style="@style/Unify.ScreenTitle"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="My Wishlist" />
 
     <TextView
         android:id="@+id/tvWishlistCount"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="2dp"
         android:text="0 saved items"
-        android:textSize="14sp"
-        android:textColor="#757575"
-        android:layout_marginBottom="16dp" />
+        android:textColor="@color/streak_text_secondary"
+        android:textSize="13sp" />
 
-    <TextView
-        android:id="@+id/tvWishlistEmpty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:text="Your wishlist is empty.\nSave products you love to find them here."
-        android:textSize="16sp"
-        android:textColor="#757575"
-        android:gravity="center"
-        android:visibility="gone" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvWishlist"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingBottom="12dp" />
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvWishlist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="20dp"
+            tools:listitem="@layout/item_wishlist" />
+
+        <!-- Empty state -->
+        <TextView
+            android:id="@+id/tvWishlistEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawablePadding="12dp"
+            android:gravity="center"
+            android:padding="24dp"
+            app:drawableTint="@color/streak_text_secondary"
+            app:drawableTopCompat="@drawable/ic_favorite_border"
+            android:text="Your wishlist is empty.\nSave products you love to find them here."
+            android:textColor="@color/streak_text_secondary"
+            android:textSize="15sp"
+            android:visibility="gone" />
+    </FrameLayout>
 
 </LinearLayout>

@@ -3,7 +3,7 @@
     <style name="Base.Theme.Prog7314P2" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/streak_accent</item>            <!-- filled buttons, switches, focused text fields -->
         <item name="colorOnPrimary">@android:color/white</item>
-        <item name="colorSecondaryContainer">#fffcd4</item>              <!-- tonal buttons (light orange) -->
+        <item name="colorSecondaryContainer">@color/streak_track</item>  <!-- tonal buttons, selected tab/chip, language dropdown (light grey) -->
         <item name="colorOnSecondaryContainer">@color/streak_text_primary</item>
     </style>
 

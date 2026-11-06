@@ -1,89 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/screen_bg"
+    android:orientation="vertical">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/detailsScroll"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnAddWishlist"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <ImageView
-                android:id="@+id/ivDetailImage"
+            <!-- Product image -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Unify.Card"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:contentDescription="@null"
-                android:scaleType="fitCenter"
-                android:src="@android:drawable/ic_menu_gallery" />
+                android:layout_height="260dp">
 
-            <TextView
-                android:id="@+id/tvDetailName"
+                <ImageView
+                    android:id="@+id/ivDetailImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@null"
+                    android:padding="16dp"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/ic_menu_gallery" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Name, price, rating, description -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Unify.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textColor="@color/black"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                tools:text="Premium Hammer" />
+                android:layout_marginTop="16dp">
 
-            <TextView
-                android:id="@+id/tvDetailPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                tools:text="R 2499.00" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <RatingBar
-                    android:id="@+id/rbAverage"
-                    style="?android:attr/ratingBarStyleSmall"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:isIndicator="true"
-                    android:numStars="5"
-                    android:progressBackgroundTint="@color/streak_track"
-                    android:progressTint="@color/streak_accent"
-                    android:secondaryProgressTint="@color/streak_accent"
-                    android:stepSize="0.1" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/tvRatingSummary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textColor="@color/streak_text_secondary"
-                    tools:text="4.3 (12 reviews)" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvDetailName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/streak_text_primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        tools:text="Premium Hammer" />
 
-            <TextView
-                android:id="@+id/tvDetailDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textSize="16sp"
-                tools:text="Experience premium quality with this wonderful tool." />
+                    <TextView
+                        android:id="@+id/tvDetailPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/streak_text_primary"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        tools:text="R 2499.00" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <RatingBar
+                            android:id="@+id/rbAverage"
+                            style="?android:attr/ratingBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:progressBackgroundTint="@color/streak_track"
+                            android:progressTint="@color/streak_accent"
+                            android:secondaryProgressTint="@color/streak_accent"
+                            android:stepSize="0.1" />
+
+                        <TextView
+                            android:id="@+id/tvRatingSummary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textColor="@color/streak_text_secondary"
+                            android:textSize="13sp"
+                            tools:text="4.3 (12 reviews)" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/streak_card_stroke" />
+
+                    <TextView
+                        android:id="@+id/tvDetailDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingMultiplier="1.2"
+                        android:textColor="@color/streak_text_secondary"
+                        android:textSize="15sp"
+                        tools:text="Experience premium quality with this wonderful tool." />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 style="@style/Unify.SectionHeader"
@@ -141,6 +169,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSubmitReview"
+                        style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
@@ -185,6 +214,7 @@
                 android:id="@+id/tvNoReviews"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:layout_marginTop="12dp"
                 android:text="@string/reviews_empty"
                 android:textColor="@color/streak_text_secondary"
@@ -201,32 +231,38 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Bottom action bar -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/streak_card_stroke" />
 
-    <Button
-        android:id="@+id/btnAddWishlist"
-        android:layout_width="0dp"
-        android:layout_height="51dp"
-        android:layout_marginBottom="16dp"
-        android:text="♡ Add to Wishlist"
-        android:textAllCaps="false"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        app:backgroundTint="#CDDE31"
-        app:layout_constraintBottom_toTopOf="@+id/btnAddCart"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/streak_card_bg"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp">
 
-    <Button
-        android:id="@+id/btnAddCart"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Add to Cart"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddCart"
+            style="@style/Unify.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add to Cart"
+            app:icon="@drawable/ic_add_shopping_cart"
+            app:iconGravity="textStart" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddWishlist"
+            style="@style/Unify.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Add to Wishlist"
+            app:icon="@drawable/ic_favorite_border"
+            app:iconGravity="textStart" />
+    </LinearLayout>
+
+</LinearLayout>

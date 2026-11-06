@@ -1,88 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Mirrors login.xml: logo, title, bordered fields, yellow button, text link -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-
     android:id="@+id/register"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-
-    <TextView
-        android:id="@+id/Register"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:layout_marginBottom="402dp"
-        android:text="@string/register"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/regregister"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingVertical="24dp">
 
-    <EditText
-        android:id="@+id/regname"
-        android:layout_width="319dp"
-        android:layout_height="50dp"
-        android:background="@drawable/text_border"
-        android:ems="10"
-        android:hint="@string/name"
-        android:inputType="text"
-        android:padding="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/regemail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.588" />
+        <ImageView
+            android:layout_width="244dp"
+            android:layout_height="174dp"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/unify" />
 
-    <EditText
-        android:id="@+id/regsurname"
-        android:layout_width="319dp"
-        android:layout_height="50dp"
-        android:background="@drawable/text_border"
-        android:ems="10"
-        android:hint="@string/surname"
-        android:inputType="text"
-        android:padding="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/regemail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/regname"
-        app:layout_constraintVertical_bias="0.508" />
+        <TextView
+            android:id="@+id/Register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/register"
+            android:textColor="#000000"
+            android:textSize="28sp" />
 
-    <EditText
-        android:id="@+id/regemail"
-        android:layout_width="319dp"
-        android:layout_height="50dp"
+        <EditText
+            android:id="@+id/regname"
+            android:layout_width="319dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="32dp"
+            android:autofillHints="givenName"
+            android:background="@drawable/text_border"
+            android:hint="@string/name"
+            android:inputType="textPersonName|textCapWords"
+            android:padding="12dp" />
 
-        android:autofillHints=""
-        android:background="@drawable/text_border"
-        android:ems="10"
-        android:hint="@string/email"
-        android:inputType="textEmailAddress"
-        android:padding="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.412" />
-
-    <EditText
-        android:id="@+id/regpassword"
-        android:layout_width="319dp"
-        android:layout_height="50dp"
-        android:background="@drawable/text_border"
-        android:ems="10"
-        android:hint="@string/password"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/regemail"
-        app:layout_constraintVertical_bias="0.068" />
+        <EditText
+            android:id="@+id/regsurname"
+            android:layout_width="319dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="14dp"
+            android:autofillHints="familyName"
+            android:background="@drawable/text_border"
+            android:hint="@string/surname"
+            android:inputType="textPersonName|textCapWords"
+            android:padding="12dp" />
 
     <Button
         android:id="@+id/regregister"
@@ -126,5 +93,23 @@
         app:layout_constraintTop_toBottomOf="@+id/btnRegGoogleSignIn"
         app:layout_constraintVertical_bias="0.463" />
 
+        <Button
+            android:id="@+id/regregister"
+            android:layout_width="317dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/register"
+            android:textColor="@color/black"
+            app:backgroundTint="@color/brand_yellow" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/reglogin"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="275dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/already_have_an_account_login"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+    </LinearLayout>
+</ScrollView>
