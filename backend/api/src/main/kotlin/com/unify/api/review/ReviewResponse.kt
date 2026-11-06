@@ -6,6 +6,7 @@ data class ReviewResponse (
     val id: Int,
     val productId: Int,
     val userId: String,
+    val reviewerName: String?,
     val rating: Int,
     val comment: String,
     val createdAt: LocalDateTime
@@ -14,7 +15,8 @@ data class ReviewResponse (
 data class CreateReviewRequest(
     val productId: Int,
     val rating: Int,
-    val comment: String?
+    val comment: String?,
+    val reviewerName: String? = null
 )
 
 data class ReviewSummaryResponse(
@@ -28,6 +30,7 @@ fun Review.toRespones(): ReviewResponse = ReviewResponse(
     id = this.id!!,
     productId = this.product?.id!!,
     userId = this.userId!!,
+    reviewerName = this.reviewerName,
     rating = this.rating!!,
     comment = this.comment ?: "",
     createdAt = this.createdAt!!

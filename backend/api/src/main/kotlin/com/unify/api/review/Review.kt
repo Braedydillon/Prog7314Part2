@@ -10,6 +10,7 @@ class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "review_id")
     var id: Int? = null
     @Column(name = "user_id")
     var userId: String? = null
@@ -17,6 +18,8 @@ class Review {
     var rating: Int? = null
     @Column(name = "comment")
     var comment: String? = null
+    @Column(name = "reviewer_name")
+    var reviewerName: String? = null
     @Column(name = "created_at")
     var createdAt: LocalDateTime? = null
 
