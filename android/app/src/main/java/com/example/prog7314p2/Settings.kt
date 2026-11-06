@@ -88,7 +88,7 @@ class Settings : Fragment() {
         )
 
         adapter.setDropDownViewResource(
-            android.R.layout.simple_spinner_dropdown_item
+            R.layout.item_language_dropdown
         )
 
         spinnerLanguage.adapter = adapter
