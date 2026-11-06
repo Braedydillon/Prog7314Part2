@@ -16,7 +16,8 @@ class AzureBlobImageStorage(private val container: BlobContainerClient) : ImageS
     private val log = LoggerFactory.getLogger(AzureBlobImageStorage::class.java)
 
     override fun store(folder: String, bytes: ByteArray, type: ImageType): String {
-        val blob = container.getBlobClient("$folder/${UUID.randomUUID()}.${type.extension}")
+        val name = "$folder/${UUID.randomUUID()}.${type.extension}"
+        val blob = container.getBlobClient(name)
 
         val headers = BlobHttpHeaders()
             .setContentType(type.contentType)
@@ -32,21 +33,20 @@ class AzureBlobImageStorage(private val container: BlobContainerClient) : ImageS
             log.error("Azure upload failed", e)
             throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "Couldn't upload the image, please try again")
         }
-        return blob.blobUrl
+        return urlFor(container.blobContainerUrl, name)
     }
 
     override fun delete(url: String) {
-        val prefix = container.blobContainerUrl + "/"
-        if (!url.startsWith(prefix)) return
+        val name = nameFrom(container.blobContainerUrl, url) ?: return
         try {
-            container.getBlobClient(url.removePrefix(prefix)).deleteIfExists()
+            container.getBlobClient(name).deleteIfExists()
         } catch (e: Exception) {
             log.warn("Couldn't delete image $url", e)
         }
     }
 
     override fun deleteFolderExcept(folder: String, keepUrl: String) {
-        val keepName = keepUrl.removePrefix(container.blobContainerUrl + "/")
+        val keepName = nameFrom(container.blobContainerUrl, keepUrl)
         try {
             container.listBlobs(ListBlobsOptions().setPrefix("$folder/"), null)
                 .map { it.name }
@@ -54,6 +54,15 @@ class AzureBlobImageStorage(private val container: BlobContainerClient) : ImageS
                 .forEach { container.getBlobClient(it).deleteIfExists() }
         } catch (e: Exception) {
             log.warn("Couldn't clean up $folder", e)
+        }
+    }
+
+    companion object {
+        fun urlFor(containerUrl: String, blobName: String): String = "$containerUrl/$blobName"
+
+        fun nameFrom(containerUrl: String, url: String): String? {
+            val prefix = "$containerUrl/"
+            return if (url.startsWith(prefix)) url.removePrefix(prefix) else null
         }
     }
 }
