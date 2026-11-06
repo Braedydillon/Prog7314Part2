@@ -1,5 +1,6 @@
 package com.unify.api.security
 
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -25,5 +26,11 @@ class FirebaseConfig(@Value($$"${FIREBASE_CREDENTIALS}") private val firebaseCre
             FirebaseApp.initializeApp(options)
         }
         return FirebaseAuth.getInstance()
+    }
+    @Bean
+    fun firebaseMessaging(
+        firebaseAuth: FirebaseAuth
+    ): FirebaseMessaging {
+        return FirebaseMessaging.getInstance()
     }
 }

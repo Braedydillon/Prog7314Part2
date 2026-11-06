@@ -12,17 +12,28 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
 import java.util.Optional
 
 class OrderServiceTests {
+
     private val orderRepository: OrderRepository = mock()
     private val productRepository: ProductRepository = mock()
     private val addressRepository: AddressRepository = mock()
     private val pointsService: PointsService = mock()
-    private val service = OrderService(orderRepository, productRepository, addressRepository, pointsService)
 
+    // Mock the event publisher required by OrderService
+    private val eventPublisher: ApplicationEventPublisher = mock()
+
+    private val service = OrderService(
+        orderRepository,
+        productRepository,
+        addressRepository,
+        pointsService,
+        eventPublisher
+    )
     private fun stubValidAddress(userId: String) {
         val address = Address().apply { id = 1; this.userId = userId }
         whenever(addressRepository.findById(1)).thenReturn(Optional.of(address))

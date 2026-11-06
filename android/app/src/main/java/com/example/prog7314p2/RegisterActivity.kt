@@ -1,3 +1,4 @@
+
 package com.example.prog7314p2
 
 import android.content.Intent
@@ -25,22 +26,32 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.register)
-        
+
         auth = FirebaseAuth.getInstance()
-        
+
         val rootView = findViewById<View>(R.id.register)
+
         if (rootView != null) {
             ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                val systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                )
+
+                v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    systemBars.bottom
+                )
+
                 insets
             }
         }
 
-        login = findViewById<Button>(R.id.reglogin)
-        register = findViewById<Button>(R.id.regregister)
-        emailEditText = findViewById<EditText>(R.id.regemail)
-        passwordEditText = findViewById<EditText>(R.id.regpassword)
+        login = findViewById(R.id.reglogin)
+        register = findViewById(R.id.regregister)
+        emailEditText = findViewById(R.id.regemail)
+        passwordEditText = findViewById(R.id.regpassword)
 
         // Login Button (Navigates back to MainActivity)
         login.setOnClickListener {
@@ -50,47 +61,94 @@ class RegisterActivity : AppCompatActivity() {
 
         // Register Button Logic
         register.setOnClickListener {
+
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please enter email and password.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.register_fill_fields),
+                    Toast.LENGTH_SHORT
+                ).show()
+
                 return@setOnClickListener
             }
 
             // Create user in Firebase
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
+
                     if (task.isSuccessful) {
+
                         // Registration success! Now save the name and surname to Firestore
                         val userId = auth.currentUser?.uid
+
                         if (userId != null) {
-                            val name = findViewById<EditText>(R.id.regname).text.toString().trim()
-                            val surname = findViewById<EditText>(R.id.regsurname).text.toString().trim()
-                            
+
+                            val name = findViewById<EditText>(
+                                R.id.regname
+                            ).text.toString().trim()
+
+                            val surname = findViewById<EditText>(
+                                R.id.regsurname
+                            ).text.toString().trim()
+
                             val userMap = hashMapOf(
                                 "name" to name,
                                 "surname" to surname,
                                 "email" to email
                             )
-                            
+
                             FirebaseFirestore.getInstance()
                                 .collection("users")
                                 .document(userId)
                                 .set(userMap)
                                 .addOnSuccessListener {
-                                    Toast.makeText(baseContext, "Registration successful.", Toast.LENGTH_SHORT).show()
-                                    // Go back to login screen
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
+
+                                    Toast.makeText(
+                                        baseContext,
+                                        getString(R.string.register_success_message),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                    BiometricHelper.promptToEnableBiometrics(
+                                        this,
+                                        email,
+                                        password
+                                    ) {
+                                        val intent = Intent(
+                                            this,
+                                            MainActivity::class.java
+                                        )
+
+                                        startActivity(intent)
+                                        finish()
+                                    }
                                 }
                                 .addOnFailureListener { e ->
-                                    Toast.makeText(baseContext, "Failed to save details: ${e.message}", Toast.LENGTH_SHORT).show()
+
+                                    Toast.makeText(
+                                        baseContext,
+                                        getString(
+                                            R.string.register_save_failed,
+                                            e.message ?: ""
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                         }
+
                     } else {
-                        Toast.makeText(baseContext, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+
+                        Toast.makeText(
+                            baseContext,
+                            getString(
+                                R.string.register_failed_message,
+                                task.exception?.message ?: ""
+                            ),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
         }

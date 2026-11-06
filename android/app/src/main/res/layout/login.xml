@@ -22,7 +22,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome back"
+        android:text="@string/welcome_back"
         android:textColor="#000000"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -94,6 +94,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loglogin" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBiometricSignIn"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="317dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="4dp"
+        android:text="@string/biometric_login_button"
+        android:textColor="@color/black"
+        app:icon="@android:drawable/ic_lock_lock"
+        app:iconSize="20dp"
+        app:iconTint="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoogleSignIn" />
+
     <Button
         android:id="@+id/logregister"
         style="@style/Widget.MaterialComponents.Button.TextButton"
@@ -106,7 +122,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnGoogleSignIn"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/btnBiometricSignIn"
+        app:layout_constraintVertical_bias="0.12" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

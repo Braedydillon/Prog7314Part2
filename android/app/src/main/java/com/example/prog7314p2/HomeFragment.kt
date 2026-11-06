@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import RetrofitClient
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.NestedScrollView
 import com.example.prog7314p2.Models.Product
@@ -71,6 +72,15 @@ class HomeFragment : Fragment() {
             etSearch.text.clear()
             currentPage = 0
             fetchData(page = 0)
+        }
+
+        val btnWishlist = view.findViewById<Button>(R.id.btnWishlist)
+
+        btnWishlist.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, WishlistFragment())
+                .addToBackStack(null)
+                .commit()
         }
         
         // Search Input Listener with Debounce & Job Cancellation

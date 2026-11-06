@@ -89,22 +89,77 @@ class ProductDetailsFragment : Fragment() {
                 }
 
                 btnAddCart.setOnClickListener {
+
                     firebaseHelper.addToCart(
                         productId = fetchedProduct.id,
                         quantity = 1,
+
+                        // Store product information for offline cart display
+                        name = fetchedProduct.name,
+                        price = fetchedProduct.price,
+                        imageUrl = fetchedProduct.imageUrl,
+
                         onSuccess = {
-                            Snackbar.make(
-                                view,
-                                "${fetchedProduct.name} added to cart!",
-                                Snackbar.LENGTH_LONG
-                            ).setAction("GO TO CART") {
-                                parentFragmentManager.beginTransaction()
-                                    .replace(R.id.fragmentContainer, ShoppingCart())
-                                    .addToBackStack(null)
-                                    .commit()
-                            }.show()
+                            if (isAdded) {
+                                Snackbar.make(
+                                    view,
+                                    "${fetchedProduct.name} added to cart!",
+                                    Snackbar.LENGTH_LONG
+                                ).setAction("GO TO CART") {
+                                    parentFragmentManager.beginTransaction()
+                                        .replace(R.id.fragmentContainer, ShoppingCart())
+                                        .addToBackStack(null)
+                                        .commit()
+                                }.show()
+                            }
                         },
+
                         onFailure = { e ->
+                            if (isAdded) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Failed to add to cart: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    )
+
+                }
+
+                val btnWishlist =
+                    view.findViewById<Button>(R.id.btnAddWishlist)
+
+                btnWishlist.setOnClickListener {
+
+                    firebaseHelper.addToWishlist(
+                        productId = fetchedProduct.id,
+                        name = fetchedProduct.name,
+                        price = fetchedProduct.price,
+                        imageUrl = fetchedProduct.imageUrl,
+
+                        onSuccess = {
+                            if (isAdded) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Added to wishlist!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
+
+                        onFailure = { error ->
+                            if (isAdded) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Wishlist error: ${error.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    )
+                }
+
                             Toast.makeText(context, "Failed to add to cart: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
                     )

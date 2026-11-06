@@ -49,11 +49,11 @@ class orderHistory : Fragment() {
                 val mapped = orders.map{ order ->
                     OrderHistoryModel(
                         orderId = order.id.toString(),
-                        datePlaced = order.createdAt,
-                        totalCost = order.total,
+                        datePlaced = order.createdAt ?: "",
+                        totalCost = order.total ?: 0.0,
                         eta = order.estimatedDelivery ?: "3-5 Business Days",
-                        itemCount = order.items.sumOf { it.quantity },
-                        status = order.status
+                        itemCount = order.items.orEmpty().sumOf { it.quantity ?: 0 },
+                        status = order.status ?: "PENDING"
                     )
                 }
 
