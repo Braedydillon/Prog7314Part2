@@ -185,4 +185,27 @@
     <string name="register_save_failed">Kon nie besonderhede stoor nie: %1$s</string>
     <string name="register_failed_message">Registrasie het misluk: %1$s</string>
 
+    <!-- Reviews -->
+    <string name="reviews_title">Resensies</string>
+    <string name="reviews_empty">Hierdie produk het nog geen resensies nie.</string>
+    <string name="reviews_none_yet">Nog geen resensies nie</string>
+    <string name="reviews_load_failed">Kon nie resensies laai nie</string>
+    <plurals name="reviews_summary">
+        <item quantity="one">%1$.1f (%2$d resensie)</item>
+        <item quantity="other">%1$.1f (%2$d resensies)</item>
+    </plurals>
+    <string name="review_write_title">Skryf \'n resensie</string>
+    <string name="review_comment_hint">Wat dink jy van hierdie produk?</string>
+    <string name="review_submit">Dien resensie in</string>
+    <string name="review_pick_rating">Kies asseblief \'n stergradering</string>
+    <string name="review_thanks">Resensie ingedien</string>
+    <string name="review_submit_failed">Kon nie jou resensie indien nie</string>
+    <string name="review_already_reviewed">Jy het reeds \'n resensie vir hierdie produk geskryf</string>
+    <string name="review_delete">Verwyder</string>
+    <string name="review_cancel">Kanselleer</string>
+    <string name="review_delete_title">Verwyder jou resensie?</string>
+    <string name="review_delete_message">Dit kan nie ongedaan gemaak word nie.</string>
+    <string name="review_delete_failed">Kon nie jou resensie verwyder nie</string>
+    <string name="review_anonymous">Anoniem</string>
+
 </resources>

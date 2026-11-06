@@ -184,4 +184,27 @@
     <string name="register_save_failed">Yehlulekile ukulondoloza imininingwane: %1$s</string>
     <string name="register_failed_message">Ukubhalisa kwehlulekile: %1$s</string>
 
+    <!-- Reviews -->
+    <string name="reviews_title">Izibuyekezo</string>
+    <string name="reviews_empty">Lo mkhiqizo awukabi nazo izibuyekezo.</string>
+    <string name="reviews_none_yet">Azikabikho izibuyekezo</string>
+    <string name="reviews_load_failed">Ayikwazanga ukulayisha izibuyekezo</string>
+    <plurals name="reviews_summary">
+        <item quantity="one">%1$.1f (isibuyekezo esingu-%2$d)</item>
+        <item quantity="other">%1$.1f (izibuyekezo ezingu-%2$d)</item>
+    </plurals>
+    <string name="review_write_title">Bhala isibuyekezo</string>
+    <string name="review_comment_hint">Ucabangani ngalo mkhiqizo?</string>
+    <string name="review_submit">Thumela isibuyekezo</string>
+    <string name="review_pick_rating">Sicela ukhethe isilinganiso sezinkanyezi</string>
+    <string name="review_thanks">Isibuyekezo sithunyelwe</string>
+    <string name="review_submit_failed">Ayikwazanga ukuthumela isibuyekezo sakho</string>
+    <string name="review_already_reviewed">Usuwubuyekezile lo mkhiqizo</string>
+    <string name="review_delete">Susa</string>
+    <string name="review_cancel">Khansela</string>
+    <string name="review_delete_title">Susa isibuyekezo sakho?</string>
+    <string name="review_delete_message">Lokhu akukwazi ukuhlehliswa.</string>
+    <string name="review_delete_failed">Ayikwazanga ukususa isibuyekezo sakho</string>
+    <string name="review_anonymous">Ongaziwa</string>
+
 </resources>
