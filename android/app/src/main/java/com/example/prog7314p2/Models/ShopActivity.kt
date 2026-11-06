@@ -19,6 +19,7 @@ import com.example.prog7314p2.Settings
 import com.example.prog7314p2.ShoppingCart
 import com.example.prog7314p2.StreakNotificationHelper
 import com.example.prog7314p2.StreakPopup
+import com.example.prog7314p2.UnifyFirebaseMessagingService
 import com.example.prog7314p2.orderHistory
 import com.example.prog7314p2.scanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -114,6 +115,19 @@ class ShopActivity : AppCompatActivity() {
         // Request notification permission after the screen loads.
         // Android 13+ will display a permission dialog if needed.
         notificationPermissionHelper.requestPermissionIfNeeded()
+
+        // Register FCM device token with backend
+        UnifyFirebaseMessagingService.registerCurrentTokenWithBackend()
+
+        val fabAdminOrders = findViewById<ExtendedFloatingActionButton>(R.id.fabAdminOrders)
+        fabAdminOrders?.setOnClickListener {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, AdminOrdersFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        checkAdminAccess()
 
         val fragmentContainer = findViewById<View>(R.id.fragmentContainer)
         ViewCompat.setOnApplyWindowInsetsListener(fragmentContainer) { v, insets ->

@@ -2,11 +2,14 @@ package com.example.prog7314p2
 
 import RetrofitClient
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -16,13 +19,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.prog7314p2.Models.OrderResponse
 import com.example.prog7314p2.Models.UpdateOrderStatusRequest
 import com.example.prog7314p2.util.serverMessage
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
+import java.util.Locale
 
 class AdminOrdersFragment : Fragment() {
 
@@ -34,8 +40,18 @@ class AdminOrdersFragment : Fragment() {
     private lateinit var tvErrorMessage: TextView
     private lateinit var btnRetry: Button
 
-    private val ordersList = mutableListOf<OrderResponse>()
+    private lateinit var tvMetricTotalCount: TextView
+    private lateinit var tvMetricPendingCount: TextView
+    private lateinit var tvMetricRevenue: TextView
+    private lateinit var etSearchAdminOrders: EditText
+    private lateinit var chipGroupAdminStatus: ChipGroup
+
+    private val allOrdersList = mutableListOf<OrderResponse>()
     private lateinit var adapter: AdminOrdersAdapter
+
+    private var selectedStatusFilter: String? = null
+    private var currentSearchQuery: String? = null
+    private var searchJob: Job? = null
 
     private val availableStatuses = arrayOf("PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED")
 
@@ -58,7 +74,13 @@ class AdminOrdersFragment : Fragment() {
         tvErrorMessage = view.findViewById(R.id.tvErrorMessage)
         btnRetry = view.findViewById(R.id.btnRetryAdminOrders)
 
-        adapter = AdminOrdersAdapter(ordersList) { order ->
+        tvMetricTotalCount = view.findViewById(R.id.tvMetricTotalCount)
+        tvMetricPendingCount = view.findViewById(R.id.tvMetricPendingCount)
+        tvMetricRevenue = view.findViewById(R.id.tvMetricRevenue)
+        etSearchAdminOrders = view.findViewById(R.id.etSearchAdminOrders)
+        chipGroupAdminStatus = view.findViewById(R.id.chipGroupAdminStatus)
+
+        adapter = AdminOrdersAdapter(mutableListOf()) { order ->
             showStatusSelectionDialog(order)
         }
         rvAdminOrders.adapter = adapter
@@ -71,7 +93,96 @@ class AdminOrdersFragment : Fragment() {
             fetchOrders(isPullToRefresh = false)
         }
 
+        setupSearchAndFilterChips()
+
         fetchOrders(isPullToRefresh = false)
+    }
+
+    private fun setupSearchAndFilterChips() {
+        // Setup Search Listener
+        etSearchAdminOrders.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchJob?.cancel()
+                searchJob = viewLifecycleOwner.lifecycleScope.launch {
+                    delay(250)
+                    val q = s?.toString()?.trim()
+                    currentSearchQuery = if (q.isNullOrEmpty()) null else q
+                    applyFilterAndSearch()
+                }
+            }
+        })
+
+        // Setup Filter Chips
+        setupFilterChips()
+    }
+
+    private fun setupFilterChips() {
+        chipGroupAdminStatus.removeAllViews()
+
+        val filterOptions = listOf(getString(R.string.admin_filter_all)) + availableStatuses
+
+        for (status in filterOptions) {
+            val chip = Chip(requireContext()).apply {
+                text = status
+                isCheckable = true
+                if (status == getString(R.string.admin_filter_all)) {
+                    isChecked = true
+                }
+                setOnClickListener {
+                    selectedStatusFilter = if (status == getString(R.string.admin_filter_all)) null else status
+                    applyFilterAndSearch()
+                }
+            }
+            chipGroupAdminStatus.addView(chip)
+        }
+    }
+
+    private fun applyFilterAndSearch() {
+        val query = currentSearchQuery
+        val statusFilter = selectedStatusFilter
+
+        var filtered = allOrdersList.toList()
+
+        // 1. Filter by Status
+        if (!statusFilter.isNullOrEmpty()) {
+            filtered = filtered.filter { order ->
+                (order.status ?: "").equals(statusFilter, ignoreCase = true)
+            }
+        }
+
+        // 2. Filter by Search Query (Order #, Customer ID, or Product Name)
+        if (!query.isNullOrEmpty()) {
+            filtered = filtered.filter { order ->
+                val orderIdMatch = order.id.toString().contains(query, ignoreCase = true)
+                val customerMatch = (order.userId ?: "").contains(query, ignoreCase = true)
+                val productMatch = order.items.orEmpty().any { item ->
+                    (item.productName ?: "").contains(query, ignoreCase = true)
+                }
+                orderIdMatch || customerMatch || productMatch
+            }
+        }
+
+        adapter.updateData(filtered)
+
+        if (filtered.isEmpty()) {
+            layoutEmptyState.visibility = View.VISIBLE
+            rvAdminOrders.visibility = View.GONE
+        } else {
+            layoutEmptyState.visibility = View.GONE
+            rvAdminOrders.visibility = View.VISIBLE
+        }
+    }
+
+    private fun updateMetrics() {
+        val totalCount = allOrdersList.size
+        val pendingCount = allOrdersList.count { (it.status ?: "").equals("PENDING", ignoreCase = true) }
+        val totalRevenue = allOrdersList.sumOf { it.total ?: 0.0 }
+
+        tvMetricTotalCount.text = totalCount.toString()
+        tvMetricPendingCount.text = pendingCount.toString()
+        tvMetricRevenue.text = String.format(Locale.getDefault(), "R %.2f", totalRevenue)
     }
 
     private fun fetchOrders(isPullToRefresh: Boolean) {
@@ -98,17 +209,11 @@ class AdminOrdersFragment : Fragment() {
                 progressIndicator.visibility = View.GONE
                 swipeRefresh.isRefreshing = false
 
-                if (fetchedOrders.isEmpty()) {
-                    ordersList.clear()
-                    adapter.updateData(emptyList())
-                    layoutEmptyState.visibility = View.VISIBLE
-                } else {
-                    ordersList.clear()
-                    ordersList.addAll(fetchedOrders)
-                    adapter.updateData(fetchedOrders)
-                    layoutEmptyState.visibility = View.GONE
-                    rvAdminOrders.visibility = View.VISIBLE
-                }
+                allOrdersList.clear()
+                allOrdersList.addAll(fetchedOrders)
+
+                updateMetrics()
+                applyFilterAndSearch()
 
             } catch (e: CancellationException) {
                 throw e
@@ -194,7 +299,15 @@ class AdminOrdersFragment : Fragment() {
                 if (!isAdded || view == null) return@launch
 
                 val finalStatus = updatedOrder.status ?: newStatus
-                adapter.updateOrderStatus(orderId, finalStatus)
+                
+                // Update local list
+                val index = allOrdersList.indexOfFirst { it.id == orderId }
+                if (index != -1) {
+                    allOrdersList[index] = allOrdersList[index].copy(status = finalStatus)
+                }
+
+                updateMetrics()
+                applyFilterAndSearch()
 
                 val successMsg = getString(R.string.admin_status_updated, orderId.toString(), finalStatus)
                 Toast.makeText(requireContext(), successMsg, Toast.LENGTH_SHORT).show()
@@ -205,7 +318,7 @@ class AdminOrdersFragment : Fragment() {
                 if (!isAdded || view == null) return@launch
                 Log.e("AdminOrders", "Status update failed", e)
                 val errorMsg = e.serverMessage() ?: getString(R.string.admin_status_update_failed)
-                
+
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Status Update Error")
                     .setMessage(errorMsg)
