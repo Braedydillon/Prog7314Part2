@@ -54,6 +54,16 @@
         </LinearLayout>
 
         <ImageButton
+            android:id="@+id/btnAddToCartWishlist"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Add to cart"
+            android:padding="10dp"
+            android:src="@drawable/cart"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <ImageButton
             android:id="@+id/btnRemoveWishlist"
             android:layout_width="44dp"
             android:layout_height="44dp"
