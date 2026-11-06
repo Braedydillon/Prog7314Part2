@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
     implementation(libs.googleid)
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation(libs.material)
     
     // Networking & Images

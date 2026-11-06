@@ -1,4 +1,3 @@
-
 package com.example.prog7314p2
 
 import android.view.LayoutInflater
@@ -14,57 +13,48 @@ import java.util.Locale
 
 class WishlistAdapter(
     private val onRemoveClick: (WishlistItem) -> Unit,
-    private val onProductClick: (WishlistItem) -> Unit
+    private val onProductClick: (WishlistItem) -> Unit,
+    private val onAddToCartClick: (WishlistItem) -> Unit
 ) : RecyclerView.Adapter<WishlistAdapter.WishlistViewHolder>() {
 
     private val items = mutableListOf<WishlistItem>()
 
-    class WishlistViewHolder(view: View) :
-        RecyclerView.ViewHolder(view) {
-
+    class WishlistViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image: ImageView = view.findViewById(R.id.ivWishlistImage)
         val name: TextView = view.findViewById(R.id.tvWishlistName)
         val price: TextView = view.findViewById(R.id.tvWishlistPrice)
+        val addToCart: ImageButton = view.findViewById(R.id.btnAddToCartWishlist)
         val remove: ImageButton = view.findViewById(R.id.btnRemoveWishlist)
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): WishlistViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishlistViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_wishlist, parent, false)
-
         return WishlistViewHolder(view)
     }
 
-    override fun onBindViewHolder(
-        holder: WishlistViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: WishlistViewHolder, position: Int) {
         val item = items[position]
 
-        holder.name.text = item.name.ifBlank {
-            "Product #${item.productId}"
-        }
+        holder.name.text = if (item.name.isNotBlank()) item.name else "Product #${item.productId}"
 
-        holder.price.text = if (item.name.isBlank()) {
-            "Price unavailable"
-        } else {
+        holder.price.text = if (item.price > 0) {
             String.format(Locale.getDefault(), "R %.2f", item.price)
+        } else {
+            "Tap to view details"
         }
 
-        if (!item.imageUrl.isNullOrBlank()
-            && item.imageUrl != "no-image-yet.com"
-        ) {
+        if (!item.imageUrl.isNullOrBlank() && item.imageUrl != "no-image-yet.com") {
             holder.image.load(item.imageUrl) {
                 placeholder(android.R.drawable.ic_menu_gallery)
                 error(android.R.drawable.ic_menu_gallery)
             }
         } else {
-            holder.image.setImageResource(
-                android.R.drawable.ic_menu_gallery
-            )
+            holder.image.setImageResource(android.R.drawable.ic_menu_gallery)
+        }
+
+        holder.addToCart.setOnClickListener {
+            onAddToCartClick(item)
         }
 
         holder.remove.setOnClickListener {
