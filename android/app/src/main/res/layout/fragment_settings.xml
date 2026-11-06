@@ -35,10 +35,14 @@
         <Spinner
             android:id="@+id/spinnerLanguage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginTop="8dp"
+            android:background="@drawable/bg_language_dropdown"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:spinnerMode="dropdown"
-            tools:ignore="TouchTargetSizeCheck" />
+            android:dropDownVerticalOffset="8dp"
+            android:popupBackground="@drawable/bg_language_popup"/>
 
         <com.google.android.material.card.MaterialCardView
             style="@style/Unify.Card"
