@@ -131,16 +131,7 @@ class LoginActivity : AppCompatActivity() {
                 ) {
                     super.onAuthenticationSucceeded(result)
 
-                    if (auth.currentUser != null) {
-                        Toast.makeText(
-                            applicationContext,
-                            getString(R.string.biometric_success_message),
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        goToMain()
-
-                    } else if (!savedEmail.isNullOrEmpty() && !savedPass.isNullOrEmpty()) {
+                    if (!savedEmail.isNullOrEmpty() && !savedPass.isNullOrEmpty()) {
                         auth.signInWithEmailAndPassword(savedEmail, savedPass)
                             .addOnCompleteListener { task ->
 
@@ -163,6 +154,9 @@ class LoginActivity : AppCompatActivity() {
                                     ).show()
                                 }
                             }
+                    } else if (auth.currentUser != null) {
+                        Toast.makeText(applicationContext, "Biometric login successful!", Toast.LENGTH_SHORT).show()
+                        goToMain()
                     } else {
                         Toast.makeText(
                             applicationContext,
