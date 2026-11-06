@@ -147,6 +147,8 @@
     <string name="admin_orders_failed" translatable="false">Couldn\'t load orders. Please try again.</string>
     <string name="admin_customer_id" translatable="false">Customer ID: %1$s</string>
     <string name="admin_order_items_header" translatable="false">Ordered Items:</string>
+    <string name="admin_filter_all" translatable="false">All</string>
+    <string name="admin_search_orders_hint" translatable="false">Search order #, customer, or product...</string>
 
 
     <string name="login_fill_fields">Fill in all fields</string>

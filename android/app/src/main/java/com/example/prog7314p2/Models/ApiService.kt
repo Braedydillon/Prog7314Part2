@@ -81,7 +81,7 @@ interface ApiService {
     suspend fun uploadAvatar(@Part image: MultipartBody.Part): AvatarResponse
 
     // Firebase notifications
-    @POST("api/notifications/device-token")
+    @POST("api/notifications/token")
     suspend fun registerDeviceToken(
         @Body request: DeviceTokenRequest
     )
