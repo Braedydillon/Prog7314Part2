@@ -25,4 +25,36 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <!-- Rounded-square image inside cards -->
+    <style name="ShapeAppearance.Unify.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <!-- Large bold page title used at the top of every screen -->
+    <style name="Unify.ScreenTitle" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/streak_text_primary</item>
+    </style>
+
+    <!-- Main call-to-action: yellow fill, dark text (matches the login button) -->
+    <style name="Unify.Button.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/brand_yellow</item>
+        <item name="android:textColor">@color/streak_text_primary</item>
+        <item name="iconTint">@color/streak_text_primary</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Secondary action: outlined, dark text (matches the Google/biometric buttons) -->
+    <style name="Unify.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/streak_text_primary</item>
+        <item name="iconTint">@color/streak_text_primary</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

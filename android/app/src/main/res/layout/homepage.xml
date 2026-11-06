@@ -2,7 +2,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/screen_bg">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -20,58 +21,54 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="20dp"
+                android:paddingTop="20dp">
 
-                <!-- Store Title and Wishlist Button -->
+                <!-- Title + Wishlist -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <!-- Store Title - Left -->
                     <TextView
+                        style="@style/Unify.ScreenTitle"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/store_title"
-                        android:textColor="@color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                        android:text="@string/store_title" />
 
-                    <!-- Wishlist Button - Right -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnWishlist"
+                        style="@style/Widget.Material3.Button.TonalButton.Icon"
                         android:layout_width="wrap_content"
-                        android:layout_height="48dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="My Wishlist"
-                        android:textAllCaps="false"
-                        android:textSize="13sp"
-                        android:textColor="@android:color/white"
-                        app:backgroundTint="#6750A4"
-                        app:cornerRadius="12dp"
-                        app:icon="@android:drawable/btn_star_big_off"
-                        app:iconTint="@android:color/white"
-                        app:iconSize="18dp"
-                        app:iconPadding="6dp" />
-
+                        app:icon="@drawable/ic_favorite_border" />
                 </LinearLayout>
 
-                <EditText
-                    android:id="@+id/etSearch"
+                <!-- Search -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/text_border"
-                    android:drawableStart="@android:drawable/ic_menu_search"
-                    android:drawablePadding="12dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:hint="@string/search_products"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:paddingHorizontal="16dp" />
+                    app:boxBackgroundColor="@color/streak_card_bg"
+                    app:endIconMode="clear_text"
+                    app:startIconDrawable="@drawable/ic_search"
+                    app:startIconTint="@color/streak_text_secondary">
 
-                <!-- Categories Bar -->
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Categories -->
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -87,27 +84,23 @@
                 </HorizontalScrollView>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/products_for_you"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    style="@style/Unify.SectionHeader"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/products_for_you" />
 
             </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- NATIVE RECYCLER VIEW (Direct child of CoordinatorLayout for true 60fps view recycling) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProducts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="8dp"
         android:clipToPadding="false"
+        android:paddingHorizontal="14dp"
+        android:paddingBottom="14dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:spanCount="2" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
