@@ -110,10 +110,7 @@ class LoginActivity : AppCompatActivity() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
 
-                    if (auth.currentUser != null) {
-                        Toast.makeText(applicationContext, "Biometric login successful!", Toast.LENGTH_SHORT).show()
-                        goToMain()
-                    } else if (!savedEmail.isNullOrEmpty() && !savedPass.isNullOrEmpty()) {
+                    if (!savedEmail.isNullOrEmpty() && !savedPass.isNullOrEmpty()) {
                         auth.signInWithEmailAndPassword(savedEmail, savedPass)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
@@ -123,6 +120,9 @@ class LoginActivity : AppCompatActivity() {
                                     Toast.makeText(applicationContext, "Biometric login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                                 }
                             }
+                    } else if (auth.currentUser != null) {
+                        Toast.makeText(applicationContext, "Biometric login successful!", Toast.LENGTH_SHORT).show()
+                        goToMain()
                     } else {
                         Toast.makeText(applicationContext, "Please log in with password once to save your session", Toast.LENGTH_LONG).show()
                     }
