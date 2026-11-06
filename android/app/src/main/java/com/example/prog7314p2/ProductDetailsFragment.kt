@@ -160,10 +160,6 @@ class ProductDetailsFragment : Fragment() {
                     )
                 }
 
-                            Toast.makeText(context, "Failed to add to cart: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    )
-                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
