@@ -119,10 +119,6 @@
     <!-- Home / Shop -->
     <string name="store_title">Unify Winkel</string>
     <string name="search_products">Soek produkte...</string>
-    <string name="special_offers">Spesiale aanbiedinge</string>
-    <string name="fashion_deals">Mode-aanbiedinge</string>
-    <string name="tech_electronics">Tegnologie en elektronika</string>
-    <string name="tools_hardware">Gereedskap en hardeware</string>
     <string name="products_for_you">Produkte vir jou</string>
 
     <!-- Shopping Cart -->

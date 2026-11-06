@@ -118,10 +118,6 @@
     <!-- Home / Shop -->
     <string name="store_title">Isitolo se-Unify</string>
     <string name="search_products">Sesha imikhiqizo...</string>
-    <string name="special_offers">Izipesheli</string>
-    <string name="fashion_deals">Izipesheli zemfashini</string>
-    <string name="tech_electronics">Ubuchwepheshe nezinto zikagesi</string>
-    <string name="tools_hardware">Amathuluzi nezinto zokwakha</string>
     <string name="products_for_you">Imikhiqizo ekhethelwe wena</string>
 
     <!-- Shopping Cart -->

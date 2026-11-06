@@ -116,10 +116,6 @@
     <!-- Home / Shop -->
     <string name="store_title">Unify Store</string>
     <string name="search_products">Search products...</string>
-    <string name="special_offers">Special Offers</string>
-    <string name="fashion_deals">Fashion Deals</string>
-    <string name="tech_electronics">Tech &amp; Electronics</string>
-    <string name="tools_hardware">Tools &amp; Hardware</string>
     <string name="products_for_you">Products for You</string>
 
     <!-- Shopping Cart -->
